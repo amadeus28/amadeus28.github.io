@@ -75,6 +75,7 @@ form {
     border: 1px solid #ccc;
     width: 200px;
     height: 35px;
+    transition: background-color 0.3s;
 }
 
 .create-button:hover {
