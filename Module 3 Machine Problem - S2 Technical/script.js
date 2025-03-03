@@ -1,4 +1,4 @@
-let lastColor = "black"; // Default color
+let lastColor = "white"; // Default color
 
 function animateBox(day) {
     let box = document.getElementById("box");
