@@ -55,6 +55,6 @@ body {
     height: 300px;
     border: 5px solid transparent;
     position: absolute;
-    top: -350px; /* Start above */
+    top: -350px; 
     transition: top 0.5s ease-in-out, background-color 0.5s ease-in-out, border-color 0.5s ease-in-out;
 }
