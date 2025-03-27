@@ -3,29 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <title>Restaurant Guide</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="mainmenu-button"><button type="button">MAIN MENU</button></div>
-    <div class="container">
-        <div class="card">
-            <div class="food_name">Rib-Eye Steak</div>
-            <div class="food_img"></div>
-        </div>
-        <div class="card">
-            <div class="food_name"></div>
-            <div class="food_img"></div>
-        </div>
-        <div class="card">
-            <div class="food_name"></div>
-            <div class="food_img"></div>
-        </div>
-        <div class="card">
-            <div class="food_name"></div>
-            <div class="food_img"></div>
+    <div class="title">
+        <h1 class="text-center">Restaurant Guide</h1>
+    </div>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card restaurant-card" data-name="Japan Overload" 
+                data-info="
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin facilisis pretium volutpat. Maecenas eu neque non nunc aliquet luctus. Quisque laoreet, nulla at mollis elementum, metus libero scelerisque ipsum, id faucibus enim neque eget ipsum. Cras euismod nibh quis orci feugiat, vitae suscipit metus luctus. Vestibulum vehicula ullamcorper libero, sed accumsan nunc pellentesque non. Vestibulum consectetur at orci vulputate egestas. Sed convallis aliquam nunc, eu commodo arcu. Aenean eu ultrices magna, pharetra varius mi.
+
+Nulla facilisi. Suspendisse mi erat, suscipit quis feugiat sed, auctor nec justo. Integer vel velit metus. Nam viverra nulla in nunc mattis, quis facilisis justo dignissim. Cras sit amet iaculis ante, et ornare nunc. Donec consectetur dui quis lacinia convallis. Cras fringilla enim id magna feugiat, vitae ultrices enim lacinia.">
+                    <img src="asset/steak.jpg" class="card-img-top" alt="Japan Overload">
+                    <div class="card-overlay">
+                        <h5 class="restaurant-name">Japan Overload</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card restaurant-card" data-name="Proud Bisaya"
+                data-info="
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin facilisis pretium volutpat. Maecenas eu neque non nunc aliquet luctus. Quisque laoreet, nulla at mollis elementum, metus libero scelerisque ipsum, id faucibus enim neque eget ipsum. Cras euismod nibh quis orci feugiat, vitae suscipit metus luctus. Vestibulum vehicula ullamcorper libero, sed accumsan nunc pellentesque non. Vestibulum consectetur at orci vulputate egestas. Sed convallis aliquam nunc, eu commodo arcu. Aenean eu ultrices magna, pharetra varius mi.
+
+Nulla facilisi. Suspendisse mi erat, suscipit quis feugiat sed, auctor nec justo. Integer vel velit metus. Nam viverra nulla in nunc mattis, quis facilisis justo dignissim. Cras sit amet iaculis ante, et ornare nunc. Donec consectetur dui quis lacinia convallis. Cras fringilla enim id magna feugiat, vitae ultrices enim lacinia.">
+                    <img src="assets/seafood.jpg" class="card-img-top" alt="Proud Bisaya">
+                    <div class="card-overlay">
+                        <h5 class="restaurant-name">Proud Bisaya</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card restaurant-card" data-name="Finest"
+                data-info="
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin facilisis pretium volutpat. Maecenas eu neque non nunc aliquet luctus. Quisque laoreet, nulla at mollis elementum, metus libero scelerisque ipsum, id faucibus enim neque eget ipsum. Cras euismod nibh quis orci feugiat, vitae suscipit metus luctus. Vestibulum vehicula ullamcorper libero, sed accumsan nunc pellentesque non. Vestibulum consectetur at orci vulputate egestas. Sed convallis aliquam nunc, eu commodo arcu. Aenean eu ultrices magna, pharetra varius mi.
+
+Nulla facilisi. Suspendisse mi erat, suscipit quis feugiat sed, auctor nec justo. Integer vel velit metus. Nam viverra nulla in nunc mattis, quis facilisis justo dignissim. Cras sit amet iaculis ante, et ornare nunc. Donec consectetur dui quis lacinia convallis. Cras fringilla enim id magna feugiat, vitae ultrices enim lacinia.">
+                    <img src="assets/stinkytofu.jpg" class="card-img-top" alt="Finest">
+                    <div class="card-overlay">
+                        <h5 class="restaurant-name">Finest</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card restaurant-card" data-name="Azadore"
+                data-info="
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin facilisis pretium volutpat. Maecenas eu neque non nunc aliquet luctus. Quisque laoreet, nulla at mollis elementum, metus libero scelerisque ipsum, id faucibus enim neque eget ipsum. Cras euismod nibh quis orci feugiat, vitae suscipit metus luctus. Vestibulum vehicula ullamcorper libero, sed accumsan nunc pellentesque non. Vestibulum consectetur at orci vulputate egestas. Sed convallis aliquam nunc, eu commodo arcu. Aenean eu ultrices magna, pharetra varius mi.
+
+Nulla facilisi. Suspendisse mi erat, suscipit quis feugiat sed, auctor nec justo. Integer vel velit metus. Nam viverra nulla in nunc mattis, quis facilisis justo dignissim. Cras sit amet iaculis ante, et ornare nunc. Donec consectetur dui quis lacinia convallis. Cras fringilla enim id magna feugiat, vitae ultrices enim lacinia.">>
+                    <img src="assets/chili crab.jpg" class="card-img-top" alt="Azadore">
+                    <div class="card-overlay">
+                        <h5 class="restaurant-name">Azadore</h5>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div id="infoModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <img id="restaurant-image" class="modal-img" src="" alt="Restaurant Image">
+                <div class="modal-info">
+                    <h5 class="modal-title" id="restaurant-title"></h5>
+                    <p id="restaurant-info"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
