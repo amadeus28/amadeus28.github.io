@@ -3,319 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aldrin's Restaurant</title>
+    <title>Restaurant Guide</title>
     <style>
         body {
-            background: url('assets/image.png') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-            min-height: 100vh;
-            font-family: 'Georgia', serif;
-        }
+    font-family: Arial, sans-serif;
+    background-image: url('assets/image.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
 
-        .header-text {
-            text-align: left;
-            margin-left: 20px;
-            padding: 20px 0;
-        }
+.title h1 {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+}
 
-        .header-text h1 {
-            font-size: 48px; 
-            font-weight: bold;
-            color: #ffcc00; 
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-style: italic;
-        }
+.card {
+    position: relative;
+    overflow: hidden;
+    border: none;
+    cursor: pointer;
+}
 
-        .header-text h2 {
-            font-size: 36px; 
-            color: #ffffff; 
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-style: italic;
-        }
+.card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease-in-out;
+}
 
-        .restaurant-card {
-            background-color: white;
-            color: black;
-            border-radius: 10px;
-            border: 3px solid white;
-            overflow: hidden;
-            margin: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease-in-out;
-            height: 500px; 
-            cursor: pointer; 
-            position: relative;
-        }
+.card-overlay {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    padding: 10px;
+    color: white;
+    font-size: 18px;
+    transition: bottom 0.3s ease-in-out;
+}
 
-        .restaurant-card h5 {
-            background: yellow;
-            padding: 10px;
-            margin: 0;
-            text-align: center;
-            font-size: 18px;
-        }
+.card:hover .card-overlay {
+    bottom: 0;
+}
 
-        .restaurant-card img {
-            width: 100%;
-            height: calc(100% - 50px);
-            object-fit: cover;
-        }
+.modal-content {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: start;
+    padding: 20px;
+    border-radius: 10px;
+}
 
-        .menu-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: yellow;
-            color: black;
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            z-index: 1001;
-            display: none;
-        }
+.modal-img {
+    width: 40%;
+    height: 100%;
+    object-fit: cover; 
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
 
-        .detail-card {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 1300px;
-            z-index: 1000;
-        }
+.modal-info {
+    width: 60%;
+    padding: 20px;
+    text-align: left;
+    overflow-y: auto;
+}
 
-        .detail-card .card {
-            display: flex;
-            width: 100%;
-            height: 550px;
-            background: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            flex-direction: row; 
-        }
+.modal-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: red;
+}
 
-        .detail-card .vertical-title {
-            writing-mode: vertical-lr;
-            text-orientation: mixed;
-            background: yellow;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 18px;
-            color: black;
-            text-align: center;
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transform: rotate(180deg);
-        }
-
-        .detail-card .image-section {
-            width: 40%;
-            background: #ddd;
-            margin-left: 40px; 
-            display: flex;
-            align-items: flex-end; 
-            height: 100%;
-        }
-
-        .detail-card .image-section img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .detail-card .content-section {
-            padding: 20px;
-            width: 60%;
-        }
-
-        .detail-card .title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #d32f2f;
-        }
-
-        .detail-card .details {
-            font-size: 14px;
-            margin: 10px 0;
-            color: #444;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .detail-card .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: stretch;
-        }
-
-        .detail-card .detail-row span {
-            flex: 1;
-            text-align: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .detail-card .detail-row span:nth-child(2) {
-            border-left: 2px solid #444;
-            padding-left: 15px;
-            min-height: 100%;
-        }
-
-        .detail-card .description {
-            font-size: 16px;
-            color: #000000;
-            line-height: 1.8;
-            font-family: 'Georgia', serif;
-            margin-top: 20px;
-            padding: 10px;
-        }
-
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 999;
-        }
+.modal-text {
+    font-size: 14px;
+    line-height: 1.6;
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <a href="#" class="menu-btn" id="menuBtn">MAIN MENU</a>
-    <div class="overlay" id="overlay"></div>
-
-    <div class="header-text">
-        <h1>Aldrin's Restaurant</h1>
-        <h2>Exotic Food</h2>
-        <p>Produced by: Aldrin Ligutan</p>
+    <div class="title">
+        <h1 class="text-center">MENU</h1>
     </div>
-
-    <div class="container" id="menuContainer">
-        <div class="row justify-content-center">
+    <div class="container mt-4">
+        <div class="row">
             <div class="col-md-3">
-                <div class="restaurant-card" data-food="Steak">
-                    <h5>Steak</h5>
-                    <img src="https://via.placeholder.com/300x300?text=Steak" alt="Steak">
+                <div class="card restaurant-card" data-name="Steak" 
+                data-info="A perfectly seared steak, rich and juicy, with a crispy, caramelized exterior that gives way to a tender, succulent interior. Each bite is a celebration of savory umami, enhanced with a hint of smokiness from the grill. Whether it’s a classic ribeye, fillet mignon, or a hearty T-bone, this dish is accompanied by a side of creamy mashed potatoes or fresh, grilled vegetables, offering a harmonious balance of flavors. The steak is seasoned simply with sea salt and cracked black pepper, allowing the natural richness of the meat to shine.">
+                    <img src="assets/steak.png" class="card-img-top" alt="Steak">
+                    <div class="card-overlay">
+                        <h5 class="restaurant-name">Steak</h5>
+                    </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="restaurant-card" data-food="Seafood Paella">
-                    <h5>Seafood Paella</h5>
-                    <img src="https://via.placeholder.com/300x300?text=Seafood+Paella" alt="Seafood Paella">
+                <div class="card restaurant-card" data-name="Seafood Paella"
+                data-info="A vibrant and aromatic dish, seafood paella bursts with the freshest ocean flavors. A bed of saffron-infused rice, golden and slightly crispy at the edges, forms the base, topped with an abundant mix of succulent shrimp, tender squid, delicate mussels, and buttery clams. The seafood is lovingly cooked in a rich, flavorful broth spiced with paprika, garlic, and onions, and garnished with fresh herbs and a squeeze of zesty lemon. Each bite is a celebration of the sea, wrapped in the warmth of a comforting, well-seasoned rice medley..">
+                    <img src="assets/seafood.jpg" class="card-img-top" alt="Seafood Paella">
+                    <div class="card-overlay"
+                        <h5 class="restaurant-name">Seafood Paella</h5>
+                    </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="restaurant-card" data-food="Stinky Tofu">
-                    <h5>Stinky Tofu</h5>
-                    <img src="https://via.placeholder.com/300x300?text=Stinky+Tofu" alt="Stinky Tofu">
+                <div class="card restaurant-card" data-name="Stinky Tofu"
+                data-info="This beloved street food is known for its distinctive aroma, which many find intriguing and irresistible. Deep-fried to golden perfection, the stinky tofu has a crispy, crunchy exterior that gives way to a soft, slightly fermented interior. The flavor is an adventurous blend of savory, earthy, and tangy notes, balanced by a kick of spice from accompanying chili sauce or pickled vegetables. Served on skewers or in a bowl, this dish is a bold and unforgettable experience that perfectly embodies the charm of traditional Taiwanese street food.">
+                    <img src="assets/stinkytofu.jpg" class="card-img-top" alt="Stinky Tofu">
+                    <div class="card-overlay">
+                        <h5 class="restaurant-name">Stinky Tofu</h5>
+                    </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="restaurant-card" data-food="Chili Crab">
-                    <h5>Chili Crab</h5>
-                    <img src="https://via.placeholder.com/300x300?text=Chili+Crab" alt="Chili Crab">
+                <div class="card restaurant-card" data-name="Chili Crab"
+                data-info="A truly indulgent dish that combines the sweetness of fresh crab with the fiery, mouth-watering heat of chili sauce. The tender crab meat is coated in a thick, aromatic sauce made from a blend of red chilies, garlic, ginger, and tomato, creating a perfect balance of spiciness and sweetness. Each bite of juicy crab is soaked in the rich, savory sauce, with a lingering heat that excites the taste buds. Served with a side of warm, fluffy buns to soak up the sauce, this dish is a messy, flavorful, and utterly satisfying experience.">
+                    <img src="assets/chili crab.jpg" class="card-img-top" alt="Chili Crab">
+                    <div class="card-overlay">
+                        <h5 class="restaurant-name">Chili Crab</h5>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="detail-card" id="detailCard">
-        <div class="card">
-            <div class="vertical-title" id="detailTitle"></div>
-            <div class="image-section">
-                <img src="" alt="Restaurant Image" id="detailImage">
-            </div>
-            <div class="content-section">
-                <div class="title" id="detailTitle2"></div>
-                <div class="details">
-                    <div class="detail-row">
-                        <span>Malabon City</span>
-                        <span>Category: <span id="detailCategory">Filipino</span></span>
-                    </div>
-                    <div class="detail-row">
-                        <span>T: +(555) 123-4567</span>
-                        <span>Open: 10 am to 10 pm</span>
-                    </div>
-                    <div class="detail-row">
-                        <span>W: Exotic Foods</span>
-                        <span>Price: ₱₱</span>
-                    </div>
-                </div>
-                <div class="description" id="detailDescription">
-                    <!-- Description will be dynamically inserted -->
+    <div id="infoModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <img id="restaurant-image" class="modal-img" src="" alt="Restaurant Image">
+                <div class="modal-info">
+                    <h5 class="modal-title" id="restaurant-title"></h5>
+                    <p id="restaurant-info"></p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const restaurantCards = document.querySelectorAll('.restaurant-card');
-            const detailCard = document.getElementById('detailCard');
-            const menuBtn = document.getElementById('menuBtn');
-            const overlay = document.getElementById('overlay');
-            const menuContainer = document.getElementById('menuContainer');
-            const detailTitle = document.getElementById('detailTitle');
-            const detailTitle2 = document.getElementById('detailTitle2');
-            const detailImage = document.getElementById('detailImage');
-            const detailDescription = document.getElementById('detailDescription');
+        document.addEventListener("DOMContentLoaded", function () {
+    const cards = document.querySelectorAll(".restaurant-card");
+    const modalTitle = document.getElementById("restaurant-title");
+    const modalInfo = document.getElementById("restaurant-info");
+    const modalImage = document.getElementById("restaurant-image");
+    const infoModal = new bootstrap.Modal(document.getElementById("infoModal"));
 
-            const foodDetails = {
-                'Steak': {
-                    image: 'https://via.placeholder.com/500x500?text=Steak',
-                    description: 'A perfectly seared steak, rich and juicy, with a crispy, caramelized exterior that gives way to a tender, succulent interior. Each bite is a celebration of savory umami, enhanced with a hint of smokiness from the grill.'
-                },
-                'Seafood Paella': {
-                    image: 'https://via.placeholder.com/500x500?text=Seafood+Paella',
-                    description: 'A vibrant and aromatic dish, seafood paella bursts with the freshest ocean flavors. A bed of saffron-infused rice, golden and slightly crispy at the edges, forms the base, topped with an abundant mix of succulent seafood.'
-                },
-                'Stinky Tofu': {
-                    image: 'https://via.placeholder.com/500x500?text=Stinky+Tofu',
-                    description: 'This beloved street food is known for its distinctive aroma. Deep-fried to golden perfection, the stinky tofu has a crispy, crunchy exterior that gives way to a soft, slightly fermented interior.'
-                },
-                'Chili Crab': {
-                    image: 'https://via.placeholder.com/500x500?text=Chili+Crab',
-                    description: 'A truly indulgent dish that combines the sweetness of fresh crab with the fiery, mouth-watering heat of chili sauce. The tender crab meat is coated in a thick, aromatic sauce.'
-                }
-            };
-
-            restaurantCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    const food = card.dataset.food;
-                    const details = foodDetails[food];
-
-                    overlay.style.display = 'block';
-                    menuContainer.style.display = 'none';
-                    
-                    detailCard.style.display = 'block';
-                    menuBtn.style.display = 'block';
-
-                    detailTitle.textContent = food;
-                    detailTitle2.textContent = food;
-                    detailImage.src = details.image;
-                    detailDescription.textContent = details.description;
-                });
-            });
-
-            menuBtn.addEventListener('click', () => {
-                overlay.style.display = 'none';
-                menuContainer.style.display = 'block';
-                detailCard.style.display = 'none';
-                menuBtn.style.display = 'none';
-            });
+    cards.forEach(card => {
+        card.addEventListener("click", function () {
+            modalTitle.textContent = this.dataset.name;
+            modalInfo.innerHTML = `
+                <strong>Address:</strong> 2123 Grilling Ave, Steakhouse District, Flavor Town, 56789<br>
+                <strong>Contact:</strong> +(555) 123-4567<br>
+                <strong>Open:</strong> 10AM - 10PM<br>
+                <p class="modal-text">${this.dataset.info}</p>
+            `;
+            modalImage.src = this.querySelector("img").src; // Use the card's image
+            infoModal.show();
         });
+    });
+});
     </script>
 </body>
 </html>
