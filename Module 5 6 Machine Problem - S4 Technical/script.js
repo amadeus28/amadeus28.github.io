@@ -9,11 +9,9 @@ document.addEventListener("DOMContentLoaded", function () {
         card.addEventListener("click", function () {
             modalTitle.textContent = this.dataset.name;
             modalInfo.innerHTML = `
-                <strong>Address:</strong> 235 Glendale Ave, Meriden City<br>
-                <strong>Contact:</strong> +49 49 4000<br>
-                <strong>Website:</strong> gandg.res<br>
+                <strong>Address:</strong> 2123 Grilling Ave, Steakhouse District, Flavor Town, 56789<br>
+                <strong>Contact:</strong> +(555) 123-4567<br>
                 <strong>Open:</strong> 10AM - 10PM<br>
-                <strong>Price:</strong> $$$
                 <p class="modal-text">${this.dataset.info}</p>
             `;
             modalImage.src = this.querySelector("img").src; // Use the card's image
