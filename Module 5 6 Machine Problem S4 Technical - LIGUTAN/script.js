@@ -23,7 +23,7 @@
                 description: 'This beloved street food is known for its distinctive aroma, which many find intriguing and irresistible. Deep-fried to golden perfection, the stinky tofu has a crispy, crunchy exterior that gives way to a soft, slightly fermented interior. The flavor is an adventurous blend of savory, earthy, and tangy notes, balanced by a kick of spice from accompanying chili sauce or pickled vegetables. Served on skewers or in a bowl, this dish is a bold and unforgettable experience that perfectly embodies the charm of traditional Taiwanese street food.'
             },
             'Chili Crab': {
-                image: 'assets/chili crah.jpg',
+                image: 'assets/chili crab.jpg',
                 description: 'A truly indulgent dish that combines the sweetness of fresh crab with the fiery, mouth-watering heat of chili sauce. The tender crab meat is coated in a thick, aromatic sauce made from a blend of red chilies, garlic, ginger, and tomato, creating a perfect balance of spiciness and sweetness. Each bite of juicy crab is soaked in the rich, savory sauce, with a lingering heat that excites the taste buds. Served with a side of warm, fluffy buns to soak up the sauce, this dish is a messy, flavorful, and utterly satisfying experience.'
             }
         };
