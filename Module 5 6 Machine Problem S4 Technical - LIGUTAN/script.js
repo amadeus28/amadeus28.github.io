@@ -10,21 +10,21 @@
         const detailDescription = document.getElementById('detailDescription');
 
         const foodDetails = {
-            'Crinkle Cheesecake': {
-                image: 'img/Crinkle Cheesecake.jpg',
-                description: 'Homemade fudgy crinkle cake, layered with cheesecake & textured with cookie brittles.'
+            'Steak': {
+                image: 'assets/steak.png',
+                description: 'A perfectly seared steak, rich and juicy, with a crispy, caramelized exterior that gives way to a tender, succulent interior. Each bite is a celebration of savory umami, enhanced with a hint of smokiness from the grill. Whether it’s a classic ribeye, fillet mignon, or a hearty T-bone, this dish is accompanied by a side of creamy mashed potatoes or fresh, grilled vegetables, offering a harmonious balance of flavors. The steak is seasoned simply with sea salt and cracked black pepper, allowing the natural richness of the meat to shine.'
             },
-            'Mango Bravo': {
-                image: 'img/Mango Bravo.jpg',
-                description: 'Layers of crunchy wafers filled with chocolate mousse, cream and mango cubes.'
+            'Seafood Paella': {
+                image: 'assets/seafood.jpg',
+                description: 'A vibrant and aromatic dish, seafood paella bursts with the freshest ocean flavors. A bed of saffron-infused rice, golden and slightly crispy at the edges, forms the base, topped with an abundant mix of succulent shrimp, tender squid, delicate mussels, and buttery clams. The seafood is lovingly cooked in a rich, flavorful broth spiced with paprika, garlic, and onions, and garnished with fresh herbs and a squeeze of zesty lemon. Each bite is a celebration of the sea, wrapped in the warmth of a comforting, well-seasoned rice medley.'
             },
-            'Sans Rival': {
-                image: 'img/Sans Rival.jpg',
-                description: 'Layers of chewy wafers filled with butter icing and cashew nuts.'
+            'Stinky Tofu': {
+                image: 'assets/stinkytofu.jpg',
+                description: 'This beloved street food is known for its distinctive aroma, which many find intriguing and irresistible. Deep-fried to golden perfection, the stinky tofu has a crispy, crunchy exterior that gives way to a soft, slightly fermented interior. The flavor is an adventurous blend of savory, earthy, and tangy notes, balanced by a kick of spice from accompanying chili sauce or pickled vegetables. Served on skewers or in a bowl, this dish is a bold and unforgettable experience that perfectly embodies the charm of traditional Taiwanese street food.'
             },
-            'Turtle Pie': {
-                image: 'img/Turtle Pie.jpg',
-                description: 'Chocolate pie with salted caramel-walnut filling, rich chocolate cream, chunky brownie, and chocolate mallows, topped with walnuts, whipped cream, and chocolate drizzle.'
+            'Chili Crab': {
+                image: 'assets/chili crah.jpg',
+                description: 'A truly indulgent dish that combines the sweetness of fresh crab with the fiery, mouth-watering heat of chili sauce. The tender crab meat is coated in a thick, aromatic sauce made from a blend of red chilies, garlic, ginger, and tomato, creating a perfect balance of spiciness and sweetness. Each bite of juicy crab is soaked in the rich, savory sauce, with a lingering heat that excites the taste buds. Served with a side of warm, fluffy buns to soak up the sauce, this dish is a messy, flavorful, and utterly satisfying experience.'
             }
         };
 
