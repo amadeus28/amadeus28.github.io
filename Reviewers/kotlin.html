@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kotlin Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+            margin-bottom: 20px;
+        }
+        .question-number {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .options label:hover {
+            background-color: #f0f0f0;
+        }
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+            display: none; /* Hidden by default */
+        }
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        .navigation-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 700px;
+        }
+        .navigation-buttons button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .navigation-buttons button:hover {
+            background-color: #0056b3;
+        }
+        .navigation-buttons button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .module-filter {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .module-filter button {
+            padding: 8px 15px;
+            margin: 0 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .module-filter button:hover {
+            background-color: #5a6268;
+        }
+        .module-filter button.active {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="module-filter">
+        <button data-module="all" class="active">All Modules</button>
+        <button data-module="M1-M2">Module 1-2</button>
+        <button data-module="M3-M4">Module 3-4</button>
+        <button data-module="M5-M6">Module 5-6</button>
+    </div>
+
+    <div class="quiz-container">
+        <div class="question-number" id="question-number"></div>
+        <div class="question" id="question-text"></div>
+        <div class="options" id="options-container"></div>
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="navigation-buttons">
+        <button id="prev-btn" disabled>Previous</button>
+        <button id="next-btn">Next</button>
+    </div>
+
+    <script>
+        const allQuestions = [
+            // Module 1-2 Questions
+            {
+                module: "M1-M2",
+                question: "This programming language considers everything in the program as objects.",
+                options: ["a. Kotlin", "b. Codio", "c. Java", "d. C++"],
+                correctAnswer: "a. Kotlin"
+            },
+            {
+                module: "M1-M2",
+                question: "All variables initialized with a numerical value will be inferred as _____ data type by default.",
+                options: ["a. Short", "b. Byte", "c. Long", "d. Int"],
+                correctAnswer: "d. Int"
+            },
+            {
+                module: "M1-M2",
+                question: "What is the data type of the variable declared below: val num = -42L",
+                options: ["a. Byte", "b. Long", "c. Int", "d. Short"],
+                correctAnswer: "b. Long"
+            },
+            {
+                module: "M1-M2",
+                question: "What keyword is used to declare immutable variables (constants) in Kotlin?",
+                options: ["a. val", "b. dec", "c. None of the other choices is correct", "d. var"],
+                correctAnswer: "a. val"
+            },
+            {
+                module: "M1-M2",
+                question: "The Float data type in Kotlin can have up to _____ significant bits.",
+                options: ["a. 32", "b. 16", "c. 24", "d. 53"],
+                correctAnswer: "c. 24"
+            },
+            {
+                module: "M1-M2",
+                question: "To explicitly define a Float type variable, you have to add a suffix ____ after the initial value.",
+                options: ["a. Ft or ft", "b. F or f", "c. Float or float", "d. Fl or fl"],
+                correctAnswer: "b. F or f"
+            },
+            {
+                module: "M1-M2",
+                question: "What is the output of the code below? <br> fun main() { <br> val x = 5 <br> val y = 2 <br> val result = x/y <br> println(result) <br> }",
+                options: ["a. 2.5", "b. error, data type of variables is Int", "c. 2", "d. Will not display any output"],
+                correctAnswer: "c. 2"
+            },
+            {
+                module: "M1-M2",
+                question: "What is the output of the following code: <br> fun main() { <br> val x = 5 <br> val y = 2 <br> val result = x/y.toFloat() <br> println(result) <br> }",
+                options: ["a. 2", "b. Will not display any output", "c. 2.5", "d. error, data type of variables is not the same"],
+                correctAnswer: "c. 2.5"
+            },
+            {
+                module: "M1-M2",
+                question: "What symbol is used to define a raw string?",
+                options: ["a. triple quotes", "b. a pair of double quotes", "c. a pair of single quotes", "d. three single quotes"],
+                correctAnswer: "a. triple quotes"
+            },
+            {
+                module: "M1-M2",
+                question: "Which of the following shows the Kotlin built-in Boolean operations?",
+                options: ["a. ||, &&, !!", "b. |, &, !", "c. |, &, !!", "d. ||, &&, !"],
+                correctAnswer: "d. ||, &&, !"
+            },
+            {
+                module: "M1-M2",
+                question: "What function is used in removing leading whitespaces in a raw string?",
+                options: ["a. trimWhitespace()", "b. trimLead()", "c. trimMargin()", "d. trim()"],
+                correctAnswer: "c. trimMargin()"
+            },
+            {
+                module: "M1-M2",
+                question: "Boolean type values in Kotlin can only have true or false values.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "Raw strings can contain escape code characters.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M1-M2",
+                question: "String is a mutable data type.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M1-M2",
+                question: "The symbol $ is used when creating string templates.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M1-M2",
+                question: "String templates can be used in raw strings.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M1-M2",
+                question: "Just like Java, we also import classes, packages, or objects in Kotlin using the keyword include.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M1-M2",
+                question: "Using if statement as an expression requires an else clause.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "The when control structure can replace if..else..if chain when used without putting any argument.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "while and do..while loops are also available in Kotlin and are used the same way they are used in other programming languages.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M1-M2",
+                question: "If you want to explicitly declare a variable with a Long data type, your have to append a suffix _______ to its initial value.",
+                options: ["a. LNG or lng", "b. L or l", "c. Lng or lng", "d. Long or long"],
+                correctAnswer: "b. L or l"
+            },
+            {
+                module: "M1-M2",
+                question: "What is the output of the following code: <br> fun main(){ <br> val x = “String” <br> println(“Another “ + x) <br> }",
+                options: ["a. Will not display any output.", "b. Error, you cannot add two strings.", "c. Another String", "d. String Another"],
+                correctAnswer: "c. Another String"
+            },
+            {
+                module: "M1-M2",
+                question: "What is the output of the following code: <br> fun main(){ <br> val output = “”” <br> |First Name: Joseph <br> |Last Name: Calleja <br> “””.trimMargin() <br> println(output) <br> }",
+                options: ["a. Error, the code uses unknown symbols to delimit a string value.", "b. |First Name: Joseph |Last Name: Calleja", "c. Error, the code uses and unknown function,trimMargin()", "d. First Name: Joseph Last Name:Calleja"],
+                correctAnswer: "d. First Name: Joseph Last Name:Calleja"
+            },
+            {
+                module: "M1-M2",
+                question: "We can use template expressions in string by using _____ symbol followed by either an identifier or an expression delimited by curly braces.",
+                options: ["a. $", "b. &", "c. ^", "d. @"],
+                correctAnswer: "a. $"
+            },
+            {
+                module: "M1-M2",
+                question: "What symbol is used for String concatenation in Kotlin?",
+                options: ["a. ampersand ( & )", "b. plus ( + )", "c. period ( . )", "d. comma ( , )"],
+                correctAnswer: "b. plus ( + )"
+            },
+            {
+                module: "M1-M2",
+                question: "Analyze the following code: <br> fun main(){ <br> val grade = 70 <br> val remarks: String <br> remarks = if (grade > 70){ <br> “Passed” <br> } else { <br> “Failed” <br> } <br> println(“Grade is: $remarks”) <br> }",
+                options: ["a. It will run and will print: Grade is: Failed", "b. It will run and will print: Grade is: Passed", "c. It will not run due to an error in the condition in the if statement.", "d. It will run but there will be no output."],
+                correctAnswer: "a. It will run and will print: Grade is: Failed"
+            },
+            {
+                module: "M1-M2",
+                question: "This statement replaced the switch statement in other programming languages.",
+                options: ["a. then", "b. choice", "c. select", "d. when"],
+                correctAnswer: "d. when"
+            },
+            {
+                module: "M1-M2",
+                question: "Analyze the code below: <br> fun main() { <br> val age = 18 <br> when(age){ <br> !in 0..100 -> println(\"Not a valid age.\") <br> in 0..17 -> println(\"Still not valid to vote.”) <br> else -> println(\"Can now vote.\") <br> } <br> }",
+                options: ["a. The program will execute, and prints can now vote.", "b. The program will execute but will not print anything.", "c. The program has an error in line 7, keyword else is not used in when statement.", "d. The program has an error in line 5, !in is not a valid statement."],
+                correctAnswer: "a. The program will execute, and prints can now vote."
+            },
+            {
+                module: "M1-M2",
+                question: "What will happen if the code below is executed? <br> fun main(){ <br> val arr: IntArray = intArrayOf(6,3,5,9,2) <br> for(i in arr.indices step 2){ <br> println(arr[i]) <br> } <br> }",
+                options: ["a. It will execute normally and prints: 6 5 2", "b. It will execute normally and prints: 3 9", "c. Error in line 4, the for statement needs more arguments.", "d. Error in line 2, it is not the correct way of defining arrays."],
+                correctAnswer: "a. It will execute normally and prints: 6 5 2"
+            },
+            {
+                module: "M1-M2",
+                question: "What jump expression terminates the nearest enclosing loop?",
+                options: ["a. return", "b. continue", "c. goto", "d. break"],
+                correctAnswer: "d. break"
+            },
+            {
+                module: "M1-M2",
+                question: "The return jump expression terminates the nearest enclosing loop.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M1-M2",
+                question: "All variables initialized with a fractional number will infer the _____ data type.",
+                options: ["a. Int", "b. Double", "c. Short", "d. Float"],
+                correctAnswer: "b. Double"
+            },
+            {
+                module: "M1-M2",
+                question: "What is the output of the code below? <br> fun main() { <br> val x = 12 <br> val y = 1.4 <br> val sum: Double = x + y <br> println(\"The sum is: \" + sum) <br> }",
+                options: ["a. Error, statements do not have semicolons", "b. Error, variable x and y does not have the same data type", "c. The sum is: 13", "d. The sum is: 13.4"],
+                correctAnswer: "d. The sum is: 13.4"
+            },
+            {
+                module: "M1-M2",
+                question: "What is the output of the code below? <br> fun main(){ <br> val x = “String” <br> println(“Another $x”) <br> }",
+                options: ["a. Another $x", "b. String Another", "c. Another String", "d. Will not display any output."],
+                correctAnswer: "c. Another String"
+            },
+            {
+                module: "M1-M2",
+                question: "Analyze the code below and determine the output: <br> fun main(){ <br> val x = 5 <br> println(\"The value is: ${x + 2}.\") <br> }",
+                options: ["a. The value is: x + 2.", "b. The value is: 7.", "c. The value is $7.", "d. The value is: ${x + 2}"],
+                correctAnswer: "b. The value is: 7."
+            },
+            {
+                module: "M1-M2",
+                question: "What keyword is used to declare a package?",
+                options: ["a. pack", "b. package", "c. pkg", "d. pckg"],
+                correctAnswer: "b. package"
+            },
+            {
+                module: "M1-M2",
+                question: "Analyze the code below: <br> fun main(){ <br> for(i in 1..10){ <br> if(i.equals(5)){ <br> return <br> } <br> print(\"%i \") <br> } <br> }",
+                options: ["a. Error in line 3.", "b. Code will execute and will print: 1 2 3 4 5 6 7 8 910", "c.Code will execute and will print: 1 2 3 4 6 7 8 9 10", "d.Code will execute and will print: 1 2 3 4"],
+                correctAnswer: "d.Code will execute and will print: 1 2 3 4"
+            },
+            {
+                module: "M1-M2",
+                question: "We can put underscores in the initial values of numeric type variables, e.g. val x = 1_234.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "You can use escape characters in a raw string.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M1-M2",
+                question: "The Byte data type has a size of _____ bits.",
+                options: ["a. 32", "b. 8", "c. 4", "d. 16"],
+                correctAnswer: "b. 8"
+            },
+            {
+                module: "M1-M2",
+                question: "What is the output of the code below? <br> fun main() { <br> val x = 12 <br> val y = 1.4 <br> println (x == y) <br> }",
+                options: ["a. false", "b. Error, statements do not have semicolons", "c. Error, the code tries to compare an Int-type to aDouble-type value", "d. true"],
+                correctAnswer: "a. false"
+            },
+            {
+                module: "M1-M2",
+                question: "The ______ control flow statement iterates through anything that provides an iterator.",
+                options: ["a. when", "b. if", "c. for", "d. while"],
+                correctAnswer: "c. for"
+            },
+            {
+                module: "M1-M2",
+                question: "Analyze the code below: <br> fun main(){ <br> for(i in 1..10){ <br> if(i.equals(5)){ <br> continue <br> } <br> print(“$i”) <br> } <br> }",
+                options: ["a. Error in line 2.", "b. Error in line 3.", "c. Code will execute and will print: 1 2 3 4 5 6 7 8 910", "d. Code will execute and will print: 1 2 3 46 7 8 9 10"],
+                correctAnswer: "d. Code will execute and will print: 1 2 3 46 7 8 9 10"
+            },
+            {
+                module: "M1-M2",
+                question: "How many numerical data types are there in Kotlin?",
+                options: ["a. 5", "b. 3", "c. 6", "d. 4"],
+                correctAnswer: "c. 6"
+            },
+            {
+                module: "M1-M2",
+                question: "What is the range value of the Int data type?",
+                options: ["a. -2,147,483,648 to 2,147,483,648", "b. -2,147,483,647 to 2,147,483,647", "c. -2,147,483,647 to 2,147,483,648", "d. -2,147,483,648 to 2,147,483,647"],
+                correctAnswer: "d. -2,147,483,648 to 2,147,483,647"
+            },
+            {
+                module: "M1-M2",
+                question: "Characters are treated as numbers in Kotlin.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M1-M2",
+                question: "The if control structure in Kotlin is considered as an expression which means it is expected to return a value.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "When iterating through a range of numbers using the for statement, we use the range expression which is represented by the symbol ________.",
+                options: ["a. \"\"", "b. ( )", "c. [ ]", "d. .."],
+                correctAnswer: "d. .."
+            },
+            {
+                module: "M1-M2",
+                question: "Individual characters in a String-type value can be accessed by indexing operation.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M1-M2",
+                question: "To make classes inheritable, we use the keyword inherit.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M1-M2",
+                question: "Which of the following class declarations is correct if it has access modifiers, constructors, and annotations?",
+                options: ["a. public class Shape @Default constructor(side: Int) {/* . . . /}", "b. public class Shape @Default (side: Int) {/ . . . /}", "c. class Shape public @Default constructor(side: Int) {/ . . . /}", "d. class Shape public @Default (side: Int) {/ . . . /}"],
+                correctAnswer: "c. class Shape public @Default constructor(side: Int) {/ . . . /}"
+            },
+            {
+                module: "M1-M2",
+                question: "Which of the following correctly creates an instance of a class named People?",
+                options: ["a. val student = People", "b. val student = new People", "c. val student = People ( )", "d. val student = new People( )"],
+                correctAnswer: "c. val student = People ( )"
+            },
+            {
+                module: "M1-M2",
+                question: "Which of the following statements is true?",
+                options: ["a. When you create a new instance of a child (derived) class, the child (derived) class is initialized first before the initialization of the parent (base) class.", "b. Constructors in the parent (base) class in executed after the execution of the constructors in the child (derived) class.", "c. When the constructors in the parent (base) class is executed, the properties in the child (derived) class are also initialized.", "d. When you create a new instance of a child (derived) class, the parent (base) class is initialized first before the initialization of the child (derived) class."],
+                correctAnswer: "d. When you create a new instance of a child (derived) class, the parent (base) class is initialized first before the initialization of the child (derived) class."
+            },
+            {
+                module: "M1-M2",
+                question: "What keyword is used when a child (derived) class want to access or call function or properties of its parent (base)?",
+                options: ["a. super", "b. get", "c. parent", "d. base"],
+                correctAnswer: "a. super"
+            },
+            {
+                module: "M1-M2",
+                question: "Which of the following is correct regarding abstract classes?",
+                options: ["a. Abstract class cannot be used as parent (base) class.", "b. Abstract classes and its members are inheritable even without using open.", "c. Members in the abstract class needs to be annotated with the keyword open.", "d. Abstract class cannot inherit other classes."],
+                correctAnswer: "b. Abstract classes and its members are inheritable even without using open."
+            },
+            {
+                module: "M1-M2",
+                question: "We use the keyword _____ to declare a mutable property.",
+                options: ["a. val", "b. init", "c. var", "d. mute"],
+                correctAnswer: "c. var"
+            },
+            {
+                module: "M1-M2",
+                question: "What keyword is used to declare an interface?",
+                options: ["a. Interface", "b. interface", "c. Int", "d. int"],
+                correctAnswer: "b. interface"
+            },
+            {
+                module: "M1-M2",
+                question: "You can declare a class without a body in Kotlin.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "In Kotlin, class can have many constructors.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M1-M2",
+                question: "The primary constructor of a class is part of the class header.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M1-M2",
+                question: "To create a new instance of a class, we use the keyword new.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M1-M2",
+                question: "By default, all class in Kotlin are final, which means they cannot be inherited.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "If a child (derived) class has a primary constructor, the parent (base) class must be initialized using the parameters of the primary constructor.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M1-M2",
+                question: "Functions in a class are also final and cannot be overridden unless explicitly defined it as overridable.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "You can also override properties using the override modifier.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "Values in a mutable property can be changed during program runtime.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M1-M2",
+                question: "Interfaces in Kotlin can contain declarations of abstract methods, as well as method implementations.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "Just like abstract classes, interfaces can also store states.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M1-M2",
+                question: "You cannot declare properties in interfaces.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M1-M2",
+                question: "Which of the following statements is true about class constructor?",
+                options: ["a. A class can only have once constructor.", "b. A class can be declared without a body.", "c. Primary constructors are defined inside the body of a class.", "d. Classes can have one primary constructor and many secondary constructors."],
+                correctAnswer: "d. Classes can have one primary constructor and many secondary constructors."
+            },
+            {
+                module: "M1-M2",
+                question: "Which of the following statements is NOT true about constructors?",
+                options: ["a. Primary constructors cannot contain codes, therefore, all initializations must be placed in initializer blocks.", "b. The constructor keyword can be omitted as long as the class declaration does not use annotations.", "c. The primary constructor is part of the class header.", "d. The primary constructor is placed within the body of a class."],
+                correctAnswer: "d. The primary constructor is placed within the body of a class."
+            },
+            {
+                module: "M1-M2",
+                question: "Classes in Kotlin cannot be inherited by default because they are final, what keyword is used to make classes inheritable?",
+                options: ["a. derive", "b. enable", "c. inherit", "d. open"],
+                correctAnswer: "d. open"
+            },
+            {
+                module: "M1-M2",
+                question: "Which of the following choices correctly declares an inheritable class named Father and a child class named Child which inherits from the Father class?",
+                options: ["a. open class Father( ) class Child( ): Father( )", "b. enable class Father( ) class Child( ): Father( )", "c. derive class Father( ) class Child( ): Father( )", "d. inherit class Father( ) class Child( ): Father( )"],
+                correctAnswer: "a. open class Father( ) class Child( ): Father( )"
+            },
+            {
+                module: "M1-M2",
+                question: "We use the keyword ______ to declare a read-only property.",
+                options: ["a. val", "b. var", "c. mute", "d. init"],
+                correctAnswer: "a. val"
+            },
+            {
+                module: "M1-M2",
+                question: "All classes will implicitly inherit from a default super class called Super.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M1-M2",
+                question: "We can define an overridable function inside a final class.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M1-M2",
+                question: "Properties declared with the var keyword can be overridden by declaring them using the val keyword.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "Properties declared using the val keyword have both accessor (get) and mutator (set).",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M1-M2",
+                question: "What keyword is used to define a function?",
+                options: ["a. func", "b. fx", "c. fun", "d. function"],
+                correctAnswer: "c. fun"
+            },
+            {
+                module: "M1-M2",
+                question: "What keyword is used to define a class?",
+                options: ["a. Class", "b. Cls", "c. cls", "d. class"],
+                correctAnswer: "d. class"
+            },
+            {
+                module: "M1-M2",
+                question: "What is the name of the common superclass of all classes in Kotlin?",
+                options: ["a. Anything", "b. Superclass", "c. Any", "d. Super"],
+                correctAnswer: "c. Any"
+            },
+            {
+                module: "M1-M2",
+                question: "What are the three methods of the superclass Any?",
+                options: ["a. equalTo( ), hashCode( ), toString( )", "b. equalTo( ), hasCodes( ), toString( )", "c. equals( ), hasCodes( ), toString( )", "d. equals( ), hashCode( ), toString( )"],
+                correctAnswer: "d. equals( ), hashCode( ), toString( )"
+            },
+            {
+                module: "M1-M2",
+                question: "To make classes inheritable, we use the keyword inherit.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M1-M2",
+                question: "An abstract member of an abstract class does not have implementation in its class.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "What does a class declaration consists of?",
+                options: ["a. class name, class header, class body", "b. class name, class return type, class body", "c. class header, class return type, class body", "d. class name, class return type, class header"],
+                correctAnswer: "a. class name, class header, class body"
+            },
+            {
+                module: "M1-M2",
+                question: "What symbol is used for annotations?",
+                options: ["a. @", "b. ?", "c. $", "d. *"],
+                correctAnswer: "a. @"
+            },
+            {
+                module: "M1-M2",
+                question: "To denote the supertype from which the inherited implementation is taken, we use the keyword super qualified by the supertype name enclosed with __________.",
+                options: ["a. parenthesis", "b. curly braces", "c. square brackets", "d. angle brackets"],
+                correctAnswer: "d. angle brackets"
+            },
+            {
+                module: "M1-M2",
+                question: "In Kotlin, all classes have a common superclass called Any.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M1-M2",
+                question: "When defining constructors, the constructor keyword is optional.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M1-M2",
+                question: "Functions, properties, constructors are some of the possible members of a class.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M1-M2",
+                question: "If a class inherits multiple implementations of the same member from its immediate superclasses, it must override this member and provide its own implementation.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M1-M2",
+                question: "Which of the following statements about inheritance and overriding is correct?",
+                options: ["a. Functions in a final class are also final even if you mark them with the open keyword.", "b. Functions inside a child (derived) class marked with the override keyword are final.", "c. Functions inside an inheritable class are also overridable by default.", "d. You can override a function inside a parent (base) class that is final."],
+                correctAnswer: "a. Functions in a final class are also final even if you mark them with the open keyword."
+            },
+            {
+                module: "M1-M2",
+                question: "Primary constructors are defined inside the body of a class.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+
+            // Module 3-4 Questions
+            {
+                module: "M3-M4",
+                question: "What keyword is used to declare a function in Kotlin?",
+                options: ["a. func", "b. fun", "c. fnc", "d. fx"],
+                correctAnswer: "b. fun"
+            },
+            {
+                module: "M3-M4",
+                question: "What notation is used when calling member functions in Kotlin?",
+                options: ["a. association notation", "b. comma notation", "c. underscore notation", "d. dot notation"],
+                correctAnswer: "d. dot notation"
+            },
+            {
+                module: "M3-M4",
+                question: "What happens if the code below is executed? <br> fun myFunction(age:Int = 0, name: String){ <br> println(“Hi, $name. You are $age years old.”) <br> } <br> fun main(){ <br> myFunction(name = “Joseph”) <br> }",
+                options: ["a. Will print: Hi, Joseph. You are 0 years old.", "b. Error, function definition is not correct.", "c. Error, too few arguments.", "d. Will execute but will not print anything."],
+                correctAnswer: "a. Will print: Hi, Joseph. You are 0 years old."
+            },
+            {
+                module: "M3-M4",
+                question: "Analyze the code below: <br> fun myFunction(age:Int = 0, name: String, gender: String){ <br> println(“Hi, $name. You are a $gender and $age years old.) <br> } <br> fun main(){ <br> myFunction(gender = “male”, name = “Joseph”, age = 18) <br> }",
+                options: ["a. Will execute but will not print anything.", "b. Error, function call is invalid.", "c. Will print: Hi, Joseph. You are a male and 18 years old.", "d. Error, arguments are not supplied in order."],
+                correctAnswer: "c. Will print: Hi, Joseph. You are a male and 18 years old."
+            },
+            {
+                module: "M3-M4",
+                question: "Which of the following statements is NOT true pertaining to the given code? <br> fun myFunction(n1: Double, n2: Double = 0.0) = Math.pow(n1,n2) <br> fun main(){ <br> println(myFunction(7.0)) <br> }",
+                options: ["a. The inferred return type is Double", "b. The function call needs to be edited so that two values will be supplied.", "c. It will execute and print 1.0", "d. It will uses a single-expression form of function definition"],
+                correctAnswer: "b. The function call needs to be edited so that two values will be supplied."
+            },
+            {
+                module: "M3-M4",
+                question: "You can declare function parameters in separate lines using trailing commas.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M3-M4",
+                question: "You can skip an argument if it has a default value when calling a function.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "If a function does not return any type of value, its return type is Void.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M3-M4",
+                question: "Curly braces is no longer need when writing a single-expression function.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "We can omit the dot and parenthesis can calling functions that are marked with the infix keyword.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "Functions in Kotlin can have variable number of arguments.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "Only one function parameter can be marked with the vararg keyword.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "You can only use the vararg keyword to the last parameter of a function.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M3-M4",
+                question: "Tail recursive functions are marked with the tailrec modifier.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M3-M4",
+                question: "Functions in Kotlin can be declared without giving it a name.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M3-M4",
+                question: "A lambda expression is always surrounded by parenthesis.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M3-M4",
+                question: "Which of the following is the correct form of how function parameters are defined?",
+                options: ["a. type name", "b. name type", "c. name: type", "d. type: name"],
+                correctAnswer: "c. name: type"
+            },
+            {
+                module: "M3-M4",
+                question: "What is the type of the returned value if a function is declared without specifying its return type?",
+                options: ["a. Unit", "b. Empty", "c. Null", "d. Void"],
+                correctAnswer: "a. Unit"
+            },
+            {
+                module: "M3-M4",
+                question: "Functions in Kotlin can be assigned to variables.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "When overriding methods with default parameter values, you must specify a new default value for the parameters.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M3-M4",
+                question: "The order of the arguments can be changed when naming arguments in a function call.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M3-M4",
+                question: "Kotlin can infer return types of functions with block bodies.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M3-M4",
+                question: "To be eligible for the tailrec modifier, a function must call itself as the last operation it performs.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "It is an ordered collection with access to elements by indices.",
+                options: ["a. Set", "b. Map", "c. List", "d. Collection"],
+                correctAnswer: "c. List"
+            },
+            {
+                module: "M3-M4",
+                question: "It is a set of key-value pairs.",
+                options: ["a. List", "b. Map", "c. Set", "d. Collection"],
+                correctAnswer: "b. Map"
+            },
+            {
+                module: "M3-M4",
+                question: "It is a collection interface which provides operation for accessing collection elements.",
+                options: ["a. read-only", "b. mutable", "c. accessor", "d. iterator"],
+                correctAnswer: "a. read-only"
+            },
+            {
+                module: "M3-M4",
+                question: "It is an interface which provides not only operations to access collection elements but also write operations as well.",
+                options: ["a. iterator", "b. mutable", "c. accessor", "d. read-only"],
+                correctAnswer: "b. mutable"
+            },
+            {
+                module: "M3-M4",
+                question: "What is the result of executing the following code? <br> fun main(){ <br> val myList = listOfInteger (1,2,3,4,5) <br> println(myList) <br> }",
+                options: ["a. Will execute and will display the structure of the list.", "b. Will execute and will print: 1, 2, 3, 4, 5", "c. Error, there is no such function namedlistOfInteger().", "d. Error, a list collection must be tagged with var."],
+                correctAnswer: "c. Error, there is no such function namedlistOfInteger()."
+            },
+            {
+                module: "M3-M4",
+                question: "What is the result of executing the code below? <br> fun main(){ <br> val myList = listOf(1,2,3,4,5) <br> myList.forEach{ <br> print(“$it “) <br> } <br> }",
+                options: ["a. Will execute and will print: 1 2 3 4 5", "b. Will execute and will print the structure of the list.", "c. Error, there is a compile error in line 4.", "d. Error, forEach is not a valid keyword."],
+                correctAnswer: "a. Will execute and will print: 1 2 3 4 5"
+            },
+            {
+                module: "M3-M4",
+                question: "What happens when the code below is executed? <br> fun printList(myList: List<String>){ <br> myList.forEach{ <br> print(“$it “) <br> } <br> } <br> fun main(){ <br> val list = listOf(“1”, “2”, “3”) <br> printList(list) <br> }",
+                options: ["a. Will execute and will print: 1 2 3", "b. Will execute but will not print anything.", "c. Error, passing a list to a function is not allowed.", "d. Will execute and will print: “1”, “2”, “3”"],
+                correctAnswer: "a. Will execute and will print: 1 2 3"
+            },
+            {
+                module: "M3-M4",
+                question: "What function is used when retrieving collection elements at a specific position?",
+                options: ["a. indexOf()", "b. valueOf()", "c. valueAt()", "d. elementAt()"],
+                correctAnswer: "d. elementAt()"
+            },
+            {
+                module: "M3-M4",
+                question: "What happens when the following code is executed? <br> fun main(){ <br> var list = mutableListOf(“1”,”2”, “3”) <br> list.add(“4”) <br> println(list.elementAt(3)) <br> }",
+                options: ["a. Error, adding elements is not allowed because the list is tagged with var instead of val.", "b. Will execute and prints: 3", "c. Will execute and prints: 1 2 3 4", "d. Will execute and prints: 4"],
+                correctAnswer: "d. Will execute and prints: 4"
+            },
+            {
+                module: "M3-M4",
+                question: "Sets store elements giving significance their order.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M3-M4",
+                question: "Collections in Kotlin can store items of different data types.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M3-M4",
+                question: "Collections can be created without explicitly defining its data type.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M3-M4",
+                question: "Reassigning mutable collections that are tagged as val will cause an exception.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "The Collection interface inherits from the Iteratable interface.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M3-M4",
+                question: "Elements stored in a List does not follow a specified order.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M3-M4",
+                question: "Collections can be used as function parameters.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "You can create a Collection that does not contain any element.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "We use the fun keyword to declare a function.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M3-M4",
+                question: "If the return type of a function is Unit, the returned value must be returned explicitly.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M3-M4",
+                question: "In Kotlin, Functions can be declared inside other functions.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M3-M4",
+                question: "In Kotlin, there is no need to explicitly define the data type of function parameters.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M3-M4",
+                question: "These are groups of a variable number of items that share significance to the problem being solved.",
+                options: ["a. variables", "b. collections", "c. objects", "d. arrays"],
+                correctAnswer: "b. collections"
+            },
+            {
+                module: "M3-M4",
+                question: "It is an unordered collection of unique items.",
+                options: ["a. Map", "b. Set", "c. Collection", "d. List"],
+                correctAnswer: "b. Set"
+            },
+            {
+                module: "M3-M4",
+                question: "What happens when the following code is executed? <br> fun main(){ <br> val list = mutableListOf(“1”,”2”,”3”) <br> list.add(“4”) <br> list.forEach{ <br> print(“$it “) <br> } <br> }",
+                options: ["a. Will execute and prints: 1 2 3 4", "b. Error, adding elements is not allowed because the list is tagged with val instead of var.", "c. Will execute and prints: 1 2 3", "d. Error, add function is not a valid function for mutable lists."],
+                correctAnswer: "a. Will execute and prints: 1 2 3 4"
+            },
+            {
+                module: "M3-M4",
+                question: "Mutable collections must be tagged as var so that you can use its write operations.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M3-M4",
+                question: "From what interface does Collection inherits its operations to go through its elements?",
+                options: ["a. List", "b. Iteratable", "c. Set", "d. Mutable"],
+                correctAnswer: "b. Iteratable"
+            },
+
+            // Module 5-6 Questions
+            {
+                module: "M5-M6",
+                question: "It is a software platform and operating system for mobile devices.",
+                options: ["a. Linux", "b. Unix", "c. Android", "d. Operating System"],
+                correctAnswer: "c. Android"
+            },
+            {
+                module: "M5-M6",
+                question: "What company developed Android?",
+                options: ["a. Windows", "b. Apple", "c. Intel", "d. Google"],
+                correctAnswer: "d. Google"
+            },
+            {
+                module: "M5-M6",
+                question: "What is the official IDE for Android application development?",
+                options: ["a. VS Code", "b. IDEAJ", "c. Android Studio", "d. Netbeans"],
+                correctAnswer: "c. Android Studio"
+            },
+            {
+                module: "M5-M6",
+                question: "What is the build system used in Android Studio?",
+                options: ["a. cloud-based", "b. JVM-based", "c. Kotlin-based", "d. gradle-based"],
+                correctAnswer: "d. gradle-based"
+            },
+            {
+                module: "M5-M6",
+                question: "What Android Studio feature finds opportunities to make the size of your Android app smaller?",
+                options: ["a. Visual Layout Editor", "b. APK Analyzer", "c. Intelligent Code Editor", "d. Flexible Build System"],
+                correctAnswer: "b. APK Analyzer"
+            },
+            {
+                module: "M5-M6",
+                question: "This Android Studio project group contains all non-code files such as XML layouts, UI strings, and bitmap images.",
+                options: ["a. module", "b. res", "c. manifests", "d. java"],
+                correctAnswer: "b. res"
+            },
+            {
+                module: "M5-M6",
+                question: "These are faceless components that run in the background.",
+                options: ["a. ContentProviders", "b. Services", "c. Intents", "d. Activities"],
+                correctAnswer: "b. Services"
+            },
+            {
+                module: "M5-M6",
+                question: "What method is automatically invoked when the devices running an Android application is rotated?",
+                options: ["a. onCreate()", "b. onResume()", "c. onRotate()", "d. onStart()"],
+                correctAnswer: "a. onCreate()"
+            },
+            {
+                module: "M5-M6",
+                question: "What method is invoked when an Activity starts?",
+                options: ["a. onCreate()", "b. onResume()", "c. onStart()", "d. onRotate()"],
+                correctAnswer: "a. onCreate()"
+            },
+            {
+                module: "M5-M6",
+                question: "What method is invoked when the user of an Android app presses the device's back button.",
+                options: ["a. onDestroy()", "b. finish()", "c. onStop()", "d. onPause()"],
+                correctAnswer: "b. finish()"
+            },
+            {
+                module: "M5-M6",
+                question: "These are the interactive components in your app's user interface.",
+                options: ["a. resources", "b. layouts", "c. input controls", "d. manifests"],
+                correctAnswer: "c. input controls"
+            },
+            {
+                module: "M5-M6",
+                question: "How may ways can we create a button in a layout?",
+                options: ["a. 3", "b. 4", "c. 2", "d. 1"],
+                correctAnswer: "a. 3"
+            },
+            {
+                module: "M5-M6",
+                question: "What UI control allows user to select one option from a set of options?",
+                options: ["a. radio buttons", "b. text view", "c. checkboxes", "d. text field"],
+                correctAnswer: "a. radio buttons"
+            },
+            {
+                module: "M5-M6",
+                question: "This refers to the device screen's aspect ratio (e.g., wide, or tall).",
+                options: ["a. screen density", "b. screen orientation", "c. screen layout", "d. screen size"],
+                correctAnswer: "b. screen orientation"
+            },
+            {
+                module: "M5-M6",
+                question: "OHA was formed in 2006.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M5-M6",
+                question: "Andy Rubin, Rich Miner, Nick Sears, and Chris White were the key developers of the Android platform.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M5-M6",
+                question: "One of the advantages of the Android platform is app development for Android is simple.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M5-M6",
+                question: "One of the advantages of Android platform is its ability to be fully customized.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M5-M6",
+                question: "Projects in Android Studio can contain only one module.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M5-M6",
+                question: "To get the correct screen size of a device, you measure it horizontally.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M5-M6",
+                question: "The Android platform was announced on __________.",
+                options: ["a. November 7, 2007", "b. November 7, 2005", "c. November 5, 2007", "d. November 5, 2005"],
+                correctAnswer: "c. November 5, 2007"
+            },
+            {
+                module: "M5-M6",
+                question: "Who were the key developers of the Android platform?",
+                options: ["a. Andy Rubin, Rich Miner, Nick Carter, and Chris White", "b. Andy Brown, Rich Miner, Nick Sears, and Chris White", "c. Andy Rubin, Rich Miner, Nick Sears, and Chris Evans", "d. Andy Rubin, Rich Miner, Nick Sears, and Chris White"],
+                correctAnswer: "d. Andy Rubin, Rich Miner, Nick Sears, and Chris White"
+            },
+            {
+                module: "M5-M6",
+                question: "When did Google made Android open source under Apache's open-source licenses?",
+                options: ["a. November 2008", "b. October 2008", "c. December 2008", "d. September 2008"],
+                correctAnswer: "b. October 2008"
+            },
+            {
+                module: "M5-M6",
+                question: "One of the goals of the Open Handset Alliance group is to __________.",
+                options: ["a. make Android platform open source", "b. advance open standards for handsets", "c. stop Google from monopolizing the Android platform", "d. make all companies use Android platform"],
+                correctAnswer: "b. advance open standards for handsets"
+            },
+            {
+                module: "M5-M6",
+                question: "This part of the Android Studio interface lets you carry out a wide range of actions including running your application.",
+                options: ["a. navigation bar", "b. tool window bar", "c. toolbar", "d. status bar"],
+                correctAnswer: "c. toolbar"
+            },
+            {
+                module: "M5-M6",
+                question: "What UI control provides users a quick way to select one value from a set of options.",
+                options: ["a. checkboxes", "b. text field", "c. text view", "d. spinners"],
+                correctAnswer: "d. spinners"
+            },
+            {
+                module: "M5-M6",
+                question: "It is referred to as the quantity of pixels within a physical area of a screen.",
+                options: ["a. screen size", "b. screen density", "c. screen orientation", "d. screen layout"],
+                correctAnswer: "b. screen density"
+            },
+            {
+                module: "M5-M6",
+                question: "This refers to the total number of pixels on a screen.",
+                options: ["a. resolution", "b. qualifier", "c. density", "d. drawable"],
+                correctAnswer: "a. resolution"
+            },
+            {
+                module: "M5-M6",
+                question: "The Android platform was announced on November 5, 2007.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M5-M6",
+                question: "Android is based on ______.",
+                options: ["a. iOS kernel", "b. Windows kernel", "c. Unix kernel", "d. Linux kernel"],
+                correctAnswer: "d. Linux kernel"
+            },
+            {
+                module: "M5-M6",
+                question: "The Android platform was acquired by what company?",
+                options: ["a. Apple", "b. Google", "c. Microsoft", "d. Intel"],
+                correctAnswer: "b. Google"
+            },
+            {
+                module: "M5-M6",
+                question: "What year was OHA formed?",
+                options: ["a. 2005", "b. 2007", "c. 2006", "d. 2009"],
+                correctAnswer: "b. 2007"
+            },
+            {
+                module: "M5-M6",
+                question: "All the following are advantages of the Android platform, EXCEPT __________.",
+                options: ["a. companies will come up with such innovative products like location service", "b. consumer will benefit from having a wide range of mobile applications to choose from", "c. app development for Android is simple", "d. ability for anyone to customize the Google Android platform"],
+                correctAnswer: "c. app development for Android is simple"
+            },
+            {
+                module: "M5-M6",
+                question: "It is a collection of source files and build settings that allow you to divide your project into discrete units of functionality.",
+                options: ["a. modules", "b. projects", "c. resources", "d. manifests"],
+                correctAnswer: "a. modules"
+            },
+            {
+                module: "M5-M6",
+                question: "How many button classes can we use to create buttons?",
+                options: ["a. 2", "b. 4", "c. 3", "d. 1"],
+                correctAnswer: "a. 2"
+            },
+            {
+                module: "M5-M6",
+                question: "OHA is the company who developed Android?",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M5-M6",
+                question: "The Android platform was acquired by Google.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M5-M6",
+                question: "Samsung G1is the first smart phone that is based on the Android platform.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M5-M6",
+                question: "It is the first smart phone that is based on the Android platform.",
+                options: ["a. T-Mobile G1", "b. Samsung G1", "c. Xiaomi G1", "d. Huawei G1"],
+                correctAnswer: "a. T-Mobile G1"
+            },
+            {
+                module: "M5-M6",
+                question: "Android is based on Windows kernel.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M5-M6",
+                question: "Each activity in an Android Studio project typically corresponds to one UI screen.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M5-M6",
+                question: "What UI control allows user to select one or more options from a set of options?",
+                options: ["a. checkboxes", "b. text field", "c. radio buttons", "d. text view"],
+                correctAnswer: "a. checkboxes"
+            },
+            {
+                module: "M5-M6",
+                question: "One of the goals of the Open Handset Alliance group is to advance open standards for handsets.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M5-M6",
+                question: "On November 2008, Google made Android open source under Apache's open-source licenses.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M5-M6",
+                question: "Using Android Studio, you can push changes made to your running app without building a new apk file.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M5-M6",
+                question: "This Android app component is where we place actions that have a global impact on the app.",
+                options: ["a. context menu", "b. options menu", "c. app menu", "d. system menu"],
+                correctAnswer: "b. options menu"
+            },
+            {
+                module: "M5-M6",
+                question: "It is a floating menu that appears when the user performs a long-click on an element.",
+                options: ["a. options menu", "b. system menu", "c. context menu", "d. pop-up menu"],
+                correctAnswer: "c. context menu"
+            },
+            {
+                module: "M5-M6",
+                question: "It is menu which displays a list of items in a vertical list that's anchored to the view that anchored the menu.",
+                options: ["a. pop-up menu", "b. context menu", "c. system menu", "d. options menu"],
+                correctAnswer: "a. pop-up menu"
+            },
+            {
+                module: "M5-M6",
+                question: "How can you start another Activity from the current activity?",
+                options: ["a. Invoke the startActivity() method and pass it an Intent.", "b. Invoke the startActivity() method.", "c. Invoke the startIntent() method and pass it an Activity.", "d. Invoke the startIntent() method."],
+                correctAnswer: "a. Invoke the startActivity() method and pass it an Intent."
+            },
+            {
+                module: "M5-M6",
+                question: "What method is used to shut down the current activity?",
+                options: ["a. destroy()", "b. finishActivity()", "c. destroyActivity()", "d. finish()"],
+                correctAnswer: "d. finish()"
+            },
+            {
+                module: "M5-M6",
+                question: "This is the state of an activity if it is completely obscured by another activity.",
+                options: ["a. Resumed", "b. Started", "c. Stopped", "d. Paused"],
+                correctAnswer: "c. Stopped"
+            },
+            {
+                module: "M5-M6",
+                question: "What method is called right after the onCreate() method is invoked?",
+                options: ["a. onStart()", "b. onRestart()", "c. onResume()", "d. onPause()"],
+                correctAnswer: "a. onStart()"
+            },
+            {
+                module: "M5-M6",
+                question: "They are used to inform the user about a situation that requires their confirmation or acknowledgement before proceeding with the action.",
+                options: ["a. Dialogs", "b. Alert", "c. Action Bar", "d. Menu"],
+                correctAnswer: "b. Alert"
+            },
+            {
+                module: "M5-M6",
+                question: "A ___________ is a message that is displayed outside your application's User Interface.",
+                options: ["a. dialogs", "b. notification", "c. alert", "d. toast"],
+                correctAnswer: "b. notification"
+            },
+            {
+                module: "M5-M6",
+                question: "We can create a submenu by putting a <menu> element in the <item> element.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M5-M6",
+                question: "Menu item elements cannot have icons.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M5-M6",
+                question: "The Android system makes action bar automatically adopt to different screen configurations.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M5-M6",
+                question: "Action bar is always visible and there is no way to hide it from the user view.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M5-M6",
+                question: "If both the icon and the logo attribute was set in an action bar, the icon is the one to be displayed.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. False"
+            },
+            {
+                module: "M5-M6",
+                question: "Every Activity in an Android app project represent an application window.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M5-M6",
+                question: "An application window always fills the entire screen of the device.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M5-M6",
+                question: "You can pass information from one Activity to another by using the putExtra() method.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M5-M6",
+                question: "You can shutdown an Activity from another activity by using the finishActivity() method.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M5-M6",
+                question: "Dialogs do not fill the entirety of the user's screen.",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M5-M6",
+                question: "The three buttons that can be added in a dialog are OK, Cancel, and Back.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "b. False"
+            },
+            {
+                module: "M5-M6",
+                question: "It is an optional menu element that is used as invisible container for menu items elements and allows you to categorize them.",
+                options: ["a. <item_group>", "b. <group>", "c. <menu>", "d. <item>"],
+                correctAnswer: "b. <group>"
+            },
+            {
+                module: "M5-M6",
+                question: "What method is invoked when the user selects an item from a menu?",
+                options: ["a. onOptionsSelected()", "b. onOptionsItemSelected()", "c. onItemSelected()", "d. onItemOptionsSelected()"],
+                correctAnswer: "b. onOptionsItemSelected()"
+            },
+            {
+                module: "M5-M6",
+                question: "It is a window feature that identifies the user location and provides user actions and navigation modes.",
+                options: ["a. Menu", "b. Action Bar", "c. Activity", "d. Dialogs"],
+                correctAnswer: "b. Action Bar"
+            },
+            {
+                module: "M5-M6",
+                question: "This is an application component that provides a screen with which users can interact to do something.",
+                options: ["a. Action Bar", "b. Dialogs", "c. Menu", "d. Activity"],
+                correctAnswer: "d. Activity"
+            },
+            {
+                module: "M5-M6",
+                question: "What method should you use if you want to pass data from one Activity to another?",
+                options: ["a. putExtraData()", "b. putData()", "c. putExtra()", "d. putDataExtra()"],
+                correctAnswer: "c. putExtra()"
+            },
+            {
+                module: "M5-M6",
+                question: "This method is always invoked first every time that an Activity becomes active.",
+                options: ["a. onCreate()", "b. onResume()", "c. onStart()", "d. onPause()"],
+                correctAnswer: "a. onCreate()"
+            },
+            {
+                module: "M5-M6",
+                question: "It provides a simple feedback about an operation in a small pop-up.",
+                options: ["a. Toast", "b. Alert", "c. Dialogs", "d. Action Bar"],
+                correctAnswer: "a. Toast"
+            },
+            {
+                module: "M5-M6",
+                question: "When an Activity (Act A) is used to start another Activity (Act B), the correct lifecycle callback is: Act A's onPause(), Act B's onCreate(), onStart(), and onResume(), then Act A's onStop().",
+                options: ["a. False", "b. True"],
+                correctAnswer: "b. True"
+            },
+            {
+                module: "M5-M6",
+                question: "It is a menu that provides actions that only affects the selected element.",
+                options: ["a. options menu", "b. system menu", "c. pop-up menu", "d. context menu"],
+                correctAnswer: "d. context menu"
+            },
+            {
+                module: "M5-M6",
+                question: "What method should you use to determine which menu items was selected by the user?",
+                options: ["a. getItemId()", "b. getId()", "c. getSelectedItemId()", "d. getSelectedId()"],
+                correctAnswer: "a. getItemId()"
+            },
+            {
+                module: "M5-M6",
+                question: "This is the state of an activity if it is in the foreground of the screen.",
+                options: ["a. Stopped", "b. Paused", "c. Resumed", "d. Started"],
+                correctAnswer: "c. Resumed"
+            },
+            {
+                module: "M5-M6",
+                question: "This is the state of an activity if another activity is in the foreground of the screen but the said activity is still visible.",
+                options: ["a. Resumed", "b. Stopped", "c. Started", "d. Paused"],
+                correctAnswer: "d. Paused"
+            },
+            {
+                module: "M5-M6",
+                question: "It is a small window that prompts the user to make a decision or enter additional information.",
+                options: ["a. Dialogs", "b. Action Bar", "c. Activity", "d. Menu"],
+                correctAnswer: "a. Dialogs"
+            },
+            {
+                module: "M5-M6",
+                question: "We define a Menu in an XML menu resource.",
+                options: ["a. True", "b. False"],
+                correctAnswer: "a. True"
+            },
+            {
+                module: "M5-M6",
+                question: "What are the three buttons that can be added to a dialog?",
+                options: ["a. Positive, Negative, Cancel", "b. OK, Cancel, Back", "c. Yes, No, Cancel", "d. Positive, Negative, Neutral"],
+                correctAnswer: "d. Positive, Negative, Neutral"
+            }
+        ];
+
+        let filteredQuestions = [];
+        let currentQuestionIndex = 0;
+        let selectedModule = "all";
+
+        const questionNumberElement = document.getElementById('question-number');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackElement = document.getElementById('feedback');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const moduleFilterButtons = document.querySelectorAll('.module-filter button');
+
+        function filterQuestions(module) {
+            selectedModule = module;
+            if (module === "all") {
+                filteredQuestions = [...allQuestions];
+            } else {
+                filteredQuestions = allQuestions.filter(q => q.module === module);
+            }
+            currentQuestionIndex = 0;
+            loadQuestion();
+            updateModuleFilterButtons();
+        }
+
+        function updateModuleFilterButtons() {
+            moduleFilterButtons.forEach(button => {
+                if (button.dataset.module === selectedModule) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+
+        function loadQuestion() {
+            if (filteredQuestions.length === 0) {
+                questionNumberElement.textContent = "";
+                questionTextElement.innerHTML = "No questions available for this module.";
+                optionsContainer.innerHTML = "";
+                feedbackElement.style.display = 'none';
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                return;
+            }
+
+            const question = filteredQuestions[currentQuestionIndex];
+            questionNumberElement.textContent = `Question ${currentQuestionIndex + 1} of ${filteredQuestions.length}`;
+            questionTextElement.innerHTML = question.question;
+            optionsContainer.innerHTML = '';
+            feedbackElement.style.display = 'none';
+            feedbackElement.classList.remove('correct', 'incorrect');
+
+            question.options.forEach((option, index) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'answer';
+                input.value = option;
+                input.addEventListener('change', () => checkAnswer(option, question.correctAnswer));
+                label.appendChild(input);
+                label.innerHTML += option;
+                optionsContainer.appendChild(label);
+            });
+
+            updateNavigationButtons();
+        }
+
+        function checkAnswer(selectedOption, correctAnswer) {
+            const allOptions = optionsContainer.querySelectorAll('input[type="radio"]');
+            allOptions.forEach(option => {
+                option.disabled = true; // Disable all options after selection
+                const label = option.parentElement;
+                if (option.value === correctAnswer) {
+                    label.style.backgroundColor = '#d4edda'; // Green for correct
+                } else if (option.checked) {
+                    label.style.backgroundColor = '#f8d7da'; // Red for incorrect selected
+                }
+            });
+
+            if (selectedOption === correctAnswer) {
+                feedbackElement.textContent = "Correct!";
+                feedbackElement.classList.add('correct');
+            } else {
+                feedbackElement.innerHTML = `Incorrect. The correct answer is: <strong>${correctAnswer}</strong>`;
+                feedbackElement.classList.add('incorrect');
+            }
+            feedbackElement.style.display = 'block';
+        }
+
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === filteredQuestions.length - 1;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < filteredQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        });
+
+        moduleFilterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterQuestions(button.dataset.module);
+            });
+        });
+
+        // Initial load
+        filterQuestions("all");
+    </script>
+</body>
+</html>
