@@ -1533,8 +1533,10 @@
                 input.name = 'answer';
                 input.value = option;
                 input.addEventListener('change', () => checkAnswer(option, question.correctAnswer));
+                
                 label.appendChild(input);
-                label.innerHTML += option;
+                // Append the option text after the input element
+                label.insertAdjacentHTML('beforeend', option); 
                 optionsContainer.appendChild(label);
             });
 
@@ -1548,7 +1550,7 @@
                 const label = option.parentElement;
                 if (option.value === correctAnswer) {
                     label.style.backgroundColor = '#d4edda'; // Green for correct
-                } else if (option.checked) {
+                } else if (option.value === selectedOption) { // This is the selected (incorrect) option
                     label.style.backgroundColor = '#f8d7da'; // Red for incorrect selected
                 }
             });
@@ -1556,9 +1558,11 @@
             if (selectedOption === correctAnswer) {
                 feedbackElement.textContent = "Correct!";
                 feedbackElement.classList.add('correct');
+                feedbackElement.classList.remove('incorrect');
             } else {
                 feedbackElement.innerHTML = `Incorrect. The correct answer is: <strong>${correctAnswer}</strong>`;
                 feedbackElement.classList.add('incorrect');
+                feedbackElement.classList.remove('correct');
             }
             feedbackElement.style.display = 'block';
         }
