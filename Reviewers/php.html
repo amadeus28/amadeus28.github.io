@@ -1,0 +1,2946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+        .module-selection {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .module-selection button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .module-selection button.active {
+            background-color: #0056b3;
+        }
+        .question-number {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .options-container label {
+            display: block;
+            background-color: #e9e9e9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 1.1em;
+        }
+        .options-container label:hover {
+            background-color: #dcdcdc;
+        }
+        .options-container input[type="radio"] {
+            margin-right: 10px;
+        }
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 20px; /* To prevent layout shift */
+        }
+        .feedback.correct {
+            color: #28a745;
+        }
+        .feedback.incorrect {
+            color: #dc3545;
+        }
+        .correct-answer-display {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .navigation-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .navigation-buttons button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .navigation-buttons button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="module-selection">
+        <h2>Select Module:</h2>
+        <button id="module-all" class="active">All Questions</button>
+        <button id="module-m1-m2">Module 1-2</button>
+        <button id="module-m3-m4">Module 3-4</button>
+        <button id="module-m5-m6">Module 5-6</button>
+        <button id="module-m7">Module 7</button>
+    </div>
+
+    <div class="quiz-container">
+        <div class="question-number" id="question-number"></div>
+        <div class="question-text" id="question-text"></div>
+        <div class="options-container" id="options-container"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="correct-answer-display" id="correct-answer-display"></div>
+    </div>
+
+    <div class="navigation-buttons">
+        <button id="prev-button">Previous</button>
+        <button id="next-button">Next</button>
+    </div>
+
+    <script>
+        const allQuestions = [
+            // Module 1-2 Questions
+            {
+                module: 'm1-m2',
+                question: "In what year PHP 5 was released?",
+                options: ["2004", "2001", "2002", "2003"],
+                correctAnswer: "2004"
+            },
+            {
+                module: 'm1-m2',
+                question: "Try/catch exception handling introduce in what version of PHP?",
+                options: ["PHP5", "PHP2", "PHP4", "PHP3"],
+                correctAnswer: "PHP5"
+            },
+            {
+                module: 'm1-m2',
+                question: "Which of the following is not a web server?",
+                options: ["MyServ", "Nginx", "IIS7", "Apache"],
+                correctAnswer: "MyServ"
+            },
+            {
+                module: 'm1-m2',
+                question: "You can use a server side scripting language in PHP?",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "Much of the PHP syntax was derived from the C programming Language.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "_______ returns the type of the variable. Possible return values are integer, double, boolean, string, array, object, resource, unknown types.",
+                options: ["settype()", "gettype()", "typeset()", "typeget()"],
+                correctAnswer: "gettype()"
+            },
+            {
+                module: 'm1-m2',
+                question: "_______ allow for multiple items of the same type to be aggregated under a single representative entity. (Array and Objects)",
+                options: ["Single datatypes", "Compound datatypes", "Scalar datatypes", "Modular datatypes"],
+                correctAnswer: "Compound datatypes"
+            },
+            {
+                module: 'm1-m2',
+                question: "_______ symbol that specifies a particular action in an expression.",
+                options: ["Associativity", "Precedence", "Operator", "Purpose"],
+                correctAnswer: "Operator"
+            },
+            {
+                module: 'm1-m2',
+                question: "Operator for Expression subgrouping",
+                options: ["@", "()", "/", "[]"],
+                correctAnswer: "()"
+            },
+            {
+                module: 'm1-m2',
+                question: "Addition-assignment symbol",
+                options: ["++", "+", "+=", "==+"],
+                correctAnswer: "+="
+            },
+            {
+                module: 'm1-m2',
+                question: "$x=10; Echo ++$x; What is the output?",
+                options: ["11", "13", "12", "14"],
+                correctAnswer: "11"
+            },
+            {
+                module: 'm1-m2',
+                question: "$x=15; Echo --$x; What is the output?",
+                options: ["16", "14", "15", "13"],
+                correctAnswer: "14"
+            },
+            {
+                module: 'm1-m2',
+                question: "Ternary format",
+                options: ["(10 == $a):?1", "($a == 10)?5", "(5 == f)::", "($a == 12) ? 5 : 1"],
+                correctAnswer: "($a == 12) ? 5 : 1"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for AND operator",
+                options: ["$$", "&&", "||", "%%"],
+                correctAnswer: "&&"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for OR operator",
+                options: ["||", "$$", "&&", "%%"],
+                correctAnswer: "||"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for identical to",
+                options: ["===", "==", "!=", "="],
+                correctAnswer: "==="
+            },
+            {
+                module: 'm1-m2',
+                question: "Complete the syntax If(expression){ __________; }",
+                options: ["Value", "Expression", "Condition", "Statement"],
+                correctAnswer: "Statement"
+            },
+            {
+                module: 'm1-m2',
+                question: "elseif is one of the conditional statements in php",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "$a=10; while($a>0){ echo $a--.\" \"; } What is the output?",
+                options: ["9 8 7 6 5 4 3 2 1", "10 9 8 7 6 5 4 3 2 1", "1 2 3 4 5 6 7 8 9", "1 2 3 4 5 6 7 8 9 10"],
+                correctAnswer: "10 9 8 7 6 5 4 3 2 1"
+            },
+            {
+                module: 'm1-m2',
+                question: "In PHP 5 how many percent on all Apache module",
+                options: ["34", "64", "45", "54"],
+                correctAnswer: "54"
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP contains More libraries and thousands of functions",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP can run only in Windows OS",
+                options: ["False", "True"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm1-m2',
+                question: "All php scripts must enclosed with",
+                options: ["<//>", "<??>", "<{}>", "<::>"],
+                correctAnswer: "<??>"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol use for Perl style single line comment",
+                options: ["#", "^", "$", "@"],
+                correctAnswer: "#"
+            },
+            {
+                module: 'm1-m2',
+                question: "Variables in PHP must begin with",
+                options: ["#", "!", "$", "@"],
+                correctAnswer: "$"
+            },
+            {
+                module: 'm1-m2',
+                question: "Variables might contain a string, numbers, arrays and objects.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "Variables are not case sensitive",
+                options: ["False", "True"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm1-m2',
+                question: "Division-assignment symbol",
+                options: ["==/", "/=", "//", "/"],
+                correctAnswer: "/="
+            },
+            {
+                module: 'm1-m2',
+                question: "$x=10; Echo $x++; What is the output?",
+                options: ["11", "12", "10", "13"],
+                correctAnswer: "10"
+            },
+            {
+                module: 'm1-m2',
+                question: "if(expression) { statement… } else { statement } How many condition/s",
+                options: ["1", "3", "2", "4"],
+                correctAnswer: "2"
+            },
+            {
+                module: 'm1-m2',
+                question: "$s=90; if($s==80 && $s<90) { echo \"Rank B\"; } else if($s>90){ echo \"Rank A\"; }else{ echo \"Rank C\"; } What is the output if $s=85?",
+                options: ["Rank C", "Rank A", "Rank B", "Error"],
+                correctAnswer: "Rank C"
+            },
+            {
+                module: 'm1-m2',
+                question: "You can only use string inside of the case statement",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm1-m2',
+                question: "$m=3; switch($m){ case 1: echo \"May\"; break; case 2: echo \"June\"; break; case 3: echo \"July\"; break; default: echo \"invalid\"; break; } What is the output if $m is 1?",
+                options: ["May", "June", "July", "Invalid"],
+                correctAnswer: "May"
+            },
+            {
+                module: 'm1-m2',
+                question: "Syntax for do… while statement",
+                options: ["do(expr)while{statement}", "do{statement}while(expr);", "while{statement}do(expr)", "while(do)expr{statement}"],
+                correctAnswer: "do{statement}while(expr);"
+            },
+            {
+                module: 'm1-m2',
+                question: "continue statement causes execution of the current loop iteration to end and commence at the beginning of the next iteration.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "One of the Core developers of PHP 4.0",
+                options: ["Zeev Suraski", "Zeeb Suraki", "Zeev Sumaki", "Zeeb Suraski"],
+                correctAnswer: "Zeev Suraski"
+            },
+            {
+                module: 'm1-m2',
+                question: "All php files must be save on htdocs folder",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "Extension name for php files",
+                options: [".p", ".php", ".hp", ".ph"],
+                correctAnswer: ".php"
+            },
+            {
+                module: 'm1-m2',
+                question: "You need a web browser to open php files",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "$num = 10; Valid or invalid?",
+                options: ["Valid", "Invalid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm1-m2',
+                question: "Associativity for object instantiation",
+                options: ["Middle", "Left", "NA", "Right"],
+                correctAnswer: "NA"
+            },
+            {
+                module: 'm1-m2',
+                question: "Operator for Boolean AND, Boolean OR",
+                options: ["?:", "&^|", ",,", "&&||"],
+                correctAnswer: "&&||"
+            },
+            {
+                module: 'm1-m2',
+                question: "Associativity for Boolean AND, Boolean OR",
+                options: ["Middle", "Left", "Right", "NA"],
+                correctAnswer: "Left"
+            },
+            {
+                module: 'm1-m2',
+                question: "Operator for Ternary operator",
+                options: ["<>", "//", "?:", ",,"],
+                correctAnswer: "?:"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for multiplication",
+                options: ["*", "**", "X", "=*"],
+                correctAnswer: "*"
+            },
+            {
+                module: 'm1-m2',
+                question: "Decrement symbol",
+                options: ["++", "--", "+", "-"],
+                correctAnswer: "--"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for less than or equal to",
+                options: ["<=", ">=", "<", ">"],
+                correctAnswer: "<="
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for equal to",
+                options: ["==", "=", "!=", "==="],
+                correctAnswer: "=="
+            },
+            {
+                module: 'm1-m2',
+                question: "______ statement is used to jump to other section of the program to support labels.",
+                options: ["Break", "If", "Goto", "Continue"],
+                correctAnswer: "Goto"
+            },
+            {
+                module: 'm1-m2',
+                question: "$m=3; switch($m){ case 1: echo \"May\"; break; case 2: echo \"June\"; break; case 3: echo \"July\"; break; default: echo \"invalid\"; break; } What is the output if $n is 1?",
+                options: ["July", "May", "June", "Invalid"],
+                correctAnswer: "July"
+            },
+            {
+                module: 'm1-m2',
+                question: "Goto always need a label",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "Which of the following is not Linux OS",
+                options: ["Debian", "Vista", "Ubuntu", "Suse"],
+                correctAnswer: "Vista"
+            },
+            {
+                module: 'm1-m2',
+                question: "HTML is one the requirements to use PHP",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "______ a server-side scripting language that runs its application on a Web server.",
+                options: ["PHP", "Java", "JavaScript", "C++"],
+                correctAnswer: "PHP"
+            },
+            {
+                module: 'm1-m2',
+                question: "Year that the developers joined Lerdorf",
+                options: ["1999", "2000", "2001", "1998"],
+                correctAnswer: "1998"
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP version that has an Enterprise development",
+                options: ["PHP 4.0", "PHP 1.0", "PHP 3.0", "PHP 2.0"],
+                correctAnswer: "PHP 4.0"
+            },
+            {
+                module: 'm1-m2',
+                question: "Term used to combine two or more different strings",
+                options: ["Combine", "Concreate", "Concatenate", "Plus"],
+                correctAnswer: "Concatenate"
+            },
+            {
+                module: 'm1-m2',
+                question: "Presented as a signed decimal number",
+                options: ["%d", "%n", "%nd", "%dn"],
+                correctAnswer: "%d"
+            },
+            {
+                module: 'm1-m2',
+                question: "Presented as a floating point number",
+                options: ["%fp", "%f", "%p", "%fn"],
+                correctAnswer: "%f"
+            },
+            {
+                module: 'm1-m2',
+                question: "Associativity for Division, multiplication, modulus",
+                options: ["Right", "Left", "Middle", "NA"],
+                correctAnswer: "Left"
+            },
+            {
+                module: 'm1-m2',
+                question: "$a=10; $b=20; If($a<$b) {echo $a+$b;} Else {echo $a-$b;} Question: what is the output of the code",
+                options: ["-10", "40", "20", "30"],
+                correctAnswer: "30"
+            },
+            {
+                module: 'm1-m2',
+                question: "if(7 __ 4) { echo \"true\";} Else { echo \"false\";} What is missing code to make the statements true?",
+                options: ["<", "!=", ">", "="],
+                correctAnswer: ">"
+            },
+            {
+                module: 'm1-m2',
+                question: "$x=0; for($i=1;$i<5;$i++){$x+=$i;} echo $x; What is the output?",
+                options: ["12", "10", "9", "15"],
+                correctAnswer: "10"
+            },
+            {
+                module: 'm1-m2',
+                question: "break statement is placed within the code of a loop to cause the program to break out of the loop statement.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "In what year PHP 1.0 released",
+                options: ["1997/1998", "1996/1997", "1994/1995", "1995/1996"],
+                correctAnswer: "1994/1995"
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP is based on",
+                options: ["C#", "Perl", "Java", "C"],
+                correctAnswer: "C"
+            },
+            {
+                module: 'm1-m2',
+                question: "Which of the following is not a code editor?",
+                options: ["Mspaint", "Netbeans", "Notepad++", "Dreamweaver"],
+                correctAnswer: "Mspaint"
+            },
+            {
+                module: 'm1-m2',
+                question: "Which of the following is not part of Web Architecture?",
+                options: ["Database", "Internet", "Page Request", "USB connection"],
+                correctAnswer: "USB connection"
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP can create in code editors",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "Closing tag for PHP scripts",
+                options: ["<?", "?>", "=>", "<="],
+                correctAnswer: "?>"
+            },
+            {
+                module: 'm1-m2',
+                question: "______ language construct that use to output one or more string.",
+                options: ["Out", "Send", "Output", "Echo"],
+                correctAnswer: "Echo"
+            },
+            {
+                module: 'm1-m2',
+                question: "$age is a valid variable",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "$val=\"abc\".\"def\" valid or invalid?",
+                options: ["Invalid", "Valid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm1-m2',
+                question: "______ converts a given variable to a specific type.",
+                options: ["typeset()", "settype()", "typeget()", "gettype()"],
+                correctAnswer: "settype()"
+            },
+            {
+                module: 'm1-m2',
+                question: "Syntax for Switch",
+                options: ["swt($cat)", "$switch($category)", "switch($category)", "$Cat($switch)"],
+                correctAnswer: "switch($category)"
+            },
+            {
+                module: 'm1-m2',
+                question: "There is always default inside of the switch",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm1-m2',
+                question: "$m=3; switch($m){ case 1: echo \"May\"; break; case 2: echo \"June\"; break; case 3: echo \"July\"; break; default: echo \"invalid\"; break; } What is the output if $m is one?",
+                options: ["May", "Invalid", "July", "June"],
+                correctAnswer: "May"
+            },
+            {
+                module: 'm1-m2',
+                question: "$x=0; for($i=1;$i<5;$i++){$x+=$i;} echo $x; What is the output if $x=2",
+                options: ["15", "12", "9", "10"],
+                correctAnswer: "10"
+            },
+            {
+                module: 'm1-m2',
+                question: "$x=0; for($i=1;$i<5;$i++){$i+=$i;} echo $x; What is the output?",
+                options: ["12", "0", "5", "10"],
+                correctAnswer: "0"
+            },
+            {
+                module: 'm1-m2',
+                question: "How many domain PHP installed on May 22, 2000",
+                options: ["2.6 million", "1.6 million", "3.6 million", "4.6 million"],
+                correctAnswer: "3.6 million"
+            },
+            {
+                module: 'm1-m2',
+                question: "Version of PHP that support Unicode",
+                options: ["PHP 6", "PHP 4", "PHP 5", "PHP 3"],
+                correctAnswer: "PHP 6"
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP can use in Linux",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "What is the default location of XAMPP?",
+                options: ["D:\\", "C:\\", "E:\\", "F:\\"],
+                correctAnswer: "C:\\"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol to use value in string",
+                options: ["–", "++", "''", "‘’"],
+                correctAnswer: "''"
+            },
+            {
+                module: 'm1-m2',
+                question: "$v=70; if($v<=70) { echo \"hooray\"; } else { Echo \"hello\"; } What is the output if the value of $v is 100?",
+                options: ["invalid", "hooray", "hello", "blank"],
+                correctAnswer: "hello"
+            },
+            {
+                module: 'm1-m2',
+                question: "$m=3; switch($m){ case 1: echo \"May\"; break; case 2: echo \"June\"; break; case 3: echo \"July\"; break; default: echo \"invalid\"; break; } What is the output?",
+                options: ["July", "Invalid", "May", "Jun"],
+                correctAnswer: "July"
+            },
+            {
+                module: 'm1-m2',
+                question: "Comments can be put anywhere in the code",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "variable can only contain ________characters and underscore (a-z,A-Z,0-9,_).",
+                options: ["alpha-numeric", "numeric", "special characters", "letters"],
+                correctAnswer: "alpha-numeric"
+            },
+            {
+                module: 'm1-m2',
+                question: "_name is a valid variable",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm1-m2',
+                question: "Operator for Object instantiation",
+                options: ["()", "@", "start", "new"],
+                correctAnswer: "new"
+            },
+            {
+                module: 'm1-m2',
+                question: "Associativity for Bitwise AND, bitwise XOR, bitwise OR",
+                options: ["Left", "Middle", "NA", "Right"],
+                correctAnswer: "Left"
+            },
+            {
+                module: 'm1-m2',
+                question: "Syntax for if statement",
+                options: ["(expression)if{statement…}", "If(expression){statement..}", "Statement…if(expression)", "Expression…if(statement)"],
+                correctAnswer: "If(expression){statement..}"
+            },
+            {
+                module: 'm1-m2',
+                question: "If($a == $b){} Valid or Invalid?",
+                options: ["Valid", "Invalid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm1-m2',
+                question: "There will be an error if there is no break inside of the switch case",
+                options: ["False", "True"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm1-m2',
+                question: "Oracle is example of database that PHP can use",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "Statement terminator",
+                options: [";", "\"", "'", "<"],
+                correctAnswer: ";"
+            },
+            {
+                module: 'm1-m2',
+                question: "How many types of comment php have?",
+                options: ["3", "4", "5", "2"],
+                correctAnswer: "2"
+            },
+            {
+                module: 'm1-m2',
+                question: "$ inside \" and \" are interpreted as variables thus it will display the value rather than the string that starts with $.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "To display the string that starts with $ and to display the double quote as string use the escape character \\ (backslash).",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "Which of the following is not a conditional statement?",
+                options: ["Else", "If", "For", "Elseif"],
+                correctAnswer: "For"
+            },
+            {
+                module: 'm1-m2',
+                question: "You can create multiple statements inside of an condition",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "Another code for condition",
+                options: ["Switch", "Get", "Set", "Pick"],
+                correctAnswer: "Switch"
+            },
+            {
+                module: 'm1-m2',
+                question: "Syntax for for statement",
+                options: ["for(statement){expr}", "for(expr1;expr2;expr3){statement}", "for(expr1){statement}expr2", "for{expr1,expr2}(statement)"],
+                correctAnswer: "for(expr1;expr2;expr3){statement}"
+            },
+            {
+                module: 'm1-m2',
+                question: "______ is the generic name assigned to any data sharing a common set of characteristics.",
+                options: ["Array", "Datatypes", "Variables", "Output"],
+                correctAnswer: "Datatypes"
+            },
+            {
+                module: 'm1-m2',
+                question: "Assignment symbol",
+                options: ["==", "===", "=", "+="],
+                correctAnswer: "="
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for less than",
+                options: [">=", "<", ">", "<="],
+                correctAnswer: "<"
+            },
+            {
+                module: 'm1-m2',
+                question: "Presented as a binary number",
+                options: ["%bn", "%y", "%n", "%b"],
+                correctAnswer: "%b"
+            },
+            {
+                module: 'm1-m2',
+                question: "$x=15; Echo $x--; What is the output?",
+                options: ["15", "13", "14", "16"],
+                correctAnswer: "15"
+            },
+            {
+                module: 'm1-m2',
+                question: "$x=4; $x++; Echo $x+2 What is the output?",
+                options: ["8", "7", "9", "6"],
+                correctAnswer: "7"
+            },
+            {
+                module: 'm1-m2',
+                question: "$v=70; if($v<=70) { echo \"hooray\"; } else { Echo \"hello\"; } What is the output?",
+                options: ["blank", "hooray", "invalid", "hello"],
+                correctAnswer: "hooray"
+            },
+            {
+                module: 'm1-m2',
+                question: "$s=90; if($s==80 && $s<90) { echo \"Rank B\"; } else if($s>90){ echo \"Rank A\"; }else{ echo \"Rank C\"; } What is the output if $s=70?",
+                options: ["Rank C", "Error", "Rank A", "Rank B"],
+                correctAnswer: "Rank C"
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP can run only in Mac OS",
+                options: ["Ture", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm1-m2',
+                question: "Standard tag",
+                options: ["<?... ?>", "<%...%>", "<?php…?>", "<%php…%>"],
+                correctAnswer: "<?php…?>"
+            },
+            {
+                module: 'm1-m2',
+                question: "Asp style tag",
+                options: ["<(…)>", "</ …/>", "<?...?>", "<%...%>"],
+                correctAnswer: "<%...%>"
+            },
+            {
+                module: 'm1-m2',
+                question: "Open tag for PHP scripts",
+                options: ["<=", "=>", "<?", "?>"],
+                correctAnswer: "<?"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for single line comment",
+                options: ["<<", ",,", ">>", "//"],
+                correctAnswer: "//"
+            },
+            {
+                module: 'm1-m2',
+                question: "Syntax for while statement",
+                options: ["while(expr){statement}", "(expr)while{statement}", "while(statement){expr}", "expr(while){statement}"],
+                correctAnswer: "while(expr){statement}"
+            },
+            {
+                module: 'm1-m2',
+                question: "$u=30; do{ echo $y++; }while($u<31); What is the output if $y=33?",
+                options: ["32", "31", "30", "33"],
+                correctAnswer: "33"
+            },
+            {
+                module: 'm1-m2',
+                question: "Presented ads character corresponding to that ASCII value",
+                options: ["%c", "%as", "%a", "%ch"],
+                correctAnswer: "%c"
+            },
+            {
+                module: 'm1-m2',
+                question: "$s=90; if($s==80 && $s<90) { echo \"Rank B\"; } else if($s>90){ echo \"Rank A\"; }else{ echo \"Rank C\"; } What is the output if $s=1000?",
+                options: ["Rank C", "Rank B", "Rank A", "Error"],
+                correctAnswer: "Rank A"
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP makes the most popular scripting language with more than one million user base by",
+                options: ["Netcraff", "Netstake", "Netscape", "Netcafe"],
+                correctAnswer: "Netcraff"
+            },
+            {
+                module: 'm1-m2',
+                question: "How many domains installed in PHP 5",
+                options: ["12 million", "19 million", "15 million", "10 million"],
+                correctAnswer: "19 million"
+            },
+            {
+                module: 'm1-m2',
+                question: "Which of the following is not a looping statement?",
+                options: ["Do while", "Loop", "For", "While"],
+                correctAnswer: "Loop"
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP 5 vastly improved",
+                options: ["Object Oriented capabilities", "Designing", "Coding", "Scripting"],
+                correctAnswer: "Object Oriented capabilities"
+            },
+            {
+                module: 'm1-m2',
+                question: "Escape Sequence for horizontal tab",
+                options: ["\\h", "\\n", "\\t", "\\r"],
+                correctAnswer: "\\t"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for subtraction",
+                options: ["-=", "-", "–", "+"],
+                correctAnswer: "-"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for greater than or equal to",
+                options: ["<=", "<", ">=", ">"],
+                correctAnswer: ">="
+            },
+            {
+                module: 'm1-m2',
+                question: "Operator for index enclosure",
+                options: ["++", "[]", "()", "<<"],
+                correctAnswer: "[]"
+            },
+            {
+                module: 'm1-m2',
+                question: "Operator for Bitwise AND, bitwise XOR, bitwise OR",
+                options: ["?:", "&&||", "& ^ |", ",,"],
+                correctAnswer: "& ^ |"
+            },
+            {
+                module: 'm1-m2',
+                question: "Symbol for greater than",
+                options: ["<=", "<", ">=", ">"],
+                correctAnswer: ">"
+            },
+            {
+                module: 'm1-m2',
+                question: "______ statement is placed within the code of a loop to cause the program to break out of the loop statement.",
+                options: ["Continue", "Goto", "If", "Break"],
+                correctAnswer: "Break"
+            },
+            {
+                module: 'm1-m2',
+                question: "recursive acronym for PHP",
+                options: ["Highlight Processor", "Hyperline Preprocessor", "Hypertext Preprocessor", "Hightext Processor"],
+                correctAnswer: "Hypertext Preprocessor"
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP can put anywhere in the code",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm1-m2',
+                question: "Multiplication-assignment symbol",
+                options: ["*", "**", "*=", "**"],
+                correctAnswer: "*="
+            },
+            {
+                module: 'm1-m2',
+                question: "PHP can run only in Linux OS",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+
+            // Module 3-4 Questions
+            {
+                module: 'm3-m4',
+                question: "Sorts by key in reverse order",
+                options: ["kusort($array)", "usort($array)", "krsort($array)", "ksort($array)"],
+                correctAnswer: "krsort($array)"
+            },
+            {
+                module: 'm3-m4',
+                question: "It is required to create a function name for a function",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Functions can be user defined generally defined by the user of the program and predefined that are build in using libraries.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Function can only do something without passing values.",
+                options: ["False", "True"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm3-m4',
+                question: "Function keyword is used in PHP to declare a function.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "You can insert CSS code inside of a function",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Sorts by value; keeps the same key",
+                options: ["arsort($array)", "asort($array)", "rsort($array)", "sort($array)"],
+                correctAnswer: "asort($array)"
+            },
+            {
+                module: 'm3-m4',
+                question: "$g = 200; function a(){echo \"5\";} function b(){echo \"4\";} a(); What is the output of the code?",
+                options: ["5", "4", "A", "200"],
+                correctAnswer: "5"
+            },
+            {
+                module: 'm3-m4',
+                question: "Function count($val){ $c = 0; $c += $val; echo $c; } count(10); count(5); What is the output of the code?",
+                options: ["Error", "105", "5", "15"],
+                correctAnswer: "5"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax for foreach",
+                options: ["foreach($arr as $value){}", "foreach($arr){}", "foreach($value){}", "foreach{}($arr as $value)"],
+                correctAnswer: "foreach($arr as $value){}"
+            },
+            {
+                module: 'm3-m4',
+                question: "References a corresponding value.",
+                options: ["Array number", "Array collection", "Array index", "Array setting"],
+                correctAnswer: "Array index"
+            },
+            {
+                module: 'm3-m4',
+                question: "We use static keyword to declare a variable inside a function that will act as accumulator variable this will let the program remember the last value of the variable that was used.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Functions are commonly used for debugging. The point of this of these functions is to help you visualize what's going on with compound data structures like arrays.",
+                options: ["print_p() and var_add()", "print_c() and var_info()", "print_a() and var_size()", "print_r() and var_dump()"],
+                correctAnswer: "print_r() and var_dump()"
+            },
+            {
+                module: 'm3-m4',
+                question: "Sorts by value; assign new numbers as the keys",
+                options: ["arsort($array)", "sort($array)", "rsort($array)", "asort($array)"],
+                correctAnswer: "sort($array)"
+            },
+            {
+                module: 'm3-m4',
+                question: "$fruit = array(\"orange\",\"apple\",\"grape\",\"banana\"); What is the value of index 0?",
+                options: ["banana", "grape", "apple", "orange"],
+                correctAnswer: "orange"
+            },
+            {
+                module: 'm3-m4',
+                question: "var_dump function is same as print_r function except it adds additional information about the data of each element.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "$a[]=\"mango\"; $a[]=\"apple\"; $a[]=\"banana\"; Check the code if valid or invalid?",
+                options: ["Invalid", "Valid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm3-m4',
+                question: "foreach($arr as ___ => $value){ //do something }",
+                options: ["$set", "$get", "$var", "$key"],
+                correctAnswer: "$key"
+            },
+            {
+                module: 'm3-m4',
+                question: "Sorts by a function",
+                options: ["usort($array)", "krsort($array)", "ksort($array)", "kusort($array)"],
+                correctAnswer: "usort($array)"
+            },
+            {
+                module: 'm3-m4',
+                question: "Functions that are provided by the user of the program.",
+                options: ["Predefined function", "User function", "Program function", "User defined function"],
+                correctAnswer: "User defined function"
+            },
+            {
+                module: 'm3-m4',
+                question: "foreach($arr as ______)",
+                options: ["val$", "value$", "val", "$value"],
+                correctAnswer: "$value"
+            },
+            {
+                module: 'm3-m4',
+                question: "Sorts by key",
+                options: ["krsort($array)", "usort($array)", "ksort($array)", "kusort($array)"],
+                correctAnswer: "ksort($array)"
+            },
+            {
+                module: 'm3-m4',
+                question: "Array index is also known as Array Keys.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "$t = 100; function one(){ echo \"value\"; } one(); What is the function name inside of the code?",
+                options: ["value", "one", "1", "$t"],
+                correctAnswer: "one"
+            },
+            {
+                module: 'm3-m4',
+                question: "Can only be assigned a scalar value, like a string or a number.",
+                options: ["Contrast", "Construct", "Define", "Constant"],
+                correctAnswer: "Constant"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax for ceil",
+                options: ["$ceil ($float)", "ceil float ($value)", "$value (ceil)", "float ceil (float $value)"],
+                correctAnswer: "float ceil (float $value)"
+            },
+            {
+                module: 'm3-m4',
+                question: "Converts string to lowercase",
+                options: ["strlow", "lowerstr", "strtolower", "stringtolow"],
+                correctAnswer: "strtolower"
+            },
+            {
+                module: 'm3-m4',
+                question: "Returns part of a given string",
+                options: ["strpart", "substr", "partstr", "strsub"],
+                correctAnswer: "substr"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax to get a part of a given string",
+                options: ["string substr ( string $string , int $start [, int $length ] )", "string strpart ( string $string , int $start [, int $length ] )", "string partstr ( string $string , int $start [, int $length ] )", "string strsub ( string $string , int $start [, int $length ] )"],
+                correctAnswer: "string substr ( string $string , int $start [, int $length ] )"
+            },
+            {
+                module: 'm3-m4',
+                question: "Strip HTML and PHP tags from a string.",
+                options: ["find_tags()", "tags_get()", "tags_search()", "strip_tags()"],
+                correctAnswer: "strip_tags()"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for a full textual representation of the day of the week",
+                options: ["w", "d", "t", "l"],
+                correctAnswer: "l"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for the day of the year (starting from 0)",
+                options: ["d", "x", "y", "z"],
+                correctAnswer: "z"
+            },
+            {
+                module: 'm3-m4',
+                question: "Each member of the array index references a corresponding value and can be a simple numerical reference to the value's position in the series, or it could have some direct correlation to the value.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "$f = array( '102' => \"red\", '101' => \"blue\", '100' => \"yellow\"); ksort($f); print_r($f); What is the output of the code?",
+                options: ["Array ( [102] => red [101] => blue [100] => yellow )", "Array ( [100] => yellow [101] => blue [102] => red )", "Array ( [100] => red [101] => blue [102] => yellow )", "Array ( [102] => yellow [101] => blue [100] => red )"],
+                correctAnswer: "Array ( [100] => yellow [101] => blue [102] => red )"
+            },
+            {
+                module: 'm3-m4',
+                question: "$s = \"variable\"; function f(){ global $s; echo \"function called \"; echo \"$s\"; } f(); What is the output of the code?",
+                options: ["function called variable", "function called", "function variable", "function called undefined variable: s"],
+                correctAnswer: "function called variable"
+            },
+            {
+                module: 'm3-m4',
+                question: "To gain access to a variable that is outside from the function we use the global keyword.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Function count($val){ static $c = 0; $c += $val; echo $c; } Count(4); Count(3); What is the output of the code?",
+                options: ["47", "43", "Error", "7"],
+                correctAnswer: "7"
+            },
+            {
+                module: 'm3-m4',
+                question: "A constant's value cannot be changed.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Most of the developers used include functions for their",
+                options: ["Content", "Footer", "Titles", "Body"],
+                correctAnswer: "Footer"
+            },
+            {
+                module: 'm3-m4',
+                question: "$x = rand(5,10);echo $x; What is the minimum value of the output?",
+                options: ["10", "5", "0", "Error"],
+                correctAnswer: "5"
+            },
+            {
+                module: 'm3-m4',
+                question: "$x = min(10, 5 , 3, 20);echo $x; What is the output?",
+                options: ["20", "3", "10", "5"],
+                correctAnswer: "3"
+            },
+            {
+                module: 'm3-m4',
+                question: "$val=643322.7834 echo number_format($val,3,'.',','); What is the output?",
+                options: ["643322.78", "643,322.7834", "643322.7834", "643,322.783"],
+                correctAnswer: "643,322.783"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax for unset",
+                options: ["mixed unset (mixed unset)", "mixed unset (void $var)", "void unset ( mixed $var [, mixed $...] )", "void unset (void $var)"],
+                correctAnswer: "void unset ( mixed $var [, mixed $...] )"
+            },
+            {
+                module: 'm3-m4',
+                question: "Find the position of the first occurrence of a substring in a given string",
+                options: ["strpos", "posstr", "stringpos", "posstring"],
+                correctAnswer: "strpos"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for numeric representation of the day of the week",
+                options: ["w", "d", "r", "n"],
+                correctAnswer: "w"
+            },
+            {
+                module: 'm3-m4',
+                question: "Function is used to print the array structure.",
+                options: ["print_f", "print_s", "print_r", "print_a"],
+                correctAnswer: "print_r"
+            },
+            {
+                module: 'm3-m4',
+                question: "Is a group of PHP statements that performs a specific task. Functions are designed to allow you to reuse the same code in different locations.",
+                options: ["Functions", "Operators", "Variables", "Arrays"],
+                correctAnswer: "Functions"
+            },
+            {
+                module: 'm3-m4',
+                question: "Functions that are built-in into PHP to perform some standard operations",
+                options: ["Predefined functions", "User defined functions", "Program functions", "User function"],
+                correctAnswer: "Predefined functions"
+            },
+            {
+                module: 'm3-m4',
+                question: "Is declared inside a function and is only available within the function in which it is declared.",
+                options: ["Dynamic variables", "Global variables", "Static variables", "Local variables"],
+                correctAnswer: "Local variables"
+            },
+            {
+                module: 'm3-m4',
+                question: "$g = 200; function a(){echo \"5\";} function b(){echo \"4\";} a(); What is the value of the $g?",
+                options: ["4", "200", "Error", "5"],
+                correctAnswer: "200"
+            },
+            {
+                module: 'm3-m4',
+                question: "You can create a function inside of a function",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Number format can include thousand separator",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax for explode",
+                options: ["array explode ( string $delimiter , string $string [, int $limit ] )", "array explode ( int $delimiter , string $string [, int $limit ] )", "array explode ( string $delimiter , string $string [, string $limit ] )", "array explode ( int $delimiter , int $string [, int $limit ] )"],
+                correctAnswer: "array explode ( string $delimiter , string $string [, int $limit ] )"
+            },
+            {
+                module: 'm3-m4',
+                question: "Converts string to uppercase",
+                options: ["stringtoupper", "strtoupper", "strupper", "upperstr"],
+                correctAnswer: "strtoupper"
+            },
+            {
+                module: 'm3-m4',
+                question: "Stripped white spaces or other characters from the beginning and end of a string.",
+                options: ["trim()", "set()", "strip()", "get()"],
+                correctAnswer: "trim()"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for a textual representation of the day, three letters",
+                options: ["d", "DAY", "day", "D"],
+                correctAnswer: "D"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for a full textual representation of the month, such as January or March",
+                options: ["F", "M", "T", "J"],
+                correctAnswer: "F"
+            },
+            {
+                module: 'm3-m4',
+                question: "$fruit = array(\"orange\",\"apple\",\"grape\",\"banana\"); What is the value of index 3?",
+                options: ["orange", "grape", "banana", "apple"],
+                correctAnswer: "banana"
+            },
+            {
+                module: 'm3-m4',
+                question: "$fruit = array(\"orange\",\"apple\",\"grape\",\"banana\"); What is the value of index 2?",
+                options: ["banana", "orange", "grape", "apple"],
+                correctAnswer: "grape"
+            },
+            {
+                module: 'm3-m4',
+                question: "You use can functions in different ways.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Functions can only have 1 parameter",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm3-m4',
+                question: "function a($a,$b){ return $a+$b; } echo a(5,4); What is the name of the parameter?",
+                options: ["a", "$a", "$b", "B"],
+                correctAnswer: "$a"
+            },
+            {
+                module: 'm3-m4',
+                question: "$x = floor(5.2);echo $x; What is the output?",
+                options: ["Error", "Blank", "6", "5"],
+                correctAnswer: "5"
+            },
+            {
+                module: 'm3-m4',
+                question: "Which of the following is not part of function for array manipulation",
+                options: ["Unset", "Explode", "Destroy", "Implode"],
+                correctAnswer: "Destroy"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax to strip HTML and PHP tags from a string.",
+                options: ["string tags_get(string $str[, string $allowable_tags ])", "string find_tags(string $str[, string $allowable_tags ])", "string tags_search(string $str[, string $allowable_tags ])", "string strip_tags(string $str [, string $allowable_tags ])"],
+                correctAnswer: "string strip_tags(string $str [, string $allowable_tags ])"
+            },
+            {
+                module: 'm3-m4',
+                question: "Specify an array expression within a set of parenthesis following the foreach keyword.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "$num=array(1,2,3,4,5); foreach($num as $val){ echo $val; } What is the output of the code?",
+                options: ["12345", "5", "1", "Error"],
+                correctAnswer: "12345"
+            },
+            {
+                module: 'm3-m4',
+                question: "Array index in PHP can be also called as array storage",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm3-m4',
+                question: "PHP array does not need to declare how many elements that the array variable have.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax to transform a string to upper case",
+                options: ["string upperstr (string $str)", "string strtoupper (string $str)", "string strupper (string $str)", "string stringtoupper (string $str)"],
+                correctAnswer: "string strtoupper (string $str)"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for number of days in the given month",
+                options: ["t", "d", "n", "m"],
+                correctAnswer: "t"
+            },
+            {
+                module: 'm3-m4',
+                question: "Array can be used as ordinary array same as in C and C++ arrays.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "It is required to create a function name for a function",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "In some scripts, a file might be included more than once, causing function redefinitions, variable reassignments, and other possible problems.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax for random",
+                options: ["int random(void)", "int rndm(void)", "int ran(void)", "int rand(void)"],
+                correctAnswer: "int rand(void)"
+            },
+            {
+                module: 'm3-m4',
+                question: "$x = max(5.3, 5 , 6, 3);echo $x; What is the output?",
+                options: ["3", "6", "5.3", "5"],
+                correctAnswer: "6"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax to make a string's first character uppercase",
+                options: ["string upperfs(string $str)", "string firstcu(string $str)", "string ucfirst(string $str)", "string fsupper(string $str)"],
+                correctAnswer: "string ucfirst(string $str)"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for ISO-8601 numeric representation of the day of the week (added in PHP 5.1.0)",
+                options: ["C", "R", "W", "N"],
+                correctAnswer: "N"
+            },
+            {
+                module: 'm3-m4',
+                question: "ksort() and krsort() used to sort elements by values.",
+                options: ["False", "True"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm3-m4',
+                question: "You can pass values to a function and you can ask functions to return a value.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "There will be a warning text if the include file not found",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Is used to aggregate a series of similar items together, arranging and dereferencing them in some specific way.",
+                options: ["Function", "Array", "Index", "Variable"],
+                correctAnswer: "Array"
+            },
+            {
+                module: 'm3-m4',
+                question: "The foreach statement is use to iterate through the element in an array.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Using foreach statement you can display both the keys and value of each element in the array.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Functions is a group of PHP statements that performs a specific task.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Number format can show or hide the decimal places",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax to stripped white spaces or other characters from the beginning and end of a string.",
+                options: ["string strip(string $str [, string $charlist ])", "string trim(string $str [, string $charlist ])", "string get(string $str [, string $charlist ])", "string set(string $str [, string $charlist ])"],
+                correctAnswer: "string trim(string $str [, string $charlist ])"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for English ordinal suffix for the day of the month, 2 characters",
+                options: ["D", "S", "C", "E"],
+                correctAnswer: "S"
+            },
+            {
+                module: 'm3-m4',
+                question: "PHP array does need to declare how many elements that the array variable have.",
+                options: ["False", "True"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm3-m4',
+                question: "Used to generate random integers",
+                options: ["rndm()", "rand()", "random()", "ran()"],
+                correctAnswer: "rand()"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax for random number with minimum and maximum value",
+                options: ["int ran(int $min, int $max)", "int rand(int $min, int $max)", "int random(int $min, int $max)", "int rndm(int $min, int $max)"],
+                correctAnswer: "int rand(int $min, int $max)"
+            },
+            {
+                module: 'm3-m4',
+                question: "$x = rand(5,10);echo $x; What is the maximum value of the output?",
+                options: ["0", "Error", "10", "5"],
+                correctAnswer: "10"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax for reverse a string",
+                options: ["string revstr (string $string)", "string stringrev (string $string)", "string revstring (string $string)", "string strrev (string $string)"],
+                correctAnswer: "string strrev (string $string)"
+            },
+            {
+                module: 'm3-m4',
+                question: "Prints additional information about the size and type of the values it discovers",
+                options: ["var_add()", "var_info()", "var_size()", "var_dump()"],
+                correctAnswer: "var_dump()"
+            },
+            {
+                module: 'm3-m4',
+                question: "Global Variables is declared inside a function and is only available within the function in which it is declared.",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax of a function",
+                options: ["Param_function", "Function name {param}", "Function name(param){}", "Param (function name){}"],
+                correctAnswer: "Function name(param){}"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax to converts the first character of each word in a string to uppercase",
+                options: ["string ucwords(string $str)", "string cwords(string $str)", "string uwords(string $str)", "string wordsuc(string $str)"],
+                correctAnswer: "string ucwords(string $str)"
+            },
+            {
+                module: 'm3-m4',
+                question: "function a($a,$b){ return $a+$b; } echo a(5,4); What is the output of the code?",
+                options: ["5", "Error", "9", "4"],
+                correctAnswer: "9"
+            },
+            {
+                module: 'm3-m4',
+                question: "Reverse a given string",
+                options: ["stringrev", "strrev", "revstring", "revstr"],
+                correctAnswer: "strrev"
+            },
+            {
+                module: 'm3-m4',
+                question: "Make a string's first character uppercase",
+                options: ["ucfirst()", "upperfs()", "firstcu()", "fsupper()"],
+                correctAnswer: "ucfirst()"
+            },
+            {
+                module: 'm3-m4',
+                question: "Converts the first character of each word in a string to uppercase",
+                options: ["cwords()", "uwords()", "ucwords()", "wordsuc()"],
+                correctAnswer: "ucwords()"
+            },
+            {
+                module: 'm3-m4',
+                question: "$g = 200; function a(){echo \"5\";} function b(){echo \"4\";} b(); What is the output of the code?",
+                options: ["Error", "5", "4", "200"],
+                correctAnswer: "4"
+            },
+            {
+                module: 'm3-m4',
+                question: "String white spaces or other characters from the beginning of a string",
+                options: ["strim()", "ctrim()", "ltrim()", "btrim()"],
+                correctAnswer: "ltrim()"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for numeric representation of a month, without leading zeros",
+                options: ["n", "m", "r", "z"],
+                correctAnswer: "n"
+            },
+            {
+                module: 'm3-m4',
+                question: "$t = 100; function one(){ echo \"1000\"; } one(); What is the value of the $t after execute the code?",
+                options: ["1000", "100", "1", "Error"],
+                correctAnswer: "100"
+            },
+            {
+                module: 'm3-m4',
+                question: "$num=array(1,2,3,4,5); foreach(num as $val){ echo $val; } Check the code if valid or invalid?",
+                options: ["Invalid", "Valid"],
+                correctAnswer: "Invalid"
+            },
+            {
+                module: 'm3-m4',
+                question: "Is one that declared outside a function and is available to all parts of the program.",
+                options: ["Local variables", "Global variables", "Dynamic variables", "Static variables"],
+                correctAnswer: "Global variables"
+            },
+            {
+                module: 'm3-m4',
+                question: "$fruit = array(\"orange\",\"apple\",\"grape\",\"banana\"); What is the value of index 1?",
+                options: ["grape", "banana", "orange", "apple"],
+                correctAnswer: "apple"
+            },
+            {
+                module: 'm3-m4',
+                question: "foreach(____ as $value)",
+                options: ["arr", "array", "$arr", "arr$"],
+                correctAnswer: "$arr"
+            },
+            {
+                module: 'm3-m4',
+                question: "Sorts by value in reverse order; keeps the same key",
+                options: ["rsort($array)", "sort($array)", "arsort($array)", "asort($array)"],
+                correctAnswer: "arsort($array)"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format a number with grouped thousand",
+                options: ["Format digit", "Number format", "Set digit", "Number set"],
+                correctAnswer: "Number format"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax for require once",
+                options: ["filename(\"require_once\");", "require_once(filename.php);", "require_once(\"filename.inc\");", "require_once(filename.inc);"],
+                correctAnswer: "require_once(\"filename.inc\");"
+            },
+            {
+                module: 'm3-m4',
+                question: "rsort(), arsort(), and krsort() functions are used to sort elements in the array in descending order.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for day of the month without leading zeros",
+                options: ["j", "m", "d", "z"],
+                correctAnswer: "j"
+            },
+            {
+                module: 'm3-m4',
+                question: "Syntax of define",
+                options: ["define('name');", "define('value,'NAME'');", "define('NAME','value');", "define('value');"],
+                correctAnswer: "define('NAME','value');"
+            },
+            {
+                module: 'm3-m4',
+                question: "Local Variables is one that declared outside a function and is available to all parts of the program.",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm3-m4',
+                question: "Format character for numeric representation of a month, with leading zeroes",
+                options: ["f", "n", "r", "m"],
+                correctAnswer: "m"
+            },
+            {
+                module: 'm3-m4',
+                question: "Join array elements to form a string",
+                options: ["Implode", "Unset", "Destroy", "Explode"],
+                correctAnswer: "Implode"
+            },
+            {
+                module: 'm3-m4',
+                question: "$x = max(10, 5 , 3, 20);echo $x; What is the output?",
+                options: ["20", "10", "3", "5"],
+                correctAnswer: "20"
+            },
+            {
+                module: 'm3-m4',
+                question: "Array can be used as ordinary array same as in",
+                options: ["Python", "Java", "Ruby", "C and C++"],
+                correctAnswer: "C and C++"
+            },
+
+            // Module 5-6 Questions
+            {
+                module: 'm5-m6',
+                question: "Entries were created by the web server",
+                options: ["$_SERVER", "$_GET", "$_SET", "$_POST"],
+                correctAnswer: "$_SERVER"
+            },
+            {
+                module: 'm5-m6',
+                question: "An associative array of variables passed to the current script via HTTP Cookies",
+                options: ["$_SESSION", "$_COOKIE", "$_REQUEST", "$_ENV"],
+                correctAnswer: "$_COOKIE"
+            },
+            {
+                module: 'm5-m6',
+                question: "```php <form action=\"<?php echo $_SERVER['PHP_SELF'] ?>\" method=\"post\"></form> ``` Check the code if it is valid or invalid",
+                options: ["Invalid", "Valid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm5-m6',
+                question: "Cookies are mechanism for storing data in the remote browser and thus tracking or identifying return users.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "Which of the following will show cookies after 1 minute",
+                options: ["settingcookie((\"name1\",\"value1\",time()+60);", "setcookie(\"name1\",\"value1\",time()+60);", "cookieset((\"name1\",\"value1\",time()+60);", "cookiesetting((\"name1\",\"value1\",time()+60);"],
+                correctAnswer: "setcookie(\"name1\",\"value1\",time()+60);"
+            },
+            {
+                module: 'm5-m6',
+                question: "What is C in PCRE",
+                options: ["Collaborate", "Computer", "Computed", "Compatible"],
+                correctAnswer: "Compatible"
+            },
+            {
+                module: 'm5-m6',
+                question: "What is R in PCRE",
+                options: ["Robust", "Regular", "Relay", "Rest"],
+                correctAnswer: "Regular"
+            },
+            {
+                module: 'm5-m6',
+                question: "Function used to open a session",
+                options: ["session_start()", "start_session()", "session_open()", "open_session()"],
+                correctAnswer: "session_start()"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters Symbol for Zero or one 'a' character. Equals to a(0,1)",
+                options: ["a/", "?a", "a?", "/a"],
+                correctAnswer: "a?"
+            },
+            {
+                module: 'm5-m6',
+                question: "The session_destroy() statement does not affect the variables set on the current page",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters Symbol for one or more of 'a'",
+                options: ["a$", "a^", "a+", "a*"],
+                correctAnswer: "a+"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters symbol for any non white-space character",
+                options: ["\\w", "\\s", "\\S", "\\W"],
+                correctAnswer: "\\S"
+            },
+            {
+                module: 'm5-m6',
+                question: "MySQL is portable",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "Code for showing help in MySQL",
+                options: ["-help", "\\help", "-h", "\\h"],
+                correctAnswer: "\\h"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command to create a table for the database",
+                options: ["TABLE CREATE", "DATABASE CREATE TABLE", "CREATE DATABASE TABLE", "CREATE TABLE"],
+                correctAnswer: "CREATE TABLE"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command to display the structure of the table",
+                options: ["DISPLAY", "DESCRIBE", "STRUCTURE", "SUMMARY"],
+                correctAnswer: "DESCRIBE"
+            },
+            {
+                module: 'm5-m6',
+                question: "Type of Field data types that range of Variable length string between 1 to 65,535 characters",
+                options: ["VARCHAR", "DATE", "TIME", "CHAR"],
+                correctAnswer: "VARCHAR"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax for dropping a column",
+                options: ["MODIFY TABLE tblname DROP", "PLUS TABLE tblname DROP", "ALTER TABLE tblname DROP field", "ADD TABLE tblname DROP"],
+                correctAnswer: "ALTER TABLE tblname DROP field"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax for updating the records",
+                options: ["CHECK <table name> SET <column name> = <value> WHERE <column name> = <value>;", "VALIDATE <table name> SET <column name> = <value> WHERE <column name> = <value>;", "RETRIEVE <table name> SET <column name> = <value> WHERE <column name> = <value>;", "UPDATE <table name> SET <column name> = <value> WHERE <column name> = <value>;"],
+                correctAnswer: "UPDATE <table name> SET <column name> = <value> WHERE <column name> = <value>;"
+            },
+            {
+                module: 'm5-m6',
+                question: "$_POST is an associative array of variables passed to the current script via this method",
+                options: ["XML POST", "XHTML POST", "HTML POST", "HTTP POST"],
+                correctAnswer: "HTTP POST"
+            },
+            {
+                module: 'm5-m6',
+                question: "$_REQUEST is an associative array that by default contains the contents except",
+                options: ["$_SESSION", "$_COOKIE", "$_POST", "$_GET"],
+                correctAnswer: "$_SESSION"
+            },
+            {
+                module: 'm5-m6',
+                question: "$_SESSION is an associative array of variables passed to the current script via the environment method",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm5-m6',
+                question: "```php <form action=\"<?php echo $_SERVER['PHP_SELF'] ?>\" method=\"get\"></form> ``` Check the code if it is valid or invalid",
+                options: ["Invalid", "Valid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax to unset session variables",
+                options: ["usession($_SESSION['varname'])", "unset($_SESSION['varname'])", "unsession($_SESSION['varname'])", "uset($_SESSION['varname'])"],
+                correctAnswer: "unset($_SESSION['varname'])"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression also known as regex or regexpr",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters Symbol for mark the start of a string",
+                options: ["$", "^", "&", "*"],
+                correctAnswer: "^"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters symbol for any alpha numeric character plus underscore. Equals to [A-Za-z0-9_]",
+                options: ["\\r", "\\e", "\\w", "\\x"],
+                correctAnswer: "\\w"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters symbol for any non alpha numeric characters",
+                options: ["\\W", "\\E", "\\R", "\\X"],
+                correctAnswer: "\\W"
+            },
+            {
+                module: 'm5-m6',
+                question: "PCRE means Perl Compatible Regular Expression",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "Information stored in computer databases is actually stored in",
+                options: ["Fields", "Memory", "Tables", "Cells"],
+                correctAnswer: "Tables"
+            },
+            {
+                module: 'm5-m6',
+                question: "MySQL prompts means ready for a new command",
+                options: ["mysql>", "mysql:", "mysql=", "mysql-"],
+                correctAnswer: "mysql>"
+            },
+            {
+                module: 'm5-m6',
+                question: "MySQL prompts means waiting for next line, waiting for completion of a string that began in double quote('''')",
+                options: ["\">", "Q>", "S>", "'>"],
+                correctAnswer: "\">"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command to display the SQL version",
+                options: ["View version()l", "See version();", "Select version();", "Get version();"],
+                correctAnswer: "Select version();"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax for showing database",
+                options: ["SHOW <dbname>;", "DATABASE SHOW <dbname>;", "<dbname> SHOW;", "SHOW DATABASE <dbname>;"],
+                correctAnswer: "SHOW DATABASE <dbname>;"
+            },
+            {
+                module: 'm5-m6',
+                question: "Database successfully created if display Query OK, 1 row affected as a result.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command for dropping a column",
+                options: ["CHANGE", "REMOVE", "DROP", "DEL"],
+                correctAnswer: "DROP"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax for inserting a value to your table",
+                options: ["INSERT <table name> VALUES (value1, value2, value3, ....);", "INSERT INTO <table name> VALUES (value1, value2, value3, ....);", "INSERT THIS <table name> VALUES (value1, value2, value3, ....);", "INSERT HERE <table name> VALUES (value1, value2, value3, ....);"],
+                correctAnswer: "INSERT INTO <table name> VALUES (value1, value2, value3, ....);"
+            },
+            {
+                module: 'm5-m6',
+                question: "Is an array containing information such as headers, paths, and script locations.",
+                options: ["$_SERVER", "$_POST", "$_SET", "$_GET"],
+                correctAnswer: "$_SERVER"
+            },
+            {
+                module: 'm5-m6',
+                question: "$_SERVER is an entries created by the",
+                options: ["Application server", "Matrix server", "Computer server", "Web server"],
+                correctAnswer: "Web server"
+            },
+            {
+                module: 'm5-m6',
+                question: "$_SERVER is an array containing information such as headers, paths, and script locations.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "session_start() is always set at the end of each web page",
+                options: ["False", "True"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm5-m6',
+                question: "Sample name of a session $_SESSION[myvalue]; Check the code if it is Valid or Invalid",
+                options: ["Invalid", "Valid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression pattern modifier for multiline mode",
+                options: ["m", "M", "ml", "ML"],
+                correctAnswer: "m"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular expression example that will match the word hello",
+                options: ["+hello+", "{hello}", "[hello]", "'/hello/'"],
+                correctAnswer: "'/hello/'"
+            },
+            {
+                module: 'm5-m6',
+                question: "SQL has a standard data manipulation language among many database management system.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "What is D in DML?",
+                options: ["Data", "Driver", "Definite", "Design"],
+                correctAnswer: "Data"
+            },
+            {
+                module: 'm5-m6',
+                question: "Either as outgrowths of earlier academic research",
+                options: ["InterBase", "PostgreSQL", "MySQL", "QueryBase"],
+                correctAnswer: "PostgreSQL"
+            },
+            {
+                module: 'm5-m6',
+                question: "What is M in DML?",
+                options: ["Memory", "Monitor", "Mainframe", "Manipulation"],
+                correctAnswer: "Manipulation"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command in MySQL to set statement delimiter",
+                options: ["\\d", "\\c", "\\s", "\\g"],
+                correctAnswer: "\\d"
+            },
+            {
+                module: 'm5-m6',
+                question: "Type of Field data types that has a large number with a floating decimal point.",
+                options: ["BOOL", "INT", "FLOAT", "DOUBLE"],
+                correctAnswer: "DOUBLE"
+            },
+            {
+                module: 'm5-m6',
+                question: "Field data types Storage value of FLOAT",
+                options: ["Varies", "Number of bytes specified", "4 Bytes", "1 Byte"],
+                correctAnswer: "4 Bytes"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command to add new column",
+                options: ["ADD", "CHANGE", "MODIFY", "SET"],
+                correctAnswer: "ADD"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax to change field names",
+                options: ["ALTER TABLE tblname CHANGE field char(1)", "ADD TABLE tblname CHANGE field char(1)", "MODIFY TABLE tblname CHANGE field char(1)", "PLUS TABLE tblname CHANGE field char(1)"],
+                correctAnswer: "ALTER TABLE tblname CHANGE field char(1)"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command for inserting a value to your table",
+                options: ["INSERT INTO", "INSERT HERE", "INSERT THIS", "INSERT"],
+                correctAnswer: "INSERT INTO"
+            },
+            {
+                module: 'm5-m6',
+                question: "An associative array that by default contains the contents of $_GET, $_POST, and $_COOKIE",
+                options: ["$_COOKIE", "$_SESSION", "$_REQUEST", "$_ENV"],
+                correctAnswer: "$_REQUEST"
+            },
+            {
+                module: 'm5-m6',
+                question: "Managing cookies can be done using function",
+                options: ["setcookie()", "settingcookie()", "cookiesetting()", "cookieset()"],
+                correctAnswer: "setcookie()"
+            },
+            {
+                module: 'm5-m6',
+                question: "$_ENV is an associative array containing session variables available to the script",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm5-m6',
+                question: "PCRE function starts with",
+                options: ["prc_", "pcre_", "prec_", "preg_"],
+                correctAnswer: "preg_"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters symbol for exactly two of 'a'",
+                options: ["a*2", "a{2}", "a+2", "a(2)"],
+                correctAnswer: "a{2}"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression pattern modifier for extra analysis of pattern",
+                options: ["s", "S", "e", "E"],
+                correctAnswer: "e"
+            },
+            {
+                module: 'm5-m6',
+                question: "What is Q in SQL?",
+                options: ["Quite", "Quantum", "Query", "Queue"],
+                correctAnswer: "Query"
+            },
+            {
+                module: 'm5-m6',
+                question: "MySQL prompts means waiting for the next line of multiple line command",
+                options: [">", "->", "=>", "/>"],
+                correctAnswer: "->"
+            },
+            {
+                module: 'm5-m6',
+                question: "Type of Field data types that range -128 to 127; 0 is considered false",
+                options: ["FLOAT", "BOOL", "DOUBLE", "INT"],
+                correctAnswer: "BOOL"
+            },
+            {
+                module: 'm5-m6',
+                question: "Type of Field data types that range of YYYY-MM-DD",
+                options: ["VARCHAR", "DATE", "CHAR", "TIME"],
+                correctAnswer: "DATE"
+            },
+            {
+                module: 'm5-m6',
+                question: "Field data types Storage value of BOOL",
+                options: ["1 Byte", "Number of bytes specified", "Varies", "4 Bytes"],
+                correctAnswer: "1 Byte"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax for updating multiple records",
+                options: ["VALIDATE <table name> SET <column name> = <value>, <column name> = <value> WHERE <column name> = <value>;", "CHECK <table name> SET <column name> = <value>, <column name> = <value> WHERE <column name> = <value>;", "UPDATE <table name> SET <column name> = <value>, <column name> = <value> WHERE <column name> = <value>;", "RETRIEVE <table name> SET <column name> = <value>, <column name> = <value> WHERE <column name> = <value>;"],
+                correctAnswer: "UPDATE <table name> SET <column name> = <value>, <column name> = <value> WHERE <column name> = <value>;"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax for setting a cookie",
+                options: ["cookiesetting()", "setcookie()", "cookieset()", "settingcookie()"],
+                correctAnswer: "setcookie()"
+            },
+            {
+                module: 'm5-m6',
+                question: "Which of the following code will delete cookies",
+                options: ["setcookie(\"name1\",\"value1\",time()-60);", "cookiesetting((\"name1\",\"value1\",time()-60);", "settingcookie((\"name1\",\"value1\",time()-60);", "cookieset((\"name1\",\"value1\",time()-60);"],
+                correctAnswer: "setcookie(\"name1\",\"value1\",time()-60);"
+            },
+            {
+                module: 'm5-m6',
+                question: "Were used to efficiently search for patterns in a given text.",
+                options: ["Double Expression", "Double Operation", "Regular Expression", "Regular Operation"],
+                correctAnswer: "Regular Expression"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters Symbol for matches any single character",
+                options: ["\"", ".", ":", "'"],
+                correctAnswer: "."
+            },
+            {
+                module: 'm5-m6',
+                question: "Session are mechanism for storing data on the server itself.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters symbol for any white-space character",
+                options: ["\\S", "\\w", "\\s", "\\W"],
+                correctAnswer: "\\s"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters symbol for any non-digits equal to [^0-9]",
+                options: ["\\D", "\\n", "\\d", "\\N"],
+                correctAnswer: "\\D"
+            },
+            {
+                module: 'm5-m6',
+                question: "Is an ordered collection of information from which a computer program can quickly access.",
+                options: ["Database", "Memory", "Fields", "Variable"],
+                correctAnswer: "Database"
+            },
+            {
+                module: 'm5-m6',
+                question: "Stores information across multiple related tables.",
+                options: ["Database relation", "Relational Database", "Relational table", "Table relation"],
+                correctAnswer: "Relational Database"
+            },
+            {
+                module: 'm5-m6',
+                question: "One important aspect of database management is its querying capability.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "MySQL prompts means waiting for next line, waiting for completion of a string that began with single quote('''')",
+                options: ["Q>", "\">", "'>", "S>"],
+                correctAnswer: "'>"
+            },
+            {
+                module: 'm5-m6',
+                question: "MySQL prompts means waiting for next line, waiting for completion of a comment that began with / .",
+                options: ["/ :", "/ >", "/ -", "/*="],
+                correctAnswer: "/ >"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command to use database",
+                options: ["USEDB", "USE", "DBUSE", "THISDB"],
+                correctAnswer: "USE"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax for using database",
+                options: ["USE <dbname>;", "DATABASE USE <dbname>;", "<dbname> USE;", "USE DATABASE <dbname>;"],
+                correctAnswer: "USE <dbname>;"
+            },
+            {
+                module: 'm5-m6',
+                question: "Field data types Storage value of TIME",
+                options: ["Number of bytes specified", "Varies", "4 Bytes", "1 Byte"],
+                correctAnswer: "Number of bytes specified"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command for updating the records",
+                options: ["RETRIEVE", "UPDATE", "VALIDATE", "CHECK"],
+                correctAnswer: "UPDATE"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression is also known as",
+                options: ["regex", "rex", "regx", "regp"],
+                correctAnswer: "regex"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters Symbol for Boolean OR",
+                options: ["|", "/", "", "?"],
+                correctAnswer: "|"
+            },
+            {
+                module: 'm5-m6',
+                question: "What is L in SQL?",
+                options: ["Location", "Latency", "Language", "Logic"],
+                correctAnswer: "Language"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command getting status from the server",
+                options: ["Getstat", "\\g", "Stat", "\\s"],
+                correctAnswer: "\\s"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command in MySQL to reconnect to the server",
+                options: ["\\s", "\\r", "\\g", "\\c"],
+                correctAnswer: "\\r"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command to create a database",
+                options: ["START", "MAKE", "BEGIN", "CREATE"],
+                correctAnswer: "CREATE"
+            },
+            {
+                module: 'm5-m6',
+                question: "Type of Field data types that -2147483648 to 2147483647",
+                options: ["INT", "DOUBLE", "FLOAT", "BOOL"],
+                correctAnswer: "INT"
+            },
+            {
+                module: 'm5-m6',
+                question: "Type of Field data types that has a small number with a floating decimal point.",
+                options: ["BOOL", "INT", "FLOAT", "DOUBLE"],
+                correctAnswer: "FLOAT"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax for deleting a column",
+                options: ["CROSSOUT FROM <table name> WHERE <column name> = <value>;", "DELETE FROM <table name> WHERE <column name> = <value>;", "REMOVE FROM <table name> WHERE <column name> = <value>;", "DROP FROM <table name> WHERE <column name> = <value>;"],
+                correctAnswer: "DELETE FROM <table name> WHERE <column name> = <value>;"
+            },
+            {
+                module: 'm5-m6',
+                question: "An associative array variables passed to the current script via the URL parameters.",
+                options: ["$_SERVER", "$_SET", "$_GET", "$_POST"],
+                correctAnswer: "$_GET"
+            },
+            {
+                module: 'm5-m6',
+                question: "Are mechanism for storing data on the server itself.",
+                options: ["Timer", "Session", "Data", "Server"],
+                correctAnswer: "Session"
+            },
+            {
+                module: 'm5-m6',
+                question: "Performs a regular expression match",
+                options: ["preg_match()", "pcre_match()", "prec_match()", "prc_match()"],
+                correctAnswer: "preg_match()"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters Symbol for not in range (every character except a,b or c)",
+                options: ["[^abc]", "(^abc)", "'^abc'", "{^abc}"],
+                correctAnswer: "[^abc]"
+            },
+            {
+                module: 'm5-m6',
+                question: "PCRE function starts with prg_",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression pattern modifier for ignore case",
+                options: ["c", "ic", "C", "i"],
+                correctAnswer: "i"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression pattern modifier for pattern is treated as UTF-8",
+                options: ["u", "t", "U", "T"],
+                correctAnswer: "u"
+            },
+            {
+                module: 'm5-m6',
+                question: "Is a field that contains a unique identifier for each record in a primary table.",
+                options: ["Primary table", "Foreign key", "Normalization", "Primary key"],
+                correctAnswer: "Primary key"
+            },
+            {
+                module: 'm5-m6',
+                question: "SQL database improvement was done by a Swedish programmer",
+                options: ["Molly Widenius", "Monty Wilnius", "Monty Widenius", "Molly Wilnius"],
+                correctAnswer: "Monty Widenius"
+            },
+            {
+                module: 'm5-m6',
+                question: "MySQL is written in",
+                options: ["C++", "Java", "C language", "Ruby"],
+                correctAnswer: "C++"
+            },
+            {
+                module: 'm5-m6',
+                question: "MySQL Command that print current command",
+                options: ["\\p", "\\m", "\\b", "\\c"],
+                correctAnswer: "\\p"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command for deleting a column",
+                options: ["DELETE", "DROP", "REMOVE", "CROSSOUT"],
+                correctAnswer: "DROP"
+            },
+            {
+                module: 'm5-m6',
+                question: "What is P in PCRE",
+                options: ["Present", "Percl", "Popular", "Program"],
+                correctAnswer: "Percl"
+            },
+            {
+                module: 'm5-m6',
+                question: "Function used to close the session",
+                options: ["session_destroy()", "session_close()", "close_session()", "destroy_session()"],
+                correctAnswer: "session_destroy()"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters symbol for up to five of 'a'",
+                options: ["a(5)", "a*5", "a+5", "a{,5}"],
+                correctAnswer: "a{,5}"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command to view your table",
+                options: ["VIEW", "SET", "SELECT", "CHECK"],
+                correctAnswer: "SELECT"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters symbol for any digits equal to [0-9]",
+                options: ["\\d", "\\N", "\\D", "\\n"],
+                correctAnswer: "\\d"
+            },
+            {
+                module: 'm5-m6',
+                question: "Type of Field data types that range of Fixed length string between 0 to 255 characters",
+                options: ["VARCHAR", "DATE", "TIME", "CHAR"],
+                correctAnswer: "CHAR"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command to change field names",
+                options: ["SET", "ADD", "CHANGE", "MODIFY"],
+                correctAnswer: "CHANGE"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters Symbol for mark the end of a string",
+                options: ["&", "^", "$", "*"],
+                correctAnswer: "$"
+            },
+            {
+                module: 'm5-m6',
+                question: "mSQL was distributed as shareware",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command in MySQL to display today's date and time",
+                options: ["Select date()", "Select time()", "Select now()", "Select date_time()"],
+                correctAnswer: "Select now()"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax to change field type sizes",
+                options: ["PLUS TABLE tblname MODIFY field char(1)", "ALTER TABLE tblname MODIFY field char(1)", "MODIFY TABLE tblname MODIFY field char(1)", "ADD TABLE tblname MODIFY field char(1)"],
+                correctAnswer: "ALTER TABLE tblname MODIFY field char(1)"
+            },
+            {
+                module: 'm5-m6',
+                question: "You can include time in cookies",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters symbol for between five to ten of 'a'",
+                options: ["a+5,10", "a(5,10)", "a{5,10}", "a*5,10"],
+                correctAnswer: "a{5,10}"
+            },
+            {
+                module: 'm5-m6',
+                question: "$_GET is an associative array variables passed to the current script via",
+                options: ["HTTP", "URL", "LOCATION", "DIRECTORY"],
+                correctAnswer: "URL"
+            },
+            {
+                module: 'm5-m6',
+                question: "Use to unset session variables",
+                options: ["uset()", "unset()", "unsession()", "usession()"],
+                correctAnswer: "unset()"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters Symbol for group elements",
+                options: ["[]", "()", "{}", "\""],
+                correctAnswer: "()"
+            },
+            {
+                module: 'm5-m6',
+                question: "Is a field in a related table that refers to the primary key in a primary table.",
+                options: ["Normalization", "Foreign key", "Primary table", "Primary key"],
+                correctAnswer: "Foreign key"
+            },
+            {
+                module: 'm5-m6',
+                question: "Go to the MySQL path",
+                options: ["C:\\xampp\\mysql\\bin\\mysql -x root", "C:\\xampp\\mysql\\bin\\mysql -s root", "C:\\xampp\\mysql\\bin\\mysql -u root", "C:\\xampp\\mysql\\bin\\mysql -v root"],
+                correctAnswer: "C:\\xampp\\mysql\\bin\\mysql -u root"
+            },
+            {
+                module: 'm5-m6',
+                question: "You can insert a values in a specific column",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "Is the time that a user spends at your Web site.",
+                options: ["Timer", "Session", "Data", "Server"],
+                correctAnswer: "Session"
+            },
+            {
+                module: 'm5-m6',
+                question: "Regular Expression Meta characters Symbol for white-space character",
+                options: ["\\s", "\\c", "\\w", "\\a"],
+                correctAnswer: "\\s"
+            },
+            {
+                module: 'm5-m6',
+                question: "Session is more secure than cookies and can store much more information.",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "mSQL short for",
+                options: ["Master SQL", "might SQL", "Mono SQL", "mini SQL"],
+                correctAnswer: "mini SQL"
+            },
+            {
+                module: 'm5-m6',
+                question: "Field data types Storage value of INTEGER",
+                options: ["4 Bytes", "Number of bytes specified", "Varies", "1 Byte"],
+                correctAnswer: "4 Bytes"
+            },
+            {
+                module: 'm5-m6',
+                question: "An associative array of variables passed to the current script via the environment method",
+                options: ["$_SESSION", "$_REQUEST", "$_ENV", "$_COOKIE"],
+                correctAnswer: "$_ENV"
+            },
+            {
+                module: 'm5-m6',
+                question: "Field data types Storage value of CHAR",
+                options: ["Varies", "Number of bytes specified", "4 Bytes", "1 Byte"],
+                correctAnswer: "Number of bytes specified"
+            },
+            {
+                module: 'm5-m6',
+                question: "INSERT INTO tblinfo (id,name) VALUES (1003,'Henry'); Check the SQL command if valid or invalid",
+                options: ["Valid", "Invalid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm5-m6',
+                question: "Database that stores information in a single table.",
+                options: ["Single-file", "Flat-file", "Round-file", "Multi-file"],
+                correctAnswer: "Flat-file"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command to change field type sizes",
+                options: ["CHANGE", "MODIFY", "ADD", "SET"],
+                correctAnswer: "MODIFY"
+            },
+            {
+                module: 'm5-m6',
+                question: "MySQL compiles using",
+                options: ["GNU ggc", "GUN ggc", "GNU gcc", "GUN gcc"],
+                correctAnswer: "GNU gcc"
+            },
+            {
+                module: 'm5-m6',
+                question: "Syntax for inserting values in a specific column",
+                options: ["INSERT <table name> (column name) VALUES (value);", "INSERT TO <table name> (column name) VALUES (value);", "INSERT INTO <table name> (column name) VALUES (value);", "INSERT VALUES <table name> (column name) VALUES (value);"],
+                correctAnswer: "INSERT INTO <table name> (column name) VALUES (value);"
+            },
+            {
+                module: 'm5-m6',
+                question: "Is a structured set of instructions and criteria for retrieving, adding, modifying, and deleting database information.",
+                options: ["Structured", "Foreign key", "Normalization", "Query"],
+                correctAnswer: "Query"
+            },
+            {
+                module: 'm5-m6',
+                question: "Which of the following is not Command help in MySQL",
+                options: ["?", "?", "Gethelp", "\\h"],
+                correctAnswer: "Gethelp"
+            },
+            {
+                module: 'm5-m6',
+                question: "You can update multiple columns",
+                options: ["False", "True"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm5-m6',
+                question: "A single complete set of related information.",
+                options: ["Database", "Tables", "Fields", "Record"],
+                correctAnswer: "Record"
+            },
+            {
+                module: 'm5-m6',
+                question: "Are mechanism for storing data in the remote browser and thus tracking or identifying return users.",
+                options: ["Cookies", "Variable", "Remote", "Session"],
+                correctAnswer: "Cookies"
+            },
+            {
+                module: 'm5-m6',
+                question: "Command to clear in MySQL",
+                options: ["Cls", "\\d", "\\c", "Del"],
+                correctAnswer: "\\c"
+            },
+
+            // Module 7 Questions
+            {
+                module: 'm7',
+                question: "SQL command that will get the sum of a specified field",
+                options: ["SUM", "PLUS", "SUMMATION", "ADD"],
+                correctAnswer: "SUM"
+            },
+            {
+                module: 'm7',
+                question: "Syntax to Retrieves the contents of one cell from a MYSQL result set",
+                options: ["mysql_result($result_query, row, field)", "mysql_fetch(($result_query, row, field)", "mysql_query(($result_query, row, field)", "mysql_fetch_array(($result_query, row, field)"],
+                correctAnswer: "mysql_result($result_query, row, field)"
+            },
+            {
+                module: 'm7',
+                question: "Complete the syntax: $ FILES[\"file\"][ _____]",
+                options: ["type", "size", "name", "index"],
+                correctAnswer: "name"
+            },
+            {
+                module: 'm7',
+                question: "Complete the syntax: mysql_result(_____,row,field)",
+                options: ["$query", "$result", "$query_result", "$result_query"],
+                correctAnswer: "$result_query"
+            },
+            {
+                module: 'm7',
+                question: "$query = mysql_query(\"SELECT MIN(tuition) FROM tblinfo\"); $fetch = mysql_fetch_array($query); Echo $fetch [\"MIN(tuition)\"]; Check the code if valid or invalid",
+                options: ["Invalid", "Valid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm7',
+                question: "$query = mysql_query(\"SELECT MIN(tuition) FROM tblinfo\"); $fetch = mysql_fetch_array($query); Echo $fetch[0]; Check the code if valid or invalid",
+                options: ["Valid", "Invalid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm7',
+                question: "mysql_num_rows() is only valid for statements like SELECT or SHOW that return an actual result set.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm7',
+                question: "Checking for file existence",
+                options: ["exists_file()", "file_check()", "check_file()", "file_exists()"],
+                correctAnswer: "file_exists()"
+            },
+            {
+                module: 'm7',
+                question: "Checking the file status if readable",
+                options: ["check_read()", "is_read()", "check_readable()", "is_readable()"],
+                correctAnswer: "is_readable()"
+            },
+            {
+                module: 'm7',
+                question: "Checking the file status if executable",
+                options: ["is_execute()", "is_executable()", "check_execute()", "check_executable()"],
+                correctAnswer: "is_executable()"
+            },
+            {
+                module: 'm7',
+                question: "Before removing or deleting files you need to indicate the extension file name of the file",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm7',
+                question: "Syntax to open a file for reading",
+                options: ["openf(\"test.txt\",\"r\")", "fileopen(\"test.txt\",\"r\")", "fopen(\"test.txt\",\"r\")", "openfile(\"test.txt\",\"r\")"],
+                correctAnswer: "fopen(\"test.txt\",\"r\")"
+            },
+            {
+                module: 'm7',
+                question: "Syntax to open a file for appending",
+                options: ["openf(\"test.txt\",\"a\")", "fileopen(\"test.txt\",\"a\")", "openfile(\"test.txt\",\"a\")", "fopen(\"test.txt\",\"a\")"],
+                correctAnswer: "fopen(\"test.txt\",\"a\")"
+            },
+            {
+                module: 'm7',
+                question: "Used to close a file",
+                options: ["closefile()", "fclose()", "closef()", "fileclose()"],
+                correctAnswer: "fclose()"
+            },
+            {
+                module: 'm7',
+                question: "Use to read a specified set of characters in a file",
+                options: ["sread()", "fread()", "readf()", "cread()"],
+                correctAnswer: "fread()"
+            },
+            {
+                module: 'm7',
+                question: "Other command for fwrite()",
+                options: ["fileput()", "putsf()", "fputs()", "putfile()"],
+                correctAnswer: "fputs()"
+            },
+            {
+                module: 'm7',
+                question: "Syntax to read a line from a file",
+                options: ["lgets(\"$file\",1024)", "fgets(\"$file\",1024)", "getsf(\"$file\",1024)", "getsl(\"$file\",1024)"],
+                correctAnswer: "fgets(\"$file\",1024)"
+            },
+            {
+                module: 'm7',
+                question: "Syntax to tell the last line of a file",
+                options: ["lastline(\"$file\")", "lastfile(\"$file\")", "feof(\"$file\")", "endoffile(\"$file\")"],
+                correctAnswer: "feof(\"$file\")"
+            },
+            {
+                module: 'm7',
+                question: "Syntax for attempts to create an empty file",
+                options: ["attempt(\"$file\")", "create(\"$file\")", "touch(\"$file\")", "empty(\"$file\")"],
+                correctAnswer: "touch(\"$file\")"
+            },
+            {
+                module: 'm7',
+                question: "Retrieves the contents of one cell from a MYSQL result set",
+                options: ["mysql_result()", "mysql_query()", "mysql_fetch_array()", "mysql_fetch()"],
+                correctAnswer: "mysql_result()"
+            },
+            {
+                module: 'm7',
+                question: "The result resource that is being evaluated. This result comes from a call to mysql_query().",
+                options: ["$result_query", "Field", "Row", "Table"],
+                correctAnswer: "$result_query"
+            },
+            {
+                module: 'm7',
+                question: "Array you can upload files from a client computer to the remote server.",
+                options: ["$_UFILE", "$_FILES", "$_UPFILE", "$_FILEUP"],
+                correctAnswer: "$_FILES"
+            },
+            {
+                module: 'm7',
+                question: "Using the global PHP $_FILES array you can upload files from a client computer to the remote server.",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm7',
+                question: "Complete the syntax: move_upload_file(____, new location);",
+                options: ["Type", "location", "Size", "File"],
+                correctAnswer: "File"
+            },
+            {
+                module: 'm7',
+                question: "mysql_rows() get the number of affected rows by the last SELECT, INSERT, UPDATE, REPLACE or DELETE query.",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm7',
+                question: "Checking if it is a file",
+                options: ["file_valid()", "is_file()", "check_file()", "file_check()"],
+                correctAnswer: "is_file()"
+            },
+            {
+                module: 'm7',
+                question: "Checking if it is a directory",
+                options: ["is_dir()", "check_directory()", "is_directory()", "check_dir()"],
+                correctAnswer: "is_dir()"
+            },
+            {
+                module: 'm7',
+                question: "In creating a file, If the file already exists, its contents won't be disturbed",
+                options: ["True", "False"],
+                correctAnswer: "False"
+            },
+            {
+                module: 'm7',
+                question: "Is used to open a file for reading, writing or appending content",
+                options: ["fopen()", "openf()", "openfile()", "fileopen()"],
+                correctAnswer: "fopen()"
+            },
+            {
+                module: 'm7',
+                question: "Syntax for opening a file",
+                options: ["fileopen(\"file\",\"mode\")", "fopen(\"file\",\"mode\")", "openfile(\"file\",\"mode\")", "openf(\"file\",\"mode\")"],
+                correctAnswer: "fopen(\"file\",\"mode\")"
+            },
+            {
+                module: 'm7',
+                question: "Syntax to open a file for writing",
+                options: ["fopen(\"test.txt\",\"w\")", "openfile(\"test.txt\",\"w\")", "openf(\"test.txt\",\"w\")", "fileopen(\"test.txt\",\"w\")"],
+                correctAnswer: "fopen(\"test.txt\",\"w\")"
+            },
+            {
+                module: 'm7',
+                question: "Use to read a line from a file",
+                options: ["getsf()", "lgets()", "getsl()", "fgets()"],
+                correctAnswer: "fgets()"
+            },
+            {
+                module: 'm7',
+                question: "Syntax for accepting a file resource and a string, and then writes the string to the file",
+                options: ["writefile(\"$file\",\"text\")", "filewrite(\"$file\",\"text\")", "fwrite(\"$file\",\"text\")", "writef(\"$file\",\"text\")"],
+                correctAnswer: "fwrite(\"$file\",\"text\")"
+            },
+            {
+                module: 'm7',
+                question: "$query = mysql_query(\"SELECT name FROM tblinfo\"); $fetch = mysql_result($query, 2); In this code it will get the name of what row?",
+                options: ["1st", "2nd", "4th", "3rd"],
+                correctAnswer: "3rd"
+            },
+            {
+                module: 'm7',
+                question: "Complete the syntax: move_upload_file(file, ________);",
+                options: ["type", "new location", "name", "size"],
+                correctAnswer: "new location"
+            },
+            {
+                module: 'm7',
+                question: "mysql_result() retrieves the contents of one cell from a MySQL result set",
+                options: ["True", "False"],
+                correctAnswer: "True"
+            },
+            {
+                module: 'm7',
+                question: "$query = mysql_query(\"SELECT MAX(tuition) FROM tblinfo\"); $fetch = mysql_fetch_array($query); Echo $fetch [\"MAX(tuition)\"]; Check the code if valid or invalid",
+                options: ["Invalid", "Valid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm7',
+                question: "$query = mysql_query(\"SELECT MAX(tuition) FROM tblinfo\"); $fetch = mysql_fetch_array($query); Echo $fetch[0]; Check the code if valid or invalid",
+                options: ["Invalid", "Valid"],
+                correctAnswer: "Valid"
+            },
+            {
+                module: 'm7',
+                question: "A function used to remove an existing file",
+                options: ["delete()", "remove()", "drop()", "unlink()"],
+                correctAnswer: "unlink()"
+            },
+            {
+                module: 'm7',
+                question: "The row number from the result that's being retrieved. Row numbers start at 0.",
+                options: ["Row", "Field", "$result_query", "Table"],
+                correctAnswer: "Row"
+            },
+            {
+                module: 'm7',
+                question: "Retrieves the number of rows from a result set.",
+                options: ["mysql_number_rows()", "mysql_rows_num()", "mysql_num_rows()", "mysql_rows()"],
+                correctAnswer: "mysql_num_rows()"
+            },
+            {
+                module: 'm7',
+                question: "Syntax for removing an existing file",
+                options: ["drop(\"myfile.txt\")", "remove(\"myfile.txt\")", "unlink(\"myfile.txt\")", "delete(\"myfile.txt\")"],
+                correctAnswer: "unlink(\"myfile.txt\")"
+            },
+            {
+                module: 'm7',
+                question: "Get the number of affected rows by the last SELECT, INSERT, UPDATE, REPLACE or DELETE query.",
+                options: ["mysql_rows()", "mysql_affected_rows()", "mysql_affected()", "mysql_rows_affected()"],
+                correctAnswer: "mysql_affected_rows()"
+            },
+            {
+                module: 'm7',
+                question: "Determining the file size",
+                options: ["is_filesize()", "filesize_check()", "check_filesize()", "filesize()"],
+                correctAnswer: "filesize()"
+            },
+            {
+                module: 'm7',
+                question: "Syntax to read a specified set of character in a file",
+                options: ["fread(\"$file\",1)", "cread(\"$file\",1)", "sread(\"$file\",1)", "readf(\"$file\",1)"],
+                correctAnswer: "fread(\"$file\",1)"
+            },
+            {
+                module: 'm7',
+                question: "Complete the syntax: $ FILES[ ___][\"index\"]",
+                options: ["type", "file", "size", "name"],
+                correctAnswer: "file"
+            },
+            {
+                module: 'm7',
+                question: "Checking the file status if writable",
+                options: ["check_writable()", "is_writable()", "check_write()", "is_write()"],
+                correctAnswer: "is_writable()"
+            },
+            {
+                module: 'm7',
+                question: "Attempts to create an empty file.",
+                options: ["create()", "empty()", "attempt()", "touch()"],
+                correctAnswer: "touch()"
+            },
+            {
+                module: 'm7',
+                question: "Complete the syntax: mysql_result($result_query,_____,field)",
+                options: ["Row", "Column", "Name", "Type"],
+                correctAnswer: "Row"
+            },
+            {
+                module: 'm7',
+                question: "Use to read a file per character",
+                options: ["fgetc()", "fcahrget()", "getfc()", "charget()"],
+                correctAnswer: "fgetc()"
+            },
+            {
+                module: 'm7',
+                question: "Syntax to read a file per character",
+                options: ["getfc(\"$file\")", "fgetc(\"$file\")", "charget(\"$file\")", "fcahrget(\"$file\")"],
+                correctAnswer: "fgetc(\"$file\")"
+            },
+            {
+                module: 'm7',
+                question: "Use to tell the last line of a file",
+                options: ["feof()", "lastline()", "endoffile()", "lastfile()"],
+                correctAnswer: "feof()"
+            }
+        ];
+
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let selectedAnswer = null;
+        let answered = false;
+
+        const questionNumberElement = document.getElementById('question-number');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackElement = document.getElementById('feedback');
+        const correctAnswerDisplay = document.getElementById('correct-answer-display');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const moduleButtons = document.querySelectorAll('.module-selection button');
+
+        function loadQuestions(module) {
+            if (module === 'all') {
+                currentQuestions = allQuestions;
+            } else {
+                currentQuestions = allQuestions.filter(q => q.module === module);
+            }
+            currentQuestionIndex = 0;
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            if (currentQuestions.length === 0) {
+                questionNumberElement.textContent = "No questions available for this module.";
+                questionTextElement.textContent = "";
+                optionsContainer.innerHTML = "";
+                feedbackElement.textContent = "";
+                correctAnswerDisplay.textContent = "";
+                prevButton.disabled = true;
+                nextButton.disabled = true;
+                return;
+            }
+
+            const question = currentQuestions[currentQuestionIndex];
+            questionNumberElement.textContent = `Question ${currentQuestionIndex + 1} of ${currentQuestions.length}`;
+            questionTextElement.textContent = question.question;
+            optionsContainer.innerHTML = '';
+            feedbackElement.textContent = '';
+            correctAnswerDisplay.textContent = '';
+            answered = false;
+            selectedAnswer = null;
+
+            question.options.forEach((option, index) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'quiz-option';
+                input.value = option;
+                input.disabled = false; // Enable options for new question
+
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(option));
+                optionsContainer.appendChild(label);
+
+                input.addEventListener('change', () => handleAnswer(option, question.correctAnswer, label));
+            });
+
+            updateNavigationButtons();
+        }
+
+        function handleAnswer(selectedOption, correctAnswer, labelElement) {
+            if (answered) return; // Prevent re-answering
+
+            answered = true;
+            selectedAnswer = selectedOption;
+
+            // Disable all radio buttons after an answer is selected
+            const radioButtons = optionsContainer.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => radio.disabled = true);
+
+            if (selectedOption === correctAnswer) {
+                feedbackElement.textContent = "Correct!";
+                feedbackElement.className = "feedback correct";
+                labelElement.style.backgroundColor = '#d4edda'; // Green for correct
+            } else {
+                feedbackElement.textContent = "Incorrect.";
+                feedbackElement.className = "feedback incorrect";
+                labelElement.style.backgroundColor = '#f8d7da'; // Red for incorrect
+                correctAnswerDisplay.textContent = `Correct Answer: ${correctAnswer}`;
+
+                // Highlight the correct answer
+                Array.from(optionsContainer.children).forEach(label => {
+                    const input = label.querySelector('input');
+                    if (input.value === correctAnswer) {
+                        label.style.backgroundColor = '#cce5ff'; // Light blue for correct answer
+                    }
+                });
+            }
+        }
+
+        function updateNavigationButtons() {
+            prevButton.disabled = currentQuestionIndex === 0;
+            nextButton.disabled = currentQuestionIndex === currentQuestions.length - 1;
+        }
+
+        prevButton.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        });
+
+        moduleButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                moduleButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const moduleId = button.id.replace('module-', '');
+                loadQuestions(moduleId);
+            });
+        });
+
+        // Initial load
+        loadQuestions('all');
+    </script>
+</body>
+</html>
