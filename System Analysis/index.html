@@ -7,85 +7,85 @@
     <style>
         * {
             box-sizing: border-box;
-            margin: 0;
+margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+}
         
         body {
             background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
-            color: #333;
+color: #333;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
-        }
+}
         
         .container {
             max-width: 900px;
-            width: 100%;
+width: 100%;
             background-color: #f8f9fa;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             overflow: hidden;
             margin-top: 20px;
-        }
+}
         
         header {
             background: #3498db;
-            color: white;
+color: white;
             padding: 25px;
             text-align: center;
         }
         
         header h1 {
             font-size: 32px;
-            margin-bottom: 10px;
+margin-bottom: 10px;
             font-weight: 600;
         }
         
         header p {
             font-size: 18px;
-            opacity: 0.9;
+opacity: 0.9;
         }
         
         .progress-bar {
             height: 10px;
-            background-color: rgba(255, 255, 255, 0.3);
+background-color: rgba(255, 255, 255, 0.3);
             border-radius: 5px;
             margin-top: 15px;
             overflow: hidden;
-        }
+}
         
         .progress {
             height: 100%;
-            background-color: #2ecc71;
+background-color: #2ecc71;
             width: 0%;
             transition: width 0.3s ease;
         }
         
         .stats {
             display: flex;
-            justify-content: space-between;
+justify-content: space-between;
             margin-top: 10px;
             font-size: 14px;
         }
         
         .quiz-container {
             padding: 30px;
-        }
+}
         
         .question-number {
             font-size: 18px;
-            color: #3498db;
+color: #3498db;
             font-weight: 600;
             margin-bottom: 5px;
         }
         
         .question-text {
             font-size: 22px;
-            font-weight: 600;
+font-weight: 600;
             margin-bottom: 25px;
             line-height: 1.4;
             color: #2c3e50;
@@ -93,132 +93,132 @@
         
         .options-container {
             display: flex;
-            flex-direction: column;
+flex-direction: column;
             gap: 12px;
             margin-bottom: 30px;
         }
         
         .option {
             padding: 16px;
-            border: 2px solid #e0e0e0;
+border: 2px solid #e0e0e0;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
             font-size: 16px;
             background-color: white;
-        }
+}
         
         .option:hover {
             background-color: #f1f8ff;
-            border-color: #3498db;
+border-color: #3498db;
             transform: translateY(-2px);
         }
         
         .option.selected {
             border-color: #3498db;
-            background-color: #e3f2fd;
+background-color: #e3f2fd;
         }
         
         .option.correct {
             border-color: #2ecc71;
-            background-color: #e8f5e9;
+background-color: #e8f5e9;
         }
         
         .option.incorrect {
             border-color: #e74c3c;
-            background-color: #ffebee;
+background-color: #ffebee;
         }
         
         .navigation {
             display: flex;
-            justify-content: space-between;
+justify-content: space-between;
             margin-top: 20px;
         }
         
         button {
             padding: 12px 25px;
-            border: none;
+border: none;
             border-radius: 6px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-        }
+}
         
         #prev-btn {
             background-color: #ecf0f1;
-            color: #2c3e50;
+color: #2c3e50;
         }
         
         #prev-btn:hover:not(:disabled) {
             background-color: #bdc3c7;
-        }
+}
         
         #next-btn, #submit-btn {
             background-color: #3498db;
-            color: white;
+color: white;
         }
         
         #next-btn:hover, #submit-btn:hover {
             background-color: #2980b9;
-        }
+}
         
         button:disabled {
             opacity: 0.6;
-            cursor: not-allowed;
+cursor: not-allowed;
         }
         
         .results-container {
             text-align: center;
-            padding: 40px 20px;
+padding: 40px 20px;
             display: none;
         }
         
         .score {
             font-size: 48px;
-            font-weight: 700;
+font-weight: 700;
             color: #3498db;
             margin: 20px 0;
         }
         
         .message {
             font-size: 24px;
-            margin-bottom: 30px;
+margin-bottom: 30px;
             color: #2c3e50;
         }
         
         .restart-btn {
             background-color: #2ecc71;
-            color: white;
+color: white;
             padding: 15px 30px;
             font-size: 18px;
         }
         
         .restart-btn:hover {
             background-color: #27ae60;
-        }
+}
         
         .explanation {
             margin-top: 20px;
-            padding: 15px;
+padding: 15px;
             background-color: #f1f8ff;
             border-radius: 8px;
             border-left: 4px solid #3498db;
             display: none;
-        }
+}
         
         .explanation h3 {
             color: #3498db;
-            margin-bottom: 10px;
+margin-bottom: 10px;
         }
         
         .explanation p {
             line-height: 1.5;
-        }
+}
         
         .question-list {
             display: flex;
-            flex-wrap: wrap;
+flex-wrap: wrap;
             gap: 10px;
             margin-top: 20px;
             justify-content: center;
@@ -226,7 +226,7 @@
         
         .question-indicator {
             width: 40px;
-            height: 40px;
+height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -235,41 +235,41 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.2s ease;
-        }
+}
         
         .question-indicator:hover {
             background-color: #bdc3c7;
-        }
+}
         
         .question-indicator.answered {
             background-color: #3498db;
-            color: white;
+color: white;
         }
         
         .question-indicator.current {
             border: 3px solid #2ecc71;
-        }
+}
         
         @media (max-width: 600px) {
             .container {
                 margin-top: 10px;
-            }
+}
             
             .quiz-container {
                 padding: 20px;
-            }
+}
             
             .question-text {
                 font-size: 20px;
-            }
+}
             
             button {
                 padding: 10px 20px;
-            }
+}
             
             .question-indicator {
                 width: 35px;
-                height: 35px;
+height: 35px;
                 font-size: 14px;
             }
         }
@@ -282,7 +282,8 @@
             <p>Test your knowledge of CodeIgniter 4 concepts</p>
             <div class="progress-bar">
                 <div class="progress" id="progress"></div>
-            </div>
+        
+    </div>
             <div class="stats">
                 <span id="answered-count">0/32 answered</span>
                 <span id="score-display">Score: 0</span>
@@ -290,21 +291,24 @@
         </header>
         
         <div class="quiz-container" id="quiz-container">
-            <div class="question-number" id="question-number">Question 1 of 32</div>
+         
+   <div class="question-number" id="question-number">Question 1 of 32</div>
             <div class="question-text" id="question-text"></div>
             <div class="options-container" id="options-container"></div>
             <div class="explanation" id="explanation">
                 <h3>Explanation</h3>
                 <p id="explanation-text"></p>
             </div>
-            <div class="navigation">
+     
+       <div class="navigation">
                 <button id="prev-btn" disabled>Previous</button>
                 <button id="next-btn">Next Question</button>
                 <button id="submit-btn" style="display: none;">Submit Quiz</button>
             </div>
             <div class="question-list" id="question-list"></div>
         </div>
-        
+  
+      
         <div class="results-container" id="results-container">
             <h2>Quiz Completed!</h2>
             <div class="score" id="score">0/32</div>
@@ -314,635 +318,966 @@
     </div>
 
     <script>
-        // Quiz questions data - all 32 questions
+        // Quiz questions data 
+- all 32 questions
         const quizData = [
             {
                 id: 20992636,
                 question: "What is the primary purpose of validation in CodeIgniter 4?",
                 options: [
-                    "Ensure data integrity before processing",
+              
+      "Ensure data integrity before processing",
                     "Manage application routing",
                     "Generate HTML content",
                     "Handle database queries"
                 ],
-                correct: 0,
+        
+        correct: 0,
                 explanation: "Validation in CodeIgniter 4 ensures that data meets specific criteria before being processed, maintaining data integrity and security."
-            },
+},
             {
                 id: 20992637,
                 question: "What is the purpose of the set_rules() method in CodeIgniter 4 validation?",
                 options: [
                     "Execute database queries",
-                    "Configure routing",
+    
+                "Configure routing",
                     "Manage sessions",
                     "Define validation rules for form fields"
                 ],
                 correct: 3,
-                explanation: "The set_rules() method is used to define validation rules for specific form fields in CodeIgniter 4."
-            },
+    
+            explanation: "The set_rules() method is used to define validation rules for specific form fields in CodeIgniter 4."
+},
             {
                 id: 20992638,
                 question: "How do you set custom error messages for validation rules in CodeIgniter 4?",
                 options: [
                     "Use the errorMessage() method",
-                    "Define them in the view file",
+  
+                  "Define them in the view file",
                     "Pass an associative array of rules and messages to the validate() method",
                     "Set them in the database"
                 ],
-                correct: 2,
+      
+          correct: 2,
                 explanation: "Custom error messages can be set by passing an associative array of rules and messages to the validate() method."
-            },
+},
             {
                 id: 20992639,
                 question: "Which method is used to check if validation passed or failed?",
                 options: [
                     "valid()",
-                    "check()",
+       
+             "check()",
                     "passed()",
                     "hasError()"
                 ],
                 correct: 3,
-                explanation: "The hasError() method is used to check if validation has failed for any field."
-            },
+              
+  explanation: "The hasError() method is used to check if validation has failed for any field."
+},
             {
                 id: 20992640,
                 question: "How do you apply validation rules to a specific field in a controller?",
                 options: [
                     "Use $this->setRules('field', 'rules')",
-                    "Use $this->validate(['field' => 'rules'])",
+   
+                 "Use $this->validate(['field' => 'rules'])",
                     "Use $this->validation->field('rules')",
                     "Use $this->applyRules('field', 'rules')"
                 ],
                 correct: 1,
-                explanation: "Validation rules can be applied using $this->validate(['field' => 'rules']) in the controller."
-            },
+    
+            explanation: "Validation rules can be applied using $this->validate(['field' => 'rules']) in the controller."
+},
             {
                 id: 20992641,
                 question: "How can you validate if a field matches another field in CodeIgniter 4?",
                 options: [
                     "matches",
-                    "equal_to",
+     
+               "equal_to",
                     "match",
                     "compare"
                 ],
                 correct: 0,
-                explanation: "The 'matches' rule is used to validate if a field matches another field in CodeIgniter 4."
-            },
+            
+    explanation: "The 'matches' rule is used to validate if a field matches another field in CodeIgniter 4."
+},
             {
                 id: 20992642,
                 question: "Which validation rule would you use to ensure a field contains only numeric values?",
                 options: [
                     "is_integer",
-                    "numeric",
+    
+                "numeric",
                     "digits_only",
                     "is_number"
                 ],
                 correct: 1,
-                explanation: "The 'numeric' rule ensures that a field contains only numeric values."
-            },
+           
+     explanation: "The 'numeric' rule ensures that a field contains only numeric values."
+},
             {
                 id: 20992643,
                 question: "What does the withInput() method do when validation fails in CodeIgniter 4?",
                 options: [
                     "Displays error messages",
-                    "Redirects back with the old input data",
+    
+                "Redirects back with the old input data",
                     "Clears the input fields",
                     "Saves the input data to the database"
                 ],
-                correct: 1,
+             
+   correct: 1,
                 explanation: "The withInput() method redirects back to the form with the old input data when validation fails."
-            },
+},
             {
                 id: 20992644,
                 question: "How can you combine multiple validation rules for a single field?",
                 options: [
                     "Use an ampersand & between rules",
-                    "Use a comma , between rules",
+  
+                  "Use a comma , between rules",
                     "Use a plus sign + between rules",
                     "Use a pipe | between rules"
                 ],
-                correct: 3,
+          
+      correct: 3,
                 explanation: "Multiple validation rules can be combined using a pipe | between rules."
-            },
+},
             {
                 id: 20992645,
                 question: "How can you set a custom rule in CodeIgniter 4?",
                 options: [
-                    "Use the setRule() method or define it in the configuration file",
+                    "Use the setRule() method or define it in 
+the configuration file",
                     "Set the rule in the database",
                     "Use the customRule() method",
                     "Define the rule in the view file"
                 ],
-                correct: 0,
+        
+        correct: 0,
                 explanation: "Custom rules can be set using the setRule() method or by defining them in the configuration file."
-            },
+},
             {
                 id: 21033492,
                 question: "Which method is used to validate data in CodeIgniter 4?",
                 options: [
                     "validate()",
-                    "check()",
+        
+            "check()",
                     "verify()",
                     "confirm()"
                 ],
                 correct: 0,
-                explanation: "The validate() method is used to validate data in CodeIgniter 4."
-            },
+               
+ explanation: "The validate() method is used to validate data in CodeIgniter 4."
+},
             {
                 id: 21033493,
                 question: "What is the return type of the validate() method when validation fails?",
                 options: [
                     "Null",
-                    "String",
+      
+              "String",
                     "Boolean (False)",
                     "Array"
                 ],
                 correct: 2,
-                explanation: "The validate() method returns false when validation fails."
-            },
+            
+    explanation: "The validate() method returns false when validation fails."
+},
             {
                 id: 21033494,
                 question: "Which built-in validation rule checks if a value is a valid email address?",
                 options: [
                     "valid_email_address",
-                    "valid_email",
+     
+               "valid_email",
                     "email_valid",
                     "email_check"
                 ],
                 correct: 1,
-                explanation: "The 'valid_email' rule checks if a value is a valid email address."
-            },
+            
+    explanation: "The 'valid_email' rule checks if a value is a valid email address."
+},
             {
                 id: 21033495,
                 question: "Which validation rule would you use to check the minimum length of a string?",
                 options: [
                     "min_size",
-                    "string_length",
+    
+                "string_length",
                     "min_length",
                     "length_min"
                 ],
                 correct: 2,
-                explanation: "The 'min_length' rule is used to check the minimum length of a string."
-            },
+           
+     explanation: "The 'min_length' rule is used to check the minimum length of a string."
+},
             {
                 id: 21033496,
                 question: "How can you validate that a field contains a unique value in the database?",
                 options: [
                     "unique_check",
-                    "is_unique_value",
+    
+                "is_unique_value",
                     "is_unique",
                     "unique_field"
                 ],
                 correct: 2,
-                explanation: "The 'is_unique' rule validates that a field contains a unique value in the database."
-            },
+           
+     explanation: "The 'is_unique' rule validates that a field contains a unique value in the database."
+},
             {
                 id: 21038712,
                 question: "Which of the following is a valid built-in validation rule in CodeIgniter 4?",
                 options: [
                     "valid_date",
-                    "required",
+     
+               "required",
                     "is_valid",
                     "numeric_only"
                 ],
                 correct: 1,
-                explanation: "'required' is a valid built-in validation rule in CodeIgniter 4."
-            },
+            
+    explanation: "'required' is a valid built-in validation rule in CodeIgniter 4."
+},
             {
                 id: 21038713,
                 question: "Which method retrieves the validation error messages in CodeIgniter 4?",
                 options: [
                     "showErrors()",
-                    "getErrors()",
+        
+            "getErrors()",
                     "displayErrors()",
                     "getErrorMessages()"
                 ],
                 correct: 1,
-                explanation: "The getErrors() method retrieves validation error messages in CodeIgniter 4."
-            },
+               
+ explanation: "The getErrors() method retrieves validation error messages in CodeIgniter 4."
+},
             {
                 id: 21038714,
                 question: "How do you specify validation rules directly in the model for CodeIgniter 4?",
                 options: [
                     "$validationRules property",
-                    "$modelRules property",
+    
+                "$modelRules property",
                     "$validateRules property",
                     "$rules property"
                 ],
                 correct: 0,
-                explanation: "The $validationRules property is used to specify validation rules directly in the model."
-            },
+        
+        explanation: "The $validationRules property is used to specify validation rules directly in the model."
+},
             {
                 id: 21038715,
                 question: "Which validation rule checks if a field value exists in a set of values?",
                 options: [
                     "in_set",
-                    "allowed_values",
+    
+                "allowed_values",
                     "exists_in",
                     "in_list"
                 ],
                 correct: 3,
-                explanation: "The 'in_list' rule checks if a field value exists in a set of values."
-            },
+           
+     explanation: "The 'in_list' rule checks if a field value exists in a set of values."
+},
             {
                 id: 21038728,
                 question: "How do you load the Pagination library in CodeIgniter 4?",
                 options: [
                     "$this->pager->initialize()",
-                    "$this->pagination->load()",
+        
+            "$this->pagination->load()",
                     "$pager = \\Config\\Services::pager()",
                     "$this->load->library('pagination')"
                 ],
                 correct: 2,
-                explanation: "The Pagination library is loaded using $pager = \\Config\\Services::pager() in CodeIgniter 4."
-            },
+             
+   explanation: "The Pagination library is loaded using $pager = \\Config\\Services::pager() in CodeIgniter 4."
+},
             {
                 id: 21038730,
                 question: "Which method in the Pagination library is used to create pagination links?",
                 options: [
                     "getLinks()",
-                    "createLinks()",
+      
+              "createLinks()",
                     "paginationLinks()",
                     "generateLinks()"
                 ],
                 correct: 1,
-                explanation: "The createLinks() method is used to create pagination links."
-            },
+             
+   explanation: "The createLinks() method is used to create pagination links."
+},
             {
                 id: 21038731,
                 question: "Which of the following is a valid configuration option for pagination in CodeIgniter 4?",
                 options: [
                     "perPage",
-                    "itemsPerPage",
+    
+                "itemsPerPage",
                     "resultsPerPage",
                     "items"
                 ],
                 correct: 0,
-                explanation: "'perPage' is a valid configuration option for pagination in CodeIgniter 4."
-            },
+           
+     explanation: "'perPage' is a valid configuration option for pagination in CodeIgniter 4."
+},
             {
                 id: 21038732,
                 question: "How do you retrieve the current page number in a controller?",
                 options: [
                     "$this->pager->currentPage()",
-                    "$this->pager->getPage()",
+       
+             "$this->pager->getPage()",
                     "$pager->getCurrentPage()",
                     "$pager->getCurrentPage()"
                 ],
                 correct: 2,
-                explanation: "The current page number is retrieved using $pager->getCurrentPage()."
-            },
+              
+  explanation: "The current page number is retrieved using $pager->getCurrentPage()."
+},
             {
                 id: 21038733,
                 question: "Which method is used to set the number of items per page in pagination?",
                 options: [
                     "$pager->itemsPerPage($perPage)",
-                    "$pager->setItemsPerPage($perPage)",
+    
+                "$pager->setItemsPerPage($perPage)",
                     "$pager->setPerPage($perPage)",
                     "$pager->setItems($perPage)"
                 ],
                 correct: 2,
-                explanation: "The setPerPage() method is used to set the number of items per page."
-            },
+           
+     explanation: "The setPerPage() method is used to set the number of items per page."
+},
             {
                 id: 21038734,
                 question: "Which method is used to start a session in CodeIgniter 4?",
                 options: [
                     "initSession()",
-                    "session()",
+       
+             "session()",
                     "beginSession()",
                     "startSession()"
                 ],
                 correct: 1,
-                explanation: "The session() method is used to start a session in CodeIgniter 4."
-            },
+              
+  explanation: "The session() method is used to start a session in CodeIgniter 4."
+},
             {
                 id: 21038735,
                 question: "Which function is used to set session data in CodeIgniter 4?",
                 options: [
                     "set()",
-                    "updateSession()",
+       
+             "updateSession()",
                     "setSessionData()",
                     "addSessionData()"
                 ],
                 correct: 0,
-                explanation: "The set() function is used to set session data in CodeIgniter 4."
-            },
+              
+  explanation: "The set() function is used to set session data in CodeIgniter 4."
+},
             {
                 id: 21038736,
                 question: "Which session driver uses the file system for storing session data in CodeIgniter 4?",
                 options: [
                     "CodeIgniter\\Session\\Handlers\\DatabaseHandler",
-                    "CodeIgniter\\Session\\Handlers\\FileHandler",
+    
+                "CodeIgniter\\Session\\Handlers\\FileHandler",
                     "CodeIgniter\\Session\\Handlers\\CookieHandler",
                     "CodeIgniter\\Session\\Handlers\\RedisHandler"
                 ],
                 correct: 1,
-                explanation: "The FileHandler uses the file system for storing session data."
-            },
+           
+     explanation: "The FileHandler uses the file system for storing session data."
+},
             {
                 id: 21038737,
                 question: "How do you retrieve all session data at once in CodeIgniter 4?",
                 options: [
                     "fetchData()",
-                    "retrieveAll()",
+      
+              "retrieveAll()",
                     "getSessionData()",
                     "get() without any arguments"
                 ],
                 correct: 3,
-                explanation: "Calling get() without any arguments retrieves all session data at once."
-            },
+          
+      explanation: "Calling get() without any arguments retrieves all session data at once."
+},
             {
                 id: 21043628,
                 question: "How do you ensure a field is not empty and has a value in CodeIgniter 4?",
                 options: [
                     "required",
-                    "mandatory",
+  
+                  "mandatory",
                     "non_empty",
                     "filled"
                 ],
                 correct: 0,
-                explanation: "The 'required' rule ensures a field is not empty and has a value."
-            },
+         
+       explanation: "The 'required' rule ensures a field is not empty and has a value."
+},
             {
                 id: 21043629,
                 question: "Which method is used to retrieve a specific error message for a particular field?",
                 options: [
                     "retrieveError('field')",
-                    "getError('field')",
+    
+                "getError('field')",
                     "showError('field')",
                     "fetchError('field')"
                 ],
                 correct: 1,
-                explanation: "The getError('field') method retrieves a specific error message for a field."
-            },
+           
+     explanation: "The getError('field') method retrieves a specific error message for a field."
+},
             {
                 id: 21043754,
                 question: "Where can validation rules be defined in CodeIgniter 4?",
                 options: [
                     "In the view files",
-                    "In the database schema",
+      
+              "In the database schema",
                     "In the controller or a validation configuration file",
                     "In the app/Views directory"
                 ],
-                correct: 2,
+                correct: 
+2,
                 explanation: "Validation rules can be defined in the controller or a validation configuration file."
-            },
+},
             {
                 id: 21043755,
                 question: "What is the function of the setvalidation() method in a model?",
                 options: [
                     "Display validation errors",
-                    "Create a validation object",
+     
+               "Create a validation object",
                     "Assign validation rules to the model",
                     "Set default form values"
                 ],
                 correct: 2,
-                explanation: "The setvalidation() method assigns validation rules to the model."
+ 
+               explanation: "The setvalidation() method assigns validation rules to the model."
+},
+            {
+                id: 21038737,
+                question: "What happens to session flashdata after it is retrieved once?",
+                options: [
+                    "It is stored permanently",
+                    "It is automatically deleted",
+                    "It is moved to a new session key",
+                    "It is retained for the duration of the session"
+                ],
+                correct: 1,
+                explanation: "Flashdata is designed to be 'one-time' data. After it is retrieved once (on the next request), the session service automatically removes it."
+            },
+            {
+                id: 21043946,
+                question: "Which validation rule would you use to ensure a field is exactly 10 characters long?",
+                options: [
+                    "size_10",
+                    "fixed_length",
+                    "exact_length",
+                    "length_exact"
+                ],
+                correct: 2,
+                explanation: "The 'exact_length' rule verifies that the field is exactly the specified length (e.g., 'exact_length[10]')."
+            },
+            {
+                id: 21044301,
+                question: "What is the primary purpose of pagination in a web application?",
+                options: [
+                    "To increase page load time",
+                    "To split content into multiple pages for easier navigation",
+                    "To filter content based on user preferences",
+                    "To display all content on a single page"
+                ],
+                correct: 1,
+                explanation: "Pagination is used to divide large sets of content into smaller, more manageable pages, improving usability and page load performance."
+            },
+            {
+                id: 21044302,
+                question: "How can you customize the pagination view in CodeIgniter 4?",
+                options: [
+                    "By modifying the baseURL option",
+                    "By setting the template option in the pagination configuration",
+                    "By using the customView method in the controller",
+                    "By editing the Pager.php configuration file directly"
+                ],
+                correct: 3,
+                explanation: "Pagination views are customized by defining templates in the `app/Config/Pager.php` configuration file and specifying which template to use."
+            },
+            {
+                id: 21044303,
+                question: "How do you pass the pagination links to a view?",
+                options: [
+                    "$data['pager'] = $pager;",
+                    "$data['links'] = $pager->generateLinks();",
+                    "$data['pagination'] = $pager->links();",
+                    "$data['pagination'] = $pager->createLinks();"
+                ],
+                correct: 2,
+                explanation: "The `links()` method of the pager service generates the HTML for the pagination links, which can then be passed to the view."
+            },
+            {
+                id: 21044304,
+                question: "What is the primary purpose of a session in CodeIgniter?",
+                options: [
+                    "Maintain user state and data across different pages",
+                    "Handle database queries",
+                    "Manage application routing",
+                    "Generate HTML content"
+                ],
+                correct: 0,
+                explanation: "Sessions are used to persist user information (like login status or cart items) across multiple HTTP requests and page loads."
+            },
+            {
+                id: 21044305,
+                question: "Where are session configurations typically stored in CodeIgniter 4?",
+                options: [
+                    "app/Models/Session.php",
+                    "app/Config/App.php",
+                    "app/Views/SessionConfig.php",
+                    "app/Controllers/SessionConfig.php"
+                ],
+                correct: 1,
+                explanation: "Session configuration settings, such as the driver, cookie name, and expiration, are stored in the `app/Config/App.php` file."
+            },
+            {
+                id: 21044306,
+                question: "How do you set flashdata in a session in CodeIgniter 4?",
+                options: [
+                    "setFlashdata()",
+                    "flashData()",
+                    "addFlashData()",
+                    "flash()"
+                ],
+                correct: 0,
+                explanation: "The `setFlashdata()` method is used to set session data that will only be available for the next server request."
+            },
+            {
+                id: 21044307,
+                question: "What does the has() method do in the context of sessions in CodeIgniter 4?",
+                options: [
+                    "Adds a new session variable",
+                    "Retrieves a session variable",
+                    "Checks if a session variable exists",
+                    "Deletes a session variable"
+                ],
+                correct: 2,
+                explanation: "The `has()` method checks if a specific item exists in the session data and returns true or false."
+            },
+            {
+                id: 21044345,
+                question: "Which library in CodeIgniter 4 is used to implement pagination?",
+                options: [
+                    "Session",
+                    "Form Validation",
+                    "Database",
+                    "Pagination"
+                ],
+                correct: 3,
+                explanation: "CodeIgniter 4 provides a Pagination library (accessed via the `pager` service) to handle splitting content across pages."
+            },
+            {
+                id: 21044346,
+                question: "How do you specify the base URL for pagination links?",
+                options: [
+                    "By using the siteURL configuration option",
+                    "By setting the linkURL option",
+                    "By using the baseURL configuration option",
+                    "By using the url configuration option"
+                ],
+                correct: 2,
+                explanation: "The pagination service typically builds links relative to the current URL, which is based on the application's `baseURL` defined in `app/Config/App.php`."
+            },
+            {
+                id: 21044347,
+                question: "How do you retrieve a specific piece of session data in CodeIgniter 4?",
+                options: [
+                    "getData()",
+                    "fetch()",
+                    "get()",
+                    "retrieve()"
+                ],
+                correct: 2,
+                explanation: "The `get('item_name')` method is used to retrieve a specific item from the session data."
+            },
+            {
+                id: 21044348,
+                question: "Which session handler uses a database for storing session data?",
+                options: [
+                    "CodeIgniter\\Session\\Handlers\\DatabaseHandler",
+                    "MemcachedHandler",
+                    "FileHandler",
+                    "CookieHandler"
+                ],
+                correct: 0,
+                explanation: "The `DatabaseHandler` is the session driver that allows you to store session data in a database table instead of files."
+            },
+            {
+                id: 21044509,
+                question: "What is the default number of links shown in pagination?",
+                options: [
+                    "2",
+                    "4",
+                    "5",
+                    "3"
+                ],
+                correct: 0,
+                explanation: "The default `onEachSide` configuration value in `app/Config/Pager.php` is 2, which determines how many page-number links are shown on either side of the current page."
+            },
+            {
+                id: 21044510,
+                question: "What is the purpose of the uriSegment option in pagination?",
+                options: [
+                    "To determine the query string structure",
+                    "To define the base URL for pagination",
+                    "To determine which URI segment contains the page number",
+                    "To define the URI structure for the controller"
+                ],
+                correct: 2,
+                explanation: "The `uriSegment` option tells the pager which segment of the URL (e.g., /users/list/3) contains the page number."
+            },
+            {
+                id: 21044511,
+                question: "Which of the following is a valid way to destroy a session in CodeIgniter 4?",
+                options: [
+                    "deleteSession()",
+                    "end()",
+                    "close()",
+                    "destroy()"
+                ],
+                correct: 3,
+                explanation: "The `destroy()` method removes all data from the current session and invalidates the session cookie."
+            },
+            {
+                id: 21044669,
+                question: "Where can you configure the default pagination settings in CodeIgniter 4?",
+                options: [
+                    "app/Config/Pager.php",
+                    "app/Config/Pager.php",
+                    "app/Views/Pagination.php",
+                    "app/Models/Pagination.php"
+                ],
+                correct: 0,
+                explanation: "Default pagination settings, such as the template and `onEachSide` value, are configured in the `app/Config/Pager.php` file."
+            },
+            {
+                id: 21044670,
+                question: "Which method is used to regenerate the session ID in CodeIgniter 4?",
+                options: [
+                    "regenerate()",
+                    "resetID()",
+                    "newSessionID()",
+                    "refreshID()"
+                ],
+                correct: 0,
+                explanation: "The `regenerate()` method creates a new session ID, helping to prevent session fixation attacks. You can optionally choose to destroy the old session data."
+            },
+            {
+                id: 21044671,
+                question: "Which method is used to remove a specific piece of session data?",
+                options: [
+                    "deleteData()",
+                    "remove()",
+                    "clear()",
+                    "removeData()"
+                ],
+                correct: 1,
+                explanation: "The `remove('item_name')` method is used to delete a specific item from the session data."
+            },
+            {
+                id: 21044713,
+                question: "Which of the following is used to set the total number of items in pagination?",
+                options: [
+                    "$pager->setTotal($totalItems)",
+                    "$pager->setTotalItems($totalItems)",
+                    "$pager->totalItems($totalItems)",
+                    "$pager->setItems($totalItems)"
+                ],
+                correct: 0,
+                explanation: "The `setTotal()` method is used to manually set the total number of items being paginated, which the pager needs to calculate the total number of pages."
+            },
+            {
+                id: 21044714,
+                question: "What does the getFlashdata() method do in CodeIgniter 4?",
+                options: [
+                    "Retrieves persistent session data",
+                    "Retrieves a specific piece of session data",
+                    "Retrieves all session data",
+                    "Retrieves temporary session data that is only available for the next request"
+                ],
+                correct: 3,
+                explanation: "Flashdata is session data that is only available for the *next* request, and is then automatically deleted. `getFlashdata()` retrieves it."
+            },
+            {
+                id: 21059685,
+                question: "Which validation rule would you use to check if a date is in the correct format?",
+                options: [
+                    "correct_date",
+                    "date_format",
+                    "valid_date",
+                    "valid_format"
+                ],
+                correct: 2,
+                explanation: "The 'valid_date' rule checks if a string is a valid date according to the format specified (or a default format if not)."
+            },
+            {
+                id: 21110078,
+                question: "Which helper function can be used to create pagination links directly in the view?",
+                options: [
+                    "pager->create()",
+                    "pager->links()",
+                    "pager->generate()",
+                    "pager->pagination()"
+                ],
+                correct: 1,
+                explanation: "The `pager->links()` helper function is the standard way to render the pagination links HTML within a view file."
             }
         ];
 
         // DOM elements
         const quizContainer = document.getElementById('quiz-container');
-        const resultsContainer = document.getElementById('results-container');
+const resultsContainer = document.getElementById('results-container');
         const questionNumber = document.getElementById('question-number');
         const questionText = document.getElementById('question-text');
         const optionsContainer = document.getElementById('options-container');
         const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
+const nextBtn = document.getElementById('next-btn');
         const submitBtn = document.getElementById('submit-btn');
         const restartBtn = document.getElementById('restart-btn');
         const scoreElement = document.getElementById('score');
         const messageElement = document.getElementById('message');
-        const progressBar = document.getElementById('progress');
+const progressBar = document.getElementById('progress');
         const explanation = document.getElementById('explanation');
         const explanationText = document.getElementById('explanation-text');
         const questionList = document.getElementById('question-list');
         const answeredCount = document.getElementById('answered-count');
-        const scoreDisplay = document.getElementById('score-display');
+const scoreDisplay = document.getElementById('score-display');
 
         // Quiz state
         let currentQuestion = 0;
-        let score = 0;
+let score = 0;
         let userAnswers = Array(quizData.length).fill(null);
         let shuffledQuestions = [];
-
-        // Initialize the quiz
+// Initialize the quiz
         function initQuiz() {
             // Shuffle the questions
             shuffledQuestions = [...quizData];
-            shuffleArray(shuffledQuestions);
+shuffleArray(shuffledQuestions);
             
             // Reset state
             currentQuestion = 0;
-            score = 0;
+score = 0;
             userAnswers = Array(shuffledQuestions.length).fill(null);
             
             // Create question indicators
             createQuestionIndicators();
-            
-            // Show first question
+// Show first question
             showQuestion();
-            
-            // Hide results, show quiz
+// Hide results, show quiz
             resultsContainer.style.display = 'none';
-            quizContainer.style.display = 'block';
+quizContainer.style.display = 'block';
             
             // Update progress and stats
             updateProgressBar();
-            updateStats();
+updateStats();
         }
 
         // Create question indicators
         function createQuestionIndicators() {
             questionList.innerHTML = '';
-            for (let i = 0; i < shuffledQuestions.length; i++) {
+for (let i = 0; i < shuffledQuestions.length; i++) {
                 const indicator = document.createElement('div');
-                indicator.classList.add('question-indicator');
+indicator.classList.add('question-indicator');
                 indicator.textContent = i + 1;
                 indicator.addEventListener('click', () => {
                     currentQuestion = i;
                     showQuestion();
                 });
-                questionList.appendChild(indicator);
+questionList.appendChild(indicator);
             }
         }
 
         // Show current question
         function showQuestion() {
             const question = shuffledQuestions[currentQuestion];
-            
-            // Update question number and text
+// Update question number and text
             questionNumber.textContent = `Question ${currentQuestion + 1} of ${shuffledQuestions.length}`;
-            questionText.textContent = question.question;
+questionText.textContent = question.question;
             
             // Clear previous options
             optionsContainer.innerHTML = '';
-            
-            // Shuffle options for this question
+// Shuffle options for this question
             const shuffledOptions = [...question.options];
-            shuffleArray(shuffledOptions);
+shuffleArray(shuffledOptions);
             
             // Find the index of the correct answer in the shuffled options
             const correctIndex = shuffledOptions.indexOf(question.options[question.correct]);
-            
-            // Create option elements
+// Create option elements
             shuffledOptions.forEach((option, index) => {
                 const optionElement = document.createElement('div');
                 optionElement.classList.add('option');
                 optionElement.textContent = option;
                 
-                // If user has already answered this question, show the result
+             
+   // If user has already answered this question, show the result
                 if (userAnswers[currentQuestion] !== null) {
                     if (index === correctIndex) {
                         optionElement.classList.add('correct');
-                    } else if (userAnswers[currentQuestion] === index && index !== correctIndex) {
+                   
+ } else if (userAnswers[currentQuestion] === index && index !== correctIndex) {
                         optionElement.classList.add('incorrect');
                     }
                     
                     if (userAnswers[currentQuestion] === index) {
-                        optionElement.classList.add('selected');
+ 
+                       optionElement.classList.add('selected');
                     }
                 }
                 
                 optionElement.addEventListener('click', () => selectOption(index, correctIndex));
-                optionsContainer.appendChild(optionElement);
+optionsContainer.appendChild(optionElement);
             });
             
             // Show explanation if user has answered
             if (userAnswers[currentQuestion] !== null) {
                 explanationText.textContent = question.explanation;
-                explanation.style.display = 'block';
+explanation.style.display = 'block';
             } else {
                 explanation.style.display = 'none';
-            }
+}
             
             // Update navigation buttons
             updateNavigationButtons();
-            
-            // Update question indicators
+// Update question indicators
             updateQuestionIndicators();
-            
-            // Update stats
+// Update stats
             updateStats();
-        }
+}
 
         // Select an option
         function selectOption(selectedIndex, correctIndex) {
             // Store user's answer
             userAnswers[currentQuestion] = selectedIndex;
-            
-            // Get all option elements
+// Get all option elements
             const options = document.querySelectorAll('.option');
-            
-            // Mark selected option
+// Mark selected option
             options[selectedIndex].classList.add('selected');
-            
-            // Check if answer is correct
+// Check if answer is correct
             if (selectedIndex === correctIndex) {
                 options[selectedIndex].classList.add('correct');
-                // Update score if this is a new correct answer
+// Update score if this is a new correct answer
                 if (userAnswers[currentQuestion] !== selectedIndex) {
                     score++;
-                }
+}
             } else {
                 options[selectedIndex].classList.add('incorrect');
-                // Also show the correct answer
+// Also show the correct answer
                 options[correctIndex].classList.add('correct');
-                // If user previously had this correct, decrease score
+// If user previously had this correct, decrease score
                 if (userAnswers[currentQuestion] === correctIndex) {
                     score--;
-                }
+}
             }
             
             // Show explanation
             explanationText.textContent = shuffledQuestions[currentQuestion].explanation;
-            explanation.style.display = 'block';
+explanation.style.display = 'block';
             
             // Update navigation buttons
             updateNavigationButtons();
-            
-            // Update question indicators
+// Update question indicators
             updateQuestionIndicators();
-            
-            // Update stats
+// Update stats
             updateStats();
-        }
+}
 
         // Update navigation buttons
         function updateNavigationButtons() {
             // Previous button
             prevBtn.disabled = currentQuestion === 0;
-            
-            // Next/Submit button
+// Next/Submit button
             if (currentQuestion === shuffledQuestions.length - 1) {
                 nextBtn.style.display = 'none';
-                submitBtn.style.display = 'inline-block';
+submitBtn.style.display = 'inline-block';
             } else {
                 nextBtn.style.display = 'inline-block';
-                submitBtn.style.display = 'none';
+submitBtn.style.display = 'none';
             }
             
             // Update progress bar
             updateProgressBar();
-        }
+}
 
         // Update progress bar
         function updateProgressBar() {
             const progress = ((currentQuestion + 1) / shuffledQuestions.length) * 100;
-            progressBar.style.width = `${progress}%`;
+progressBar.style.width = `${progress}%`;
         }
 
         // Update question indicators
         function updateQuestionIndicators() {
             const indicators = document.querySelectorAll('.question-indicator');
-            indicators.forEach((indicator, index) => {
+indicators.forEach((indicator, index) => {
                 indicator.classList.remove('current', 'answered');
                 if (index === currentQuestion) {
                     indicator.classList.add('current');
                 }
                 if (userAnswers[index] !== null) {
-                    indicator.classList.add('answered');
+    
+                indicator.classList.add('answered');
                 }
             });
-        }
+}
 
         // Update stats
         function updateStats() {
             const answered = userAnswers.filter(answer => answer !== null).length;
-            answeredCount.textContent = `${answered}/${shuffledQuestions.length} answered`;
+answeredCount.textContent = `${answered}/${shuffledQuestions.length} answered`;
             scoreDisplay.textContent = `Score: ${score}`;
         }
 
         // Show results
         function showResults() {
             quizContainer.style.display = 'none';
-            resultsContainer.style.display = 'block';
+resultsContainer.style.display = 'block';
             
             // Calculate score
             const percentage = (score / shuffledQuestions.length) * 100;
-            scoreElement.textContent = `${score}/${shuffledQuestions.length}`;
+scoreElement.textContent = `${score}/${shuffledQuestions.length}`;
             
             // Set message based on score
             if (percentage >= 90) {
                 messageElement.textContent = "Excellent! You're a CodeIgniter 4 expert!";
-            } else if (percentage >= 70) {
+} else if (percentage >= 70) {
                 messageElement.textContent = "Good job! You have a solid understanding of CodeIgniter 4.";
-            } else if (percentage >= 50) {
+} else if (percentage >= 50) {
                 messageElement.textContent = "Not bad! Keep studying to improve your CodeIgniter 4 knowledge.";
-            } else {
+} else {
                 messageElement.textContent = "Keep practicing! Review the CodeIgniter 4 documentation to improve.";
-            }
+}
         }
 
         // Utility function to shuffle array
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+[array[i], array[j]] = [array[j], array[i]];
             }
             return array;
-        }
+}
 
         // Event listeners
         prevBtn.addEventListener('click', () => {
@@ -951,20 +1286,18 @@
                 showQuestion();
             }
         });
-
-        nextBtn.addEventListener('click', () => {
+nextBtn.addEventListener('click', () => {
             if (currentQuestion < shuffledQuestions.length - 1) {
                 currentQuestion++;
                 showQuestion();
             }
         });
-
-        submitBtn.addEventListener('click', showResults);
+submitBtn.addEventListener('click', showResults);
 
         restartBtn.addEventListener('click', initQuiz);
 
         // Initialize the quiz when page loads
         window.addEventListener('load', initQuiz);
-    </script>
+</script>
 </body>
 </html>
