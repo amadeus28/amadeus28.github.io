@@ -285,14 +285,14 @@ height: 35px;
         
     </div>
             <div class="stats">
-                <span id="answered-count">0/32 answered</span>
+                <span id="answered-count">0/55 answered</span>
                 <span id="score-display">Score: 0</span>
             </div>
         </header>
         
         <div class="quiz-container" id="quiz-container">
          
-   <div class="question-number" id="question-number">Question 1 of 32</div>
+   <div class="question-number" id="question-number">Question 1 of 55</div>
             <div class="question-text" id="question-text"></div>
             <div class="options-container" id="options-container"></div>
             <div class="explanation" id="explanation">
@@ -311,464 +311,351 @@ height: 35px;
       
         <div class="results-container" id="results-container">
             <h2>Quiz Completed!</h2>
-            <div class="score" id="score">0/32</div>
+            <div class="score" id="score">0/55</div>
             <div class="message" id="message"></div>
             <button class="restart-btn" id="restart-btn">Restart Quiz</button>
         </div>
     </div>
 
     <script>
-        // Quiz questions data 
-- all 32 questions
+        // Quiz questions data - 55 questions from quiz results
         const quizData = [
             {
                 id: 20992636,
                 question: "What is the primary purpose of validation in CodeIgniter 4?",
                 options: [
-              
-      "Ensure data integrity before processing",
+                    "Ensure data integrity before processing",
                     "Manage application routing",
                     "Generate HTML content",
                     "Handle database queries"
                 ],
-        
-        correct: 0,
+                correct: 0,
                 explanation: "Validation in CodeIgniter 4 ensures that data meets specific criteria before being processed, maintaining data integrity and security."
-},
+            },
             {
                 id: 20992637,
                 question: "What is the purpose of the set_rules() method in CodeIgniter 4 validation?",
                 options: [
                     "Execute database queries",
-    
-                "Configure routing",
+                    "Configure routing",
                     "Manage sessions",
                     "Define validation rules for form fields"
                 ],
                 correct: 3,
-    
-            explanation: "The set_rules() method is used to define validation rules for specific form fields in CodeIgniter 4."
-},
+                explanation: "The set_rules() method is used to define validation rules for specific form fields in CodeIgniter 4."
+            },
             {
                 id: 20992638,
                 question: "How do you set custom error messages for validation rules in CodeIgniter 4?",
                 options: [
                     "Use the errorMessage() method",
-  
-                  "Define them in the view file",
+                    "Define them in the view file",
                     "Pass an associative array of rules and messages to the validate() method",
                     "Set them in the database"
                 ],
-      
-          correct: 2,
+                correct: 2,
                 explanation: "Custom error messages can be set by passing an associative array of rules and messages to the validate() method."
-},
+            },
             {
                 id: 20992639,
                 question: "Which method is used to check if validation passed or failed?",
                 options: [
                     "valid()",
-       
-             "check()",
+                    "check()",
                     "passed()",
                     "hasError()"
                 ],
                 correct: 3,
-              
-  explanation: "The hasError() method is used to check if validation has failed for any field."
-},
+                explanation: "The hasError() method is used to check if validation has failed for any field."
+            },
             {
                 id: 20992640,
                 question: "How do you apply validation rules to a specific field in a controller?",
                 options: [
                     "Use $this->setRules('field', 'rules')",
-   
-                 "Use $this->validate(['field' => 'rules'])",
+                    "Use $this->validate(['field' => 'rules'])",
                     "Use $this->validation->field('rules')",
                     "Use $this->applyRules('field', 'rules')"
                 ],
                 correct: 1,
-    
-            explanation: "Validation rules can be applied using $this->validate(['field' => 'rules']) in the controller."
-},
+                explanation: "Validation rules can be applied using $this->validate(['field' => 'rules']) in the controller."
+            },
             {
                 id: 20992641,
                 question: "How can you validate if a field matches another field in CodeIgniter 4?",
                 options: [
                     "matches",
-     
-               "equal_to",
+                    "equal_to",
                     "match",
                     "compare"
                 ],
                 correct: 0,
-            
-    explanation: "The 'matches' rule is used to validate if a field matches another field in CodeIgniter 4."
-},
+                explanation: "The 'matches' rule is used to validate if a field matches another field in CodeIgniter 4."
+            },
             {
                 id: 20992642,
                 question: "Which validation rule would you use to ensure a field contains only numeric values?",
                 options: [
                     "is_integer",
-    
-                "numeric",
+                    "numeric",
                     "digits_only",
                     "is_number"
                 ],
                 correct: 1,
-           
-     explanation: "The 'numeric' rule ensures that a field contains only numeric values."
-},
+                explanation: "The 'numeric' rule ensures that a field contains only numeric values."
+            },
             {
                 id: 20992643,
                 question: "What does the withInput() method do when validation fails in CodeIgniter 4?",
                 options: [
                     "Displays error messages",
-    
-                "Redirects back with the old input data",
+                    "Redirects back with the old input data",
                     "Clears the input fields",
                     "Saves the input data to the database"
                 ],
-             
-   correct: 1,
+                correct: 1,
                 explanation: "The withInput() method redirects back to the form with the old input data when validation fails."
-},
+            },
             {
                 id: 20992644,
                 question: "How can you combine multiple validation rules for a single field?",
                 options: [
                     "Use an ampersand & between rules",
-  
-                  "Use a comma , between rules",
+                    "Use a comma , between rules",
                     "Use a plus sign + between rules",
                     "Use a pipe | between rules"
                 ],
-          
-      correct: 3,
+                correct: 3,
                 explanation: "Multiple validation rules can be combined using a pipe | between rules."
-},
+            },
             {
                 id: 20992645,
                 question: "How can you set a custom rule in CodeIgniter 4?",
                 options: [
-                    "Use the setRule() method or define it in 
-the configuration file",
+                    "Use the setRule() method or define it in the configuration file",
                     "Set the rule in the database",
                     "Use the customRule() method",
                     "Define the rule in the view file"
                 ],
-        
-        correct: 0,
+                correct: 0,
                 explanation: "Custom rules can be set using the setRule() method or by defining them in the configuration file."
-},
+            },
             {
                 id: 21033492,
                 question: "Which method is used to validate data in CodeIgniter 4?",
                 options: [
                     "validate()",
-        
-            "check()",
+                    "check()",
                     "verify()",
                     "confirm()"
                 ],
                 correct: 0,
-               
- explanation: "The validate() method is used to validate data in CodeIgniter 4."
-},
+                explanation: "The validate() method is used to validate data in CodeIgniter 4."
+            },
             {
                 id: 21033493,
                 question: "What is the return type of the validate() method when validation fails?",
                 options: [
                     "Null",
-      
-              "String",
+                    "String",
                     "Boolean (False)",
                     "Array"
                 ],
                 correct: 2,
-            
-    explanation: "The validate() method returns false when validation fails."
-},
+                explanation: "The validate() method returns false when validation fails."
+            },
             {
                 id: 21033494,
                 question: "Which built-in validation rule checks if a value is a valid email address?",
                 options: [
                     "valid_email_address",
-     
-               "valid_email",
+                    "valid_email",
                     "email_valid",
                     "email_check"
                 ],
                 correct: 1,
-            
-    explanation: "The 'valid_email' rule checks if a value is a valid email address."
-},
+                explanation: "The 'valid_email' rule checks if a value is a valid email address."
+            },
             {
                 id: 21033495,
                 question: "Which validation rule would you use to check the minimum length of a string?",
                 options: [
                     "min_size",
-    
-                "string_length",
+                    "string_length",
                     "min_length",
                     "length_min"
                 ],
                 correct: 2,
-           
-     explanation: "The 'min_length' rule is used to check the minimum length of a string."
-},
+                explanation: "The 'min_length' rule is used to check the minimum length of a string."
+            },
             {
                 id: 21033496,
                 question: "How can you validate that a field contains a unique value in the database?",
                 options: [
                     "unique_check",
-    
-                "is_unique_value",
+                    "is_unique_value",
                     "is_unique",
                     "unique_field"
                 ],
                 correct: 2,
-           
-     explanation: "The 'is_unique' rule validates that a field contains a unique value in the database."
-},
+                explanation: "The 'is_unique' rule validates that a field contains a unique value in the database."
+            },
             {
                 id: 21038712,
                 question: "Which of the following is a valid built-in validation rule in CodeIgniter 4?",
                 options: [
                     "valid_date",
-     
-               "required",
+                    "required",
                     "is_valid",
                     "numeric_only"
                 ],
                 correct: 1,
-            
-    explanation: "'required' is a valid built-in validation rule in CodeIgniter 4."
-},
+                explanation: "'required' is a valid built-in validation rule in CodeIgniter 4."
+            },
             {
                 id: 21038713,
                 question: "Which method retrieves the validation error messages in CodeIgniter 4?",
                 options: [
                     "showErrors()",
-        
-            "getErrors()",
+                    "getErrors()",
                     "displayErrors()",
                     "getErrorMessages()"
                 ],
                 correct: 1,
-               
- explanation: "The getErrors() method retrieves validation error messages in CodeIgniter 4."
-},
+                explanation: "The getErrors() method retrieves validation error messages in CodeIgniter 4."
+            },
             {
                 id: 21038714,
                 question: "How do you specify validation rules directly in the model for CodeIgniter 4?",
                 options: [
                     "$validationRules property",
-    
-                "$modelRules property",
+                    "$modelRules property",
                     "$validateRules property",
                     "$rules property"
                 ],
                 correct: 0,
-        
-        explanation: "The $validationRules property is used to specify validation rules directly in the model."
-},
+                explanation: "The $validationRules property is used to specify validation rules directly in the model."
+            },
             {
                 id: 21038715,
                 question: "Which validation rule checks if a field value exists in a set of values?",
                 options: [
                     "in_set",
-    
-                "allowed_values",
+                    "allowed_values",
                     "exists_in",
                     "in_list"
                 ],
                 correct: 3,
-           
-     explanation: "The 'in_list' rule checks if a field value exists in a set of values."
-},
+                explanation: "The 'in_list' rule checks if a field value exists in a set of values."
+            },
             {
                 id: 21038728,
                 question: "How do you load the Pagination library in CodeIgniter 4?",
                 options: [
                     "$this->pager->initialize()",
-        
-            "$this->pagination->load()",
+                    "$this->pagination->load()",
                     "$pager = \\Config\\Services::pager()",
                     "$this->load->library('pagination')"
                 ],
                 correct: 2,
-             
-   explanation: "The Pagination library is loaded using $pager = \\Config\\Services::pager() in CodeIgniter 4."
-},
+                explanation: "The Pagination library is loaded using $pager = \\Config\\Services::pager() in CodeIgniter 4."
+            },
             {
-                id: 21038730,
+                id: 21038729,
                 question: "Which method in the Pagination library is used to create pagination links?",
                 options: [
                     "getLinks()",
-      
-              "createLinks()",
+                    "createLinks()",
                     "paginationLinks()",
                     "generateLinks()"
                 ],
                 correct: 1,
-             
-   explanation: "The createLinks() method is used to create pagination links."
-},
+                explanation: "The createLinks() method is used to create pagination links."
+            },
             {
-                id: 21038731,
+                id: 21038730,
                 question: "Which of the following is a valid configuration option for pagination in CodeIgniter 4?",
                 options: [
                     "perPage",
-    
-                "itemsPerPage",
+                    "itemsPerPage",
                     "resultsPerPage",
                     "items"
                 ],
                 correct: 0,
-           
-     explanation: "'perPage' is a valid configuration option for pagination in CodeIgniter 4."
-},
+                explanation: "'perPage' is a valid configuration option for pagination in CodeIgniter 4."
+            },
             {
-                id: 21038732,
+                id: 21038731,
                 question: "How do you retrieve the current page number in a controller?",
                 options: [
                     "$this->pager->currentPage()",
-       
-             "$this->pager->getPage()",
+                    "$this->pager->getPage()",
                     "$pager->getCurrentPage()",
                     "$pager->getCurrentPage()"
                 ],
                 correct: 2,
-              
-  explanation: "The current page number is retrieved using $pager->getCurrentPage()."
-},
+                explanation: "The current page number is retrieved using $pager->getCurrentPage()."
+            },
             {
-                id: 21038733,
+                id: 21038732,
                 question: "Which method is used to set the number of items per page in pagination?",
                 options: [
                     "$pager->itemsPerPage($perPage)",
-    
-                "$pager->setItemsPerPage($perPage)",
+                    "$pager->setItemsPerPage($perPage)",
                     "$pager->setPerPage($perPage)",
                     "$pager->setItems($perPage)"
                 ],
                 correct: 2,
-           
-     explanation: "The setPerPage() method is used to set the number of items per page."
-},
+                explanation: "The setPerPage() method is used to set the number of items per page."
+            },
             {
-                id: 21038734,
+                id: 21038733,
                 question: "Which method is used to start a session in CodeIgniter 4?",
                 options: [
                     "initSession()",
-       
-             "session()",
+                    "session()",
                     "beginSession()",
                     "startSession()"
                 ],
                 correct: 1,
-              
-  explanation: "The session() method is used to start a session in CodeIgniter 4."
-},
+                explanation: "The session() method is used to start a session in CodeIgniter 4."
+            },
             {
-                id: 21038735,
+                id: 21038734,
                 question: "Which function is used to set session data in CodeIgniter 4?",
                 options: [
                     "set()",
-       
-             "updateSession()",
+                    "updateSession()",
                     "setSessionData()",
                     "addSessionData()"
                 ],
                 correct: 0,
-              
-  explanation: "The set() function is used to set session data in CodeIgniter 4."
-},
+                explanation: "The set() function is used to set session data in CodeIgniter 4."
+            },
             {
-                id: 21038736,
+                id: 21038735,
                 question: "Which session driver uses the file system for storing session data in CodeIgniter 4?",
                 options: [
                     "CodeIgniter\\Session\\Handlers\\DatabaseHandler",
-    
-                "CodeIgniter\\Session\\Handlers\\FileHandler",
+                    "CodeIgniter\\Session\\Handlers\\FileHandler",
                     "CodeIgniter\\Session\\Handlers\\CookieHandler",
                     "CodeIgniter\\Session\\Handlers\\RedisHandler"
                 ],
                 correct: 1,
-           
-     explanation: "The FileHandler uses the file system for storing session data."
-},
+                explanation: "The FileHandler uses the file system for storing session data."
+            },
             {
-                id: 21038737,
+                id: 21038736,
                 question: "How do you retrieve all session data at once in CodeIgniter 4?",
                 options: [
                     "fetchData()",
-      
-              "retrieveAll()",
+                    "retrieveAll()",
                     "getSessionData()",
                     "get() without any arguments"
                 ],
                 correct: 3,
-          
-      explanation: "Calling get() without any arguments retrieves all session data at once."
-},
-            {
-                id: 21043628,
-                question: "How do you ensure a field is not empty and has a value in CodeIgniter 4?",
-                options: [
-                    "required",
-  
-                  "mandatory",
-                    "non_empty",
-                    "filled"
-                ],
-                correct: 0,
-         
-       explanation: "The 'required' rule ensures a field is not empty and has a value."
-},
-            {
-                id: 21043629,
-                question: "Which method is used to retrieve a specific error message for a particular field?",
-                options: [
-                    "retrieveError('field')",
-    
-                "getError('field')",
-                    "showError('field')",
-                    "fetchError('field')"
-                ],
-                correct: 1,
-           
-     explanation: "The getError('field') method retrieves a specific error message for a field."
-},
-            {
-                id: 21043754,
-                question: "Where can validation rules be defined in CodeIgniter 4?",
-                options: [
-                    "In the view files",
-      
-              "In the database schema",
-                    "In the controller or a validation configuration file",
-                    "In the app/Views directory"
-                ],
-                correct: 
-2,
-                explanation: "Validation rules can be defined in the controller or a validation configuration file."
-},
-            {
-                id: 21043755,
-                question: "What is the function of the setvalidation() method in a model?",
-                options: [
-                    "Display validation errors",
-     
-               "Create a validation object",
-                    "Assign validation rules to the model",
-                    "Set default form values"
-                ],
-                correct: 2,
- 
-               explanation: "The setvalidation() method assigns validation rules to the model."
-},
+                explanation: "Calling get() without any arguments retrieves all session data at once."
+            },
             {
                 id: 21038737,
                 question: "What happens to session flashdata after it is retrieved once?",
@@ -780,6 +667,54 @@ the configuration file",
                 ],
                 correct: 1,
                 explanation: "Flashdata is designed to be 'one-time' data. After it is retrieved once (on the next request), the session service automatically removes it."
+            },
+            {
+                id: 21043628,
+                question: "How do you ensure a field is not empty and has a value in CodeIgniter 4?",
+                options: [
+                    "required",
+                    "mandatory",
+                    "non_empty",
+                    "filled"
+                ],
+                correct: 0,
+                explanation: "The 'required' rule ensures a field is not empty and has a value."
+            },
+            {
+                id: 21043629,
+                question: "Which method is used to retrieve a specific error message for a particular field?",
+                options: [
+                    "retrieveError('field')",
+                    "getError('field')",
+                    "showError('field')",
+                    "fetchError('field')"
+                ],
+                correct: 1,
+                explanation: "The getError('field') method retrieves a specific error message for a field."
+            },
+            {
+                id: 21043754,
+                question: "Where can validation rules be defined in CodeIgniter 4?",
+                options: [
+                    "In the view files",
+                    "In the database schema",
+                    "In the controller or a validation configuration file",
+                    "In the app/Views directory"
+                ],
+                correct: 2,
+                explanation: "Validation rules can be defined in the controller or a validation configuration file."
+            },
+            {
+                id: 21043755,
+                question: "What is the function of the setValidation() method in a model?",
+                options: [
+                    "Display validation errors",
+                    "Create a validation object",
+                    "Assign validation rules to the model",
+                    "Set default form values"
+                ],
+                correct: 2,
+                explanation: "The setvalidation() method assigns validation rules to the model."
             },
             {
                 id: 21043946,
@@ -966,7 +901,7 @@ the configuration file",
                 question: "Where can you configure the default pagination settings in CodeIgniter 4?",
                 options: [
                     "app/Config/Pager.php",
-                    "app/Config/Pager.php",
+                    "app/Config/Pagination.php",
                     "app/Views/Pagination.php",
                     "app/Models/Pagination.php"
                 ],
