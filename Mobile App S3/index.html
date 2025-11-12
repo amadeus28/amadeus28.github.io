@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile App Reviewer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+        
+        body {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+}
+        
+        .container {
+            max-width: 900px;
+width: 100%;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            margin-top: 20px;
+}
+        
+        header {
+            background: #3498db;
+color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 32px;
+margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        header p {
+            font-size: 18px;
+opacity: 0.9;
+        }
+        
+        .progress-bar {
+            height: 10px;
+background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            margin-top: 15px;
+            overflow: hidden;
+}
+        
+        .progress {
+            height: 100%;
+background-color: #2ecc71;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .stats {
+            display: flex;
+justify-content: space-between;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .quiz-container {
+            padding: 30px;
+}
+        
+        .question-number {
+            font-size: 18px;
+color: #3498db;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .question-text {
+            font-size: 22px;
+font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            color: #2c3e50;
+        }
+        
+        .options-container {
+            display: flex;
+flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .option {
+            padding: 16px;
+border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            background-color: white;
+}
+        
+        .option:hover {
+            background-color: #f1f8ff;
+border-color: #3498db;
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            border-color: #3498db;
+background-color: #e3f2fd;
+        }
+        
+        .option.correct {
+            border-color: #2ecc71;
+background-color: #e8f5e9;
+        }
+        
+        .option.incorrect {
+            border-color: #e74c3c;
+background-color: #ffebee;
+        }
+        
+        .navigation {
+            display: flex;
+justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+}
+        
+        #prev-btn {
+            background-color: #ecf0f1;
+color: #2c3e50;
+        }
+        
+        #prev-btn:hover:not(:disabled) {
+            background-color: #bdc3c7;
+}
+        
+        #next-btn, #submit-btn {
+            background-color: #3498db;
+color: white;
+        }
+        
+        #next-btn:hover, #submit-btn:hover {
+            background-color: #2980b9;
+}
+        
+        button:disabled {
+            opacity: 0.6;
+cursor: not-allowed;
+        }
+        
+        .results-container {
+            text-align: center;
+padding: 40px 20px;
+            display: none;
+        }
+        
+        .score {
+            font-size: 48px;
+font-weight: 700;
+            color: #3498db;
+            margin: 20px 0;
+        }
+        
+        .message {
+            font-size: 24px;
+margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .restart-btn {
+            background-color: #2ecc71;
+color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+        }
+        
+        .restart-btn:hover {
+            background-color: #27ae60;
+}
+        
+        .explanation {
+            margin-top: 20px;
+padding: 15px;
+            background-color: #f1f8ff;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            display: none;
+}
+        
+        .explanation h3 {
+            color: #3498db;
+margin-bottom: 10px;
+        }
+        
+        .explanation p {
+            line-height: 1.5;
+}
+        
+        .question-list {
+            display: flex;
+flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        .question-indicator {
+            width: 40px;
+height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ecf0f1;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+}
+        
+        .question-indicator:hover {
+            background-color: #bdc3c7;
+}
+        
+        .question-indicator.answered {
+            background-color: #3498db;
+color: white;
+        }
+        
+        .question-indicator.current {
+            border: 3px solid #2ecc71;
+}
+        
+        @media (max-width: 600px) {
+            .container {
+                margin-top: 10px;
+}
+            
+            .quiz-container {
+                padding: 20px;
+}
+            
+            .question-text {
+                font-size: 20px;
+}
+            
+            button {
+                padding: 10px 20px;
+}
+            
+            .question-indicator {
+                width: 35px;
+height: 35px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mobile App Reviewer</h1>
+            <p>Test your knowledge of Mobile App concepts</p>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+        
+    </div>
+            <div class="stats">
+                <span id="answered-count">0/54 answered</span>
+                <span id="score-display">Score: 0</span>
+            </div>
+        </header>
+        
+        <div class="quiz-container" id="quiz-container">
+         
+   <div class="question-number" id="question-number">Question 1 of 54</div>
+            <div class="question-text" id="question-text"></div>
+            <div class="options-container" id="options-container"></div>
+            <div class="explanation" id="explanation">
+                <h3>Explanation</h3>
+                <p id="explanation-text"></p>
+            </div>
+     
+       <div class="navigation">
+                <button id="prev-btn" disabled>Previous</button>
+                <button id="next-btn">Next Question</button>
+                <button id="submit-btn" style="display: none;">Submit Quiz</button>
+            </div>
+            <div class="question-list" id="question-list"></div>
+        </div>
+  
+      
+        <div class="results-container" id="results-container">
+            <h2>Quiz Completed!</h2>
+            <div class="score" id="score">0/54</div>
+            <div class="message" id="message"></div>
+            <button class="restart-btn" id="restart-btn">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz questions data - 54 questions from PDF
+        const quizData = [
+            {
+                id: 21113045,
+                question: "The following characteristics are part of ______: Table View - Plain Table or Grouped Table, Table view with NavigationBar (Stack), View with Tabbed, Multi Views",
+                options: [
+                    "View Controller",
+                    "View Types",
+                    "View Model",
+                    "View Navigation"
+                ],
+                correct: 1,
+                explanation: "These are examples of different View Types in mobile app development."
+            },
+            {
+                id: 21113046,
+                question: "Displays device's current battery level, 3G connection, bars of reception, phone carrier, and a whole lot more. It's recommended that you always include these elements.",
+                options: [
+                    "Menu Bar",
+                    "Home",
+                    "Status Bar",
+                    "Console"
+                ],
+                correct: 2,
+                explanation: "The Status Bar displays device-level information like battery, time, and connectivity."
+            },
+            {
+                id: 21113048,
+                question: "Appears at the bottom of the iPhone app. This will hold a few icons tied to some functions such as Share, Download, Delete, etc.",
+                options: [
+                    "Status Bar",
+                    "Option Menu",
+                    "Tool Bar",
+                    "Menu Bar"
+                ],
+                correct: 2,
+                explanation: "A Tool Bar typically appears at the bottom and holds action buttons like Share, Download, etc."
+            },
+            {
+                id: 21113049,
+                question: "Gives your users the option to navigate between page hierarchies. This often includes a button on the left side of the bar to enable the user to return to the previous app view.",
+                options: [
+                    "Tool Bar",
+                    "Tab Bar",
+                    "Multitask",
+                    "Status Bar"
+                ],
+                correct: 1,
+                explanation: "This question is tricky. While the description matches a Navigation Bar, the quiz answer is 'Tab Bar'. A Tab Bar lets users switch between different sections."
+            },
+            {
+                id: 21113050,
+                question: "The following describes a ______: Is a container, Some properties: rootViewController - initial vc, viewControllers - all vc in the stack, topViewControllers - visible vc",
+                options: [
+                    "Navigation Controller",
+                    "Navigation Model",
+                    "Navigation Routing",
+                    "Navigation View"
+                ],
+                correct: 0,
+                explanation: "A Navigation Controller is a container that manages a stack of view controllers."
+            },
+            {
+                id: 21113051,
+                question: "Navigation Controller uses ______ segue",
+                options: [
+                    "Deque",
+                    "Push",
+                    "Queue",
+                    "Pop"
+                ],
+                correct: 1,
+                explanation: "A 'push' segue adds a new view controller to the navigation stack."
+            },
+            {
+                id: 21113052,
+                question: "Contains UITableViewCell Objects",
+                options: [
+                    "Table Cell",
+                    "Table View",
+                    "Table Menu",
+                    "Table Row"
+                ],
+                correct: 1,
+                explanation: "A Table View (UITableView) is the container that holds and manages Table View Cells (UITableViewCell)."
+            },
+            {
+                id: 21113053,
+                question: "Doesn't necessarily need a custom class if all you need are standard seques",
+                options: [
+                    "Dynamic Table",
+                    "Static Reference",
+                    "Static Table",
+                    "Dynamic Reference"
+                ],
+                correct: 2,
+                explanation: "A Static Table is often used for settings or forms and doesn't require a custom data source class if configured in the storyboard."
+            },
+            {
+                id: 21113054,
+                question: "Build one or more prototypes cells in story board",
+                options: [
+                    "Dynamic Prototypes",
+                    "ARC",
+                    "Static Prototype",
+                    "Garbage Collector"
+                ],
+                correct: 0,
+                explanation: "Dynamic Prototypes allow you to design a cell in the storyboard and reuse it dynamically for lists."
+            },
+            {
+                id: 21113055,
+                question: "Notification displays device's current battery level, 3G connection, bars of reception, phone carrier, and a whole lot more. It's recommended that you always include these elements.",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 0,
+                explanation: "This statement is False. The Status Bar displays this information, not a Notification."
+            },
+            {
+                id: 21113057,
+                question: "Toolbar appears at the bottom of the iPhone app. This will hold a few icons tied to some functions such as Share, Download, Delete, etc.",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. A Toolbar is commonly used for this purpose."
+            },
+            {
+                id: 21113058,
+                question: "Tab Bar gives your users the option to navigate between page hierarchies. This often includes a button on the left side of the bar to enable the user to return to the previous app view.",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 0,
+                explanation: "This statement is False. It describes a Navigation Bar, not a Tab Bar."
+            },
+            {
+                id: 21113059,
+                question: "Navigation Controller is a container.",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. A Navigation Controller is a container view controller."
+            },
+            {
+                id: 21113061,
+                question: "Tab Bar Controller's View Controllers are loaded concurrently.",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 0,
+                explanation: "This statement is False. Typically, only the first view controller is loaded, and others are lazy-loaded when their tab is selected."
+            },
+            {
+                id: 21113062,
+                question: "Table View is a scroll view.",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 0,
+                explanation: "This statement is True. A UITableView inherits from UIScrollView."
+            },
+            {
+                id: 21113063,
+                question: "Table Views can be static or dynamic",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 0,
+                explanation: "This statement is True. Table Views can be configured as static (e.g., for settings) or dynamic (for lists)."
+            },
+            {
+                id: 21113086,
+                question: "Contains or encapsulates the data that your app uses",
+                options: [
+                    "Model",
+                    "View",
+                    "Controller",
+                    "No answer text provided."
+                ],
+                correct: 0,
+                explanation: "The Model (in MVC) contains or encapsulates the app's data."
+            },
+            {
+                id: 21113087,
+                question: "The model provides ways to be accessed by the controller, sometimes directly (like properties), or through other API calls or objects",
+                options: [
+                    "View",
+                    "Controller",
+                    "Model",
+                    "No answer text provided."
+                ],
+                correct: 1,
+                explanation: "The Controller accesses the model to get or update data."
+            },
+            {
+                id: 21113088,
+                question: "The visible part of your app",
+                options: [
+                    "No answer text provided.",
+                    "Controller",
+                    "View",
+                    "Model"
+                ],
+                correct: 2,
+                explanation: "The View is the visible part of your app (the UI)."
+            },
+            {
+                id: 21113089,
+                question: "Interacts with the user",
+                options: [
+                    "Controller",
+                    "No answer text provided.",
+                    "Model",
+                    "View"
+                ],
+                correct: 3,
+                explanation: "The View (UI elements like buttons, sliders) is what interacts with the user."
+            },
+            {
+                id: 21113090,
+                question: "Talks to the controller when things happen",
+                options: [
+                    "Model",
+                    "No answer text provided.",
+                    "View",
+                    "Controller"
+                ],
+                correct: 2,
+                explanation: "The View sends action messages to the Controller when the user interacts with it."
+            },
+            {
+                id: 21113091,
+                question: "Gets and processes interactions from the view",
+                options: [
+                    "Controller",
+                    "View",
+                    "No answer text provided.",
+                    "Model"
+                ],
+                correct: 0,
+                explanation: "The Controller gets and processes interactions from the View."
+            },
+            {
+                id: 21113092,
+                question: "Updates the view based on what happens (in the view, the model, or external factors)",
+                options: [
+                    "Model",
+                    "Controller",
+                    "No answer text provided.",
+                    "View"
+                ],
+                correct: 1,
+                explanation: "The Controller updates the View based on changes or events."
+            },
+            {
+                id: 21113093,
+                question: "Updates the model based on what happens (in the view, the model or external factors",
+                options: [
+                    "Controller",
+                    "View",
+                    "Model",
+                    "No answer text provided."
+                ],
+                correct: 0,
+                explanation: "The Controller is responsible for updating the Model."
+            },
+            {
+                id: 21113094,
+                question: "Refers to a design pattern where a target object and a method in that object is called in response to specific events",
+                options: [
+                    "Target Class",
+                    "Target Action",
+                    "Action Menu",
+                    "Target"
+                ],
+                correct: 1,
+                explanation: "This describes the Target-Action design pattern."
+            },
+            {
+                id: 21113095,
+                question: "Used to specify code in response to changes to properties",
+                options: [
+                    "Property Manager",
+                    "Property Observers",
+                    "Property Listeners",
+                    "Property Responders"
+                ],
+                correct: 1,
+                explanation: "Property Observers (like `willSet` and `didSet` in Swift) execute code in response to property changes."
+            },
+            {
+                id: 21113096,
+                question: "Controller Contains or encapsulates the data that your app uses",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 0,
+                explanation: "This statement is False. The Model contains the data, not the Controller."
+            },
+            {
+                id: 21113097,
+                question: "Views Contains or encapsulates the data that your app uses",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 1,
+                explanation: "This statement is False. The Model contains the data, not the View."
+            },
+            {
+                id: 21113098,
+                question: "View is what you create in interface builder",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. Interface Builder is used to visually design the Views."
+            },
+            {
+                id: 21113099,
+                question: "Model is what you create in interface builder",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 0,
+                explanation: "This statement is False. The View is created in Interface Builder; the Model is typically code."
+            },
+            {
+                id: 21113100,
+                question: "Controller gets and processes interactions from the view",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. This is a primary role of the Controller."
+            },
+            {
+                id: 21113101,
+                question: "Controller retrieves and updates information in the model",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. The Controller mediates between the View and Model."
+            },
+            {
+                id: 21113102,
+                question: "View retrieves and updates information in the model",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 1,
+                explanation: "This statement is False. The View should not directly interact with the Model; that is the Controller's job."
+            },
+            {
+                id: 21113103,
+                question: "The model should be valid for multiple views for things like adaptive layouts",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. A well-designed Model is view-agnostic."
+            },
+            {
+                id: 21113104,
+                question: "Protocol to allow multiple objects to communicate",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 1,
+                explanation: "This statement is False. This describes a Delegate or Notification, not a Protocol (which defines a blueprint of methods)."
+            },
+            {
+                id: 21113105,
+                question: "Property Observers are used to specify code in response to changes to properties",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. This is the definition of Property Observers."
+            },
+            {
+                id: 21175778,
+                question: "VCs are loaded concurrently",
+                options: [
+                    "Tab Bar Controller",
+                    "Tabs",
+                    "Tab Menu",
+                    "Tab View"
+                ],
+                correct: 0,
+                explanation: "This is a poorly phrased question, but it likely refers to a Tab Bar Controller's view controllers."
+            },
+            {
+                id: 21175779,
+                question: "The ______ class defines three properties for this cell content: textLabel, detailTextLabel, imageView",
+                options: [
+                    "UITable",
+                    "UITableController",
+                    "UITableMenu",
+                    "UITableViewCell"
+                ],
+                correct: 3,
+                explanation: "The UITableViewCell class defines these default properties."
+            },
+            {
+                id: 21175780,
+                question: "Represent a significant change to how we, as developers, construct our user interfaces using Interface Builder.",
+                options: [
+                    "Delegate",
+                    "Segue",
+                    "Storyboard",
+                    "Protocol"
+                ],
+                correct: 2,
+                explanation: "Storyboards represent a major change in how UIs are constructed in Interface Builder."
+            },
+            {
+                id: 21175782,
+                question: "Navigation Bar gives your users the option to navigate between page hierarchies. This often includes a button on the left side of the bar to enable the user to return to the previous app view.",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. This is the correct description of a Navigation Bar."
+            },
+            {
+                id: 21175783,
+                question: "Navigation Model is a container.",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 1,
+                explanation: "This statement is False. A Navigation Controller is a container; 'Navigation Model' is not a standard component."
+            },
+            {
+                id: 21175784,
+                question: "Navigation Controller Manages the Navigation Bar",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. The Navigation Controller is responsible for displaying and managing the Navigation Bar."
+            },
+            {
+                id: 21175785,
+                question: "Table View is a navigation controller.",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 1,
+                explanation: "This statement is False. A Table View is a UI element for displaying lists; it is not a controller."
+            },
+            {
+                id: 21176331,
+                question: "The ______ is the transition between view controllers.",
+                options: [
+                    "Navigation",
+                    "Animation",
+                    "segue",
+                    "Storyboard"
+                ],
+                correct: 2,
+                explanation: "A 'segue' represents a transition between view controllers in a storyboard."
+            },
+            {
+                id: 21176332,
+                question: "______ doesn't need to define a data source for the view controller.",
+                options: [
+                    "Responsive Table",
+                    "Dynamic Table",
+                    "Content Table",
+                    "Static table"
+                ],
+                correct: 3,
+                explanation: "A Static table, when configured in Interface Builder, does not require a dynamic data source."
+            },
+            {
+                id: 21176334,
+                question: "Segue represent a significant change to how we, as developers, construct our user interfaces using Interface Builder.",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 1,
+                explanation: "This statement is False. Storyboards represent the significant change; segues are a *part* of storyboards."
+            },
+            {
+                id: 21176335,
+                question: "Storyboarding greatly simplifies the setup between view controllers. It allows a new graphical representation of the flow between screens.",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. This is the primary benefit of storyboarding."
+            },
+            {
+                id: 21176355,
+                question: "Can be a simple property in the controller, an array or other structure, a local file or database, or data from an external source such as a web service",
+                options: [
+                    "View",
+                    "No answer text provided.",
+                    "Model",
+                    "Controller"
+                ],
+                correct: 2,
+                explanation: "This describes the Model, which can hold data from any source."
+            },
+            {
+                id: 21176356,
+                question: "Used to allow multiple objects to communicate",
+                options: [
+                    "Segue",
+                    "Protocol",
+                    "Storyboard",
+                    "Delegate"
+                ],
+                correct: 3,
+                explanation: "The Delegate design pattern is used to allow one object to communicate with another."
+            },
+            {
+                id: 21176357,
+                question: "Model can be a simple property in the controller, an array or other structure, a local file or database, or data from an external source such as a web service",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. This is a correct description of a Model."
+            },
+            {
+                id: 21176358,
+                question: "The model provides ways to be accessed by the controller, sometimes directly (like properties), or through other API calls or objects",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 0,
+                explanation: "This statement is True. The Controller reads from and updates the Model."
+            },
+            {
+                id: 21176359,
+                question: "Controller is what you create in interface builder",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 0,
+                explanation: "This statement is False. You create Views in Interface Builder. Controllers are typically code files, though they are *linked* in IB."
+            },
+            {
+                id: 21176360,
+                question: "Controller interacts with the user",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 1,
+                explanation: "This statement is False. The View interacts with the user; the Controller *processes* those interactions."
+            },
+            {
+                id: 21176361,
+                question: "The Controller elements are accessed by the controller by name",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 0,
+                explanation: "This statement is False. UI elements are typically connected to the controller via outlets (properties), not accessed by a string name."
+            },
+            {
+                id: 21177961,
+                question: "Tab Bar Controller's View Controllers are loaded one at a time.",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 1,
+                explanation: "This statement is False. As in a previous question, VCs are lazy-loaded as tabs are selected."
+            },
+            {
+                id: 21177964,
+                question: "What you create in interface builder",
+                options: [
+                    "Controller",
+                    "Model",
+                    "View",
+                    "No answer text provided."
+                ],
+                correct: 2,
+                explanation: "The View (UI) is what you create in Interface Builder."
+            },
+            {
+                id: 21177965,
+                question: "Retrieves and updates information in the model",
+                options: [
+                    "Model",
+                    "No answer text provided.",
+                    "View",
+                    "Controller"
+                ],
+                correct: 3,
+                explanation: "The Controller retrieves and updates information in the Model."
+            },
+            {
+                id: 21177966,
+                question: "Model Contains or encapsulates the data that your app uses",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 1,
+                explanation: "This statement is True. This is the definition of the Model."
+            },
+            {
+                id: 21177967,
+                question: "View is visible part of your app",
+                options: [
+                    "True",
+                    "False"
+                ],
+                correct: 0,
+                explanation: "This statement is True. The View is the visible UI."
+            },
+            {
+                id: 21177968,
+                question: "Target Location refers to a design pattern where a target object and a method in that object is called in response to specific events",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 0,
+                explanation: "This statement is False. The pattern is called Target-Action, not Target-Location."
+            },
+            {
+                id: 21183497,
+                question: "Model gets and processes interactions from the view",
+                options: [
+                    "False",
+                    "True"
+                ],
+                correct: 0,
+                explanation: "This statement is False. The Controller gets and processes interactions from the View."
+            },
+            {
+                id: 21183852,
+                question: "Are announcements or broadcasts that can be generated both internal and external to the app",
+                options: [
+                    "Menu",
+                    "Alert",
+                    "Toast",
+                    "Notifications"
+                ],
+                correct: 3,
+                explanation: "Notifications are broadcasts that can be generated both internally (local notifications) and externally (push notifications)."
+            }
+        ];
+
+
+        // DOM elements
+        const quizContainer = document.getElementById('quiz-container');
+const resultsContainer = document.getElementById('results-container');
+        const questionNumber = document.getElementById('question-number');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const scoreElement = document.getElementById('score');
+        const messageElement = document.getElementById('message');
+const progressBar = document.getElementById('progress');
+        const explanation = document.getElementById('explanation');
+        const explanationText = document.getElementById('explanation-text');
+        const questionList = document.getElementById('question-list');
+        const answeredCount = document.getElementById('answered-count');
+const scoreDisplay = document.getElementById('score-display');
+
+        // Quiz state
+        let currentQuestion = 0;
+let score = 0;
+        let userAnswers = Array(quizData.length).fill(null);
+        let shuffledQuestions = [];
+// Initialize the quiz
+        function initQuiz() {
+            // Shuffle the questions
+            shuffledQuestions = [...quizData];
+shuffleArray(shuffledQuestions);
+            
+            // Reset state
+            currentQuestion = 0;
+score = 0;
+            userAnswers = Array(shuffledQuestions.length).fill(null);
+            
+            // Create question indicators
+            createQuestionIndicators();
+// Show first question
+            showQuestion();
+// Hide results, show quiz
+            resultsContainer.style.display = 'none';
+quizContainer.style.display = 'block';
+            
+            // Update progress and stats
+            updateProgressBar();
+updateStats();
+        }
+
+        // Create question indicators
+        function createQuestionIndicators() {
+            questionList.innerHTML = '';
+for (let i = 0; i < shuffledQuestions.length; i++) {
+                const indicator = document.createElement('div');
+indicator.classList.add('question-indicator');
+                indicator.textContent = i + 1;
+                indicator.addEventListener('click', () => {
+                    currentQuestion = i;
+                    showQuestion();
+                });
+questionList.appendChild(indicator);
+            }
+        }
+
+        // Show current question
+        function showQuestion() {
+            const question = shuffledQuestions[currentQuestion];
+// Update question number and text
+            questionNumber.textContent = `Question ${currentQuestion + 1} of ${shuffledQuestions.length}`;
+questionText.textContent = question.question;
+            
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+// Shuffle options for this question
+            const shuffledOptions = [...question.options];
+            // shuffleArray(shuffledOptions); // Optionally disable option shuffling
+            
+            // Find the index of the correct answer in the shuffled options
+            const correctIndex = shuffledOptions.indexOf(question.options[question.correct]);
+// Create option elements
+            shuffledOptions.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                
+             
+   // If user has already answered this question, show the result
+                if (userAnswers[currentQuestion] !== null) {
+                    if (index === correctIndex) {
+                        optionElement.classList.add('correct');
+                   
+ } else if (userAnswers[currentQuestion] === index && index !== correctIndex) {
+                        optionElement.classList.add('incorrect');
+                    }
+                    
+                    if (userAnswers[currentQuestion] === index) {
+ 
+                       optionElement.classList.add('selected');
+                    }
+                }
+                
+                optionElement.addEventListener('click', () => selectOption(index, correctIndex));
+optionsContainer.appendChild(optionElement);
+            });
+            
+            // Show explanation if user has answered
+            if (userAnswers[currentQuestion] !== null) {
+                explanationText.textContent = question.explanation;
+explanation.style.display = 'block';
+            } else {
+                explanation.style.display = 'none';
+}
+            
+            // Update navigation buttons
+            updateNavigationButtons();
+// Update question indicators
+            updateQuestionIndicators();
+// Update stats
+            updateStats();
+}
+
+        // Select an option
+        function selectOption(selectedIndex, correctIndex) {
+            // Prevent re-answering
+            if (userAnswers[currentQuestion] !== null) {
+                return;
+            }
+
+            // Store user's answer
+            userAnswers[currentQuestion] = selectedIndex;
+// Get all option elements
+            const options = document.querySelectorAll('.option');
+// Mark selected option
+            options[selectedIndex].classList.add('selected');
+// Check if answer is correct
+            if (selectedIndex === correctIndex) {
+                options[selectedIndex].classList.add('correct');
+                score++; // Only increment score on first selection
+
+            } else {
+                options[selectedIndex].classList.add('incorrect');
+// Also show the correct answer
+                options[correctIndex].classList.add('correct');
+
+            }
+            
+            // Show explanation
+            explanationText.textContent = shuffledQuestions[currentQuestion].explanation;
+explanation.style.display = 'block';
+            
+            // Update navigation buttons
+            updateNavigationButtons();
+// Update question indicators
+            updateQuestionIndicators();
+// Update stats
+            updateStats();
+}
+
+        // Update navigation buttons
+        function updateNavigationButtons() {
+            // Previous button
+            prevBtn.disabled = currentQuestion === 0;
+// Next/Submit button
+            if (currentQuestion === shuffledQuestions.length - 1) {
+                nextBtn.style.display = 'none';
+submitBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+submitBtn.style.display = 'none';
+            }
+            
+            // Update progress bar
+            updateProgressBar();
+}
+
+        // Update progress bar
+        function updateProgressBar() {
+            const answered = userAnswers.filter(answer => answer !== null).length;
+            const progress = (answered / shuffledQuestions.length) * 100;
+progressBar.style.width = `${progress}%`;
+        }
+
+        // Update question indicators
+        function updateQuestionIndicators() {
+            const indicators = document.querySelectorAll('.question-indicator');
+indicators.forEach((indicator, index) => {
+                indicator.classList.remove('current', 'answered');
+                if (index === currentQuestion) {
+                    indicator.classList.add('current');
+                }
+                if (userAnswers[index] !== null) {
+    
+                indicator.classList.add('answered');
+                }
+            });
+}
+
+        // Update stats
+        function updateStats() {
+            const answered = userAnswers.filter(answer => answer !== null).length;
+answeredCount.textContent = `${answered}/${shuffledQuestions.length} answered`;
+            scoreDisplay.textContent = `Score: ${score}`;
+        }
+
+        // Show results
+        function showResults() {
+            quizContainer.style.display = 'none';
+resultsContainer.style.display = 'block';
+            
+            // Calculate score
+            const percentage = (score / shuffledQuestions.length) * 100;
+scoreElement.textContent = `${score}/${shuffledQuestions.length}`;
+            
+            // Set message based on score
+            if (percentage >= 90) {
+                messageElement.textContent = "Excellent! You're a Mobile App expert!";
+} else if (percentage >= 70) {
+                messageElement.textContent = "Good job! You have a solid understanding of Mobile App concepts.";
+} else if (percentage >= 50) {
+                messageElement.textContent = "Not bad! Keep studying to improve your knowledge.";
+} else {
+                messageElement.textContent = "Keep practicing! Review the concepts to improve.";
+}
+        }
+
+        // Utility function to shuffle array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+[array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+}
+
+        // Event listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        });
+nextBtn.addEventListener('click', () => {
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            }
+        });
+submitBtn.addEventListener('click', showResults);
+
+        restartBtn.addEventListener('click', initQuiz);
+
+        // Initialize the quiz when page loads
+        window.addEventListener('load', initQuiz);
+</script>
+</body>
+</html>
