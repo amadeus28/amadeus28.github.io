@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Networking & Cloud Computing Reviewer</title>
+    <title>Networking Reviewer Ultimate</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary: #2563eb;
@@ -17,6 +19,9 @@
             --wrong-bg: #fee2e2;
             --wrong-border: #ef4444;
             --wrong-text: #7f1d1d;
+            --selected-bg: #eff6ff;
+            --selected-border: #3b82f6;
+            --ai-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
         }
 
         body {
@@ -41,17 +46,24 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
         h1 {
             margin: 0;
             font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .controls {
             display: flex;
             gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         button {
@@ -60,7 +72,8 @@
             border: none;
             border-radius: 4px;
             font-weight: 600;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            font-size: 0.9rem;
         }
 
         .btn-light {
@@ -77,48 +90,79 @@
         }
         .btn-primary:hover {
             background: var(--primary-hover);
+            transform: translateY(-1px);
         }
 
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
+        .btn-submit {
+            background-color: #059669;
+            color: white;
+            width: 100%;
+            margin-top: 1rem;
+            padding: 1rem;
+            font-size: 1.1rem;
         }
-        .btn-outline:hover {
-            background: #eff6ff;
+        .btn-submit:hover { background-color: #047857; }
+
+        /* AI Buttons */
+        .btn-ai {
+            background: var(--ai-gradient);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-ai:hover {
+            opacity: 0.95;
+            box-shadow: 0 2px 10px rgba(168, 85, 247, 0.4);
         }
 
         /* Main Container */
         main {
             flex: 1;
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
             margin: 2rem auto;
             padding: 0 1rem;
+            box-sizing: border-box;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             padding: 2rem;
             margin-bottom: 1rem;
+            border: 1px solid #e5e7eb;
         }
 
         .question-header {
             display: flex;
             justify-content: space-between;
             color: #6b7280;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             margin-bottom: 1rem;
+            font-weight: 500;
         }
 
         .question-text {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.35rem;
+            font-weight: 700;
             margin-bottom: 1.5rem;
-            line-height: 1.5;
+            line-height: 1.4;
+            color: #111827;
         }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-multi { background: #dbeafe; color: #1e40af; }
+        .badge-single { background: #f3f4f6; color: #374151; }
+        .badge-match { background: #fce7f3; color: #9d174d; }
 
         /* Options */
         .options-grid {
@@ -130,13 +174,14 @@
         .option-btn {
             width: 100%;
             text-align: left;
-            padding: 1rem;
+            padding: 1.25rem;
             border: 2px solid #e5e7eb;
             background: white;
-            border-radius: 6px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 1.05rem;
             color: var(--text);
             transition: all 0.2s;
+            position: relative;
         }
 
         .option-btn:hover:not(:disabled) {
@@ -144,16 +189,93 @@
             background-color: #f8fafc;
         }
 
+        /* Selected State (Before Submission) */
+        .option-btn.selected {
+            border-color: var(--selected-border);
+            background-color: var(--selected-bg);
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+
+        /* Correct/Wrong States (After Submission) */
         .option-btn.correct {
-            background-color: var(--correct-bg);
-            border-color: var(--correct-border);
-            color: var(--correct-text);
+            background-color: var(--correct-bg) !important;
+            border-color: var(--correct-border) !important;
+            color: var(--correct-text) !important;
         }
 
         .option-btn.wrong {
-            background-color: var(--wrong-bg);
+            background-color: var(--wrong-bg) !important;
+            border-color: var(--wrong-border) !important;
+            color: var(--wrong-text) !important;
+        }
+        
+        /* Marker icons for feedback */
+        .option-btn i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+        }
+
+        /* Matching Game Styles */
+        .matching-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 1rem;
+        }
+        
+        .matching-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .match-item {
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .match-item:hover:not(.disabled) {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .match-item.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+        }
+
+        .match-item.matched-correct {
+            border-color: var(--correct-border);
+            background: var(--correct-bg);
+            color: var(--correct-text);
+            opacity: 0.8;
+            pointer-events: none;
+        }
+        
+        .match-item.matched-wrong {
             border-color: var(--wrong-border);
+            background: var(--wrong-bg);
             color: var(--wrong-text);
+        }
+
+        @media (max-width: 600px) {
+            .matching-container {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Explanation */
@@ -163,26 +285,47 @@
             background-color: #f0f9ff;
             border-left: 4px solid var(--primary);
             border-radius: 4px;
-            display: none; /* Hidden by default */
+            display: none;
         }
 
         .explanation.visible {
             display: block;
+            animation: slideDown 0.3s ease;
         }
 
-        .explanation h4 {
-            margin-top: 0;
-            color: var(--primary);
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Navigation Bar */
-        .nav-bar {
-            display: flex;
-            justify-content: space-between;
+        /* AI Response Box */
+        .ai-response-box {
             margin-top: 1rem;
+            padding: 1.5rem;
+            background-color: #faf5ff;
+            border: 1px solid #e9d5ff;
+            border-radius: 8px;
+            color: #4c1d95;
+            display: none;
+            line-height: 1.6;
+        }
+        .ai-response-box.visible {
+            display: block;
         }
 
-        /* Modal for Map */
+        .loading-spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -194,67 +337,59 @@
             z-index: 100;
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(2px);
         }
 
         .modal-content {
             background: white;
             padding: 2rem;
-            border-radius: 8px;
-            max-width: 600px;
+            border-radius: 12px;
+            max-width: 700px;
             width: 90%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
         .q-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+            gap: 10px;
+            margin-top: 1rem;
         }
 
         .q-cell {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            transition: all 0.1s;
         }
-
+        .q-cell:hover { transform: scale(1.1); background: #f3f4f6; }
         .q-cell.current { border-color: var(--primary); border-width: 2px; }
         .q-cell.correct { background-color: var(--correct-bg); color: var(--correct-text); border-color: var(--correct-border); }
         .q-cell.wrong { background-color: var(--wrong-bg); color: var(--wrong-text); border-color: var(--wrong-border); }
-        
-        .shuffle-toggle {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.9rem;
-            color: white;
-        }
 
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Net/Cloud Reviewer</h1>
+    <h1><i class="fas fa-cloud-network"></i> NetReview Ultimate</h1>
     <div class="controls">
-        <label class="shuffle-toggle">
+        <label style="color:white; font-size:0.9rem; display:flex; align-items:center; gap:5px; cursor:pointer;">
             <input type="checkbox" id="shuffleCheck"> Randomize
         </label>
-        <button class="btn-light" onclick="toggleMap()">Show All Questions</button>
-        <button class="btn-light" style="background-color: #dc2626;" onclick="resetQuiz()">Reset</button>
+        <button class="btn-light" onclick="toggleMap()"><i class="fas fa-th"></i> Map</button>
+        <button class="btn-light" style="background-color: #dc2626;" onclick="resetQuiz()"><i class="fas fa-undo"></i> Reset</button>
+        <button class="btn-ai" id="btn-generate" onclick="generateAIQuestion()">
+            <i class="fas fa-magic"></i> New Q
+        </button>
     </div>
 </header>
 
@@ -262,393 +397,193 @@
     <div class="card" id="quiz-card">
         <div class="question-header">
             <span id="q-progress">Question 1 of 49</span>
+            <span class="badge" id="q-type-badge">Single Choice</span>
             <span id="q-status">Not Answered</span>
         </div>
-        <div class="question-text" id="q-text">
-            Loading...
-        </div>
-        <div class="options-grid" id="options-container">
-            <!-- Options injected here -->
-        </div>
+        
+        <div class="question-text" id="q-text">Loading...</div>
+        
+        <!-- Containers for different question types -->
+        <div id="options-container" class="options-grid"></div>
+        <div id="matching-container" class="matching-container" style="display:none;"></div>
+
+        <!-- Action Buttons -->
+        <button id="btn-submit-multi" class="btn-submit" style="display:none;" onclick="submitMultiSelect()">
+            Submit Answer
+        </button>
         
         <div class="explanation" id="explanation-box">
-            <h4>Explanation</h4>
-            <p id="explanation-text"></p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <h4 style="margin:0; color:var(--primary);">Explanation</h4>
+                <button class="btn-ai" id="btn-explain" onclick="simplifyExplanation()" style="font-size:0.8rem; padding: 0.3rem 0.6rem;">
+                    <i class="fas fa-robot"></i> Explain Like I'm 5
+                </button>
+            </div>
+            <p id="explanation-text" style="margin:0;"></p>
+            <div id="ai-explanation" class="ai-response-box"></div>
         </div>
     </div>
 
-    <div class="nav-bar">
-        <button class="btn-primary" onclick="prevQuestion()" id="btn-prev">Previous</button>
-        <button class="btn-primary" onclick="nextQuestion()" id="btn-next">Next</button>
+    <div class="nav-bar" style="display:flex; justify-content:space-between;">
+        <button class="btn-primary" onclick="prevQuestion()" id="btn-prev"><i class="fas fa-arrow-left"></i> Previous</button>
+        <button class="btn-primary" onclick="nextQuestion()" id="btn-next">Next <i class="fas fa-arrow-right"></i></button>
     </div>
 </main>
 
-<!-- Modal -->
+<!-- Modal for Map -->
 <div class="modal" id="map-modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h2>Question Map</h2>
-            <button onclick="toggleMap()">Close</button>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="margin:0;">Question Map</h2>
+            <button class="btn-light" style="background:#9ca3af; color:white;" onclick="toggleMap()"><i class="fas fa-times"></i></button>
         </div>
-        <div class="q-grid" id="q-grid">
-            <!-- Grid items -->
-        </div>
+        <div class="q-grid" id="q-grid"></div>
     </div>
 </div>
 
 <script>
-    // Data parsed from your request. 
-    // Note: I have cleaned up the data and inferred correct answers based on the provided explanations and standard networking curriculum.
+    const apiKey = ""; // System injects key
+
+    // --- DATA ---
+    // Types: 'single', 'multi', 'matching'
     const rawData = [
         {
-            id: 1,
+            id: 1, type: 'single',
             q: "A company uses a cloud-based payroll system. Which cloud computing technology is this company using?",
             options: ["browser as a service (BaaS)", "infrastructure as a service (IaaS)", "software as a service (SaaS)", "wireless as a service (WaaS)"],
             correct: "software as a service (SaaS)",
-            expl: "Curriculum Reference: Module 7.2. There is no such thing as BaaS. Infrastructure as a service (IaaS) is when key network devices such as routers and firewalls are leased from a provider. Wireless as a service (WaaS) is when a provider provides wireless connectivity at a fixed monthly cost. Payroll software is an application, hence SaaS."
+            expl: "Payroll software accessed over the internet is a classic example of SaaS. The user consumes the software; they don't manage the infrastructure."
         },
         {
-            id: 2,
+            id: 2, type: 'single',
             q: "For a data center, what is the difference in the server virtualization data traffic compared with the traditional client-server model?",
             options: ["Data traffic from clients will be routed to multiple virtual servers.", "There are significant data exchanges between virtual servers.", "There is more data traffic flowing from virtual servers to clients.", "More network control traffic is generated between virtual servers and clients."],
             correct: "There are significant data exchanges between virtual servers.",
-            expl: "In modern data centers with virtualization, 'East-West' traffic (traffic between servers) is significantly higher than traditional 'North-South' traffic due to virtual machine migration and inter-app communication."
+            expl: "In virtualized data centers, 'East-West' traffic (server-to-server) is often much higher than 'North-South' traffic due to VM migration and distributed workloads."
         },
-        {
-            id: 3,
-            q: "Which component in a traditional infrastructure device provides Layer 2 and Layer 3 functions to create data paths within a network?",
-            options: ["data plane", "control plane", "adjacency table", "forwarding information base"],
-            correct: "control plane",
-            expl: "The Control Plane is responsible for populating the routing tables and ARP tables (L2/L3 functions) to determine paths. The Data Plane actually forwards the packets based on this information."
+        { id: 3, type: 'single', q: "Which component in a traditional infrastructure device provides Layer 2 and Layer 3 functions to create data paths within a network?", options: ["data plane", "control plane", "adjacency table", "forwarding information base"], correct: "control plane", expl: "The Control Plane creates the map (routing tables, ARP), while the Data Plane drives the car (forwards packets)." },
+        { id: 4, type: 'single', q: "Which network traffic management technology is a basic element in SDN implementations?", options: ["OpenFlow", "OpenStack", "IEEE 802.1aq", "Interface to the Routing System"], correct: "OpenFlow", expl: "OpenFlow is the standard southbound API protocol used in SDN to tell switches where to send packets." },
+        { id: 5, type: 'single', q: "Which type of hypervisor would most likely be used in a data center?", options: ["Type 2", "Type 1", "Nexus", "Hadoop"], correct: "Type 1", expl: "Type 1 (Bare Metal) runs directly on hardware and is more efficient for data centers. Type 2 runs on top of an OS (like Windows/Mac)." },
+        { id: 6, type: 'single', q: "Which is a characteristic of a Type 1 hypervisor?", options: ["installed directly on a server", "best suited for consumers and not for an enterprise environment", "does not require management console software", "installed on an existing operating system"], correct: "installed directly on a server", expl: "Type 1 = Bare Metal. It IS the operating system of the server, essentially." },
+        { id: 7, type: 'single', q: "Which two layers of the OSI model are associated with SDN network control plane functions that make forwarding decisions?", options: ["Layer 1 and Layer 2", "Layer 2 and Layer 3", "Layer 3 and Layer 4", "Layer 4 and Layer 5"], correct: "Layer 2 and Layer 3", expl: "Forwarding decisions are made based on MAC addresses (Layer 2) and IP addresses (Layer 3)." },
+        { id: 8, type: 'single', q: "What pre-populates the FIB on Cisco devices that use CEF to process packets?", options: ["the routing table", "the adjacency table", "the ARP table", "the DSP"], correct: "the routing table", expl: "CEF copies the Routing Table into the FIB (Forwarding Information Base) for faster lookups." },
+        { id: 9, type: 'single', q: "What is a function of the data plane of a network device?", options: ["sending information to the CPU for processing", "building the routing table", "resolving MAC addresses", "forwarding traffic flows"], correct: "forwarding traffic flows", expl: "The data plane moves packets from input interface to output interface." },
+        { id: 10, type: 'single', q: "Which statement describes the concept of cloud computing?", options: ["separation of application from hardware", "separation of management plane from control plane", "separation of operating system from hardware", "separation of control plane from data plane"], correct: "separation of application from hardware", expl: "Cloud abstracts the service/app from the physical hardware running it." },
+        { id: 11, type: 'single', q: "Which cloud model provides services for a specific organization or entity?", options: ["a public cloud", "a hybrid cloud", "a private cloud", "a community cloud"], correct: "a private cloud", expl: "Private cloud is dedicated to a single organization." },
+        
+        // MULTI SELECT QUESTION
+        { 
+            id: 12, type: 'multi',
+            q: "What two benefits are gained when an organization adopts cloud computing and virtualization? (Choose two.)",
+            options: [
+                "provides a “pay-as-you-go” model, allowing organizations to treat computing and storage expenses as a utility",
+                "enables rapid responses to increasing data volume requirements",
+                "distributed processing of large data sets in the size of terabytes",
+                "elimination of vulnerabilities to cyber attacks",
+                "increases the dependance on onsite IT resources"
+            ],
+            correct: [
+                "provides a “pay-as-you-go” model, allowing organizations to treat computing and storage expenses as a utility",
+                "enables rapid responses to increasing data volume requirements"
+            ],
+            expl: "Cloud allows OpEx (pay-as-you-go) instead of CapEx, and elasticity (rapid response to demand)."
         },
-        {
-            id: 4,
-            q: "Which network traffic management technology is a basic element in SDN implementations?",
-            options: ["OpenFlow", "OpenStack", "IEEE 802.1aq", "Interface to the Routing System"],
-            correct: "OpenFlow",
-            expl: "OpenFlow was developed at Stanford University to manage traffic between routers, switches, and wireless access points and a controller. It is the original and widely implemented southbound API for SDN."
+
+        { id: 13, type: 'single', q: "Which type of Hypervisor is implemented when a user with a laptop running the Mac OS installs a Windows virtual OS instance?", options: ["type 2", "virtual machine", "type 1", "bare metal"], correct: "type 2", expl: "Running a VM on top of an existing OS (like macOS) is Type 2." },
+        
+        // MULTI SELECT QUESTION
+        { 
+            id: 14, type: 'multi',
+            q: "A small company is considering moving many of its data center functions to the cloud. What are three advantages of this plan? (Choose three.)",
+            options: [
+                "The company only needs to pay for the amount of processing and storage capacity that it uses.",
+                "Cloud services are billed at a fixed fee no matter how much processing and storage are used by the company.",
+                "The company does not need to be concerned about how to handle increasing data storage and processing demands with in-house data center equipment.",
+                "The company can increase processing and storage capacity as needed and then decrease capacity when it is no longer needed.",
+                "Single-tenant data centers can easily grow to accommodate increasing data storage requirements.",
+                "Cloud services enable the company to own and administer its own servers and storage devices."
+            ],
+            correct: [
+                "The company only needs to pay for the amount of processing and storage capacity that it uses.",
+                "The company does not need to be concerned about how to handle increasing data storage and processing demands with in-house data center equipment.",
+                "The company can increase processing and storage capacity as needed and then decrease capacity when it is no longer needed."
+            ],
+            expl: "Key Cloud advantages: Metered service (pay for use), Abstraction of hardware maintenance, and Elasticity (scale up/down)."
         },
-        {
-            id: 5,
-            q: "Which type of hypervisor would most likely be used in a data center?",
-            options: ["Type 2", "Type 1", "Nexus", "Hadoop"],
-            correct: "Type 1",
-            expl: "The two type of hypervisors are Type 1 and Type 2. Type 1 hypervisors (Bare Metal) are usually used on enterprise servers. Enterprise servers are most likely to be in a data center."
+
+        { id: 15, type: 'single', q: "How does virtualization help with disaster recovery within a data center?", options: ["support of live migration", "guarantee of power", "improvement of business practices", "supply of consistent air flow"], correct: "support of live migration", expl: "VMs can be moved to different physical servers or even different locations while running." },
+        { id: 16, type: 'single', q: "What technology allows users to access data anywhere and at any time?", options: ["Cloud computing", "virtualization", "micromarketing", "data analytics"], correct: "Cloud computing", expl: "Ubiquitous network access is a core characteristic of Cloud." },
+        { id: 17, type: 'single', q: "Which action takes place in the assurance element of the IBN model?", options: ["verification and corrective action", "configuring systems", "translation of policies", "integrity checks"], correct: "verification and corrective action", expl: "Assurance verifies that the network is doing what the intent specified." },
+        { id: 18, type: 'single', q: "Which data format is used to represent the data for network automation applications? (Key/Value in braces)", options: ["XML", "YAML", "HTML", "JSON"], correct: "JSON", expl: "JSON uses curly braces {} for objects and is widely used in automation." },
+        { id: 19, type: 'single', q: "What is the function of the key contained in most RESTful APIs?", options: ["It is the top-level object of the API query.", "It is used to authenticate the requesting source.", "It represents the main query components in the API request.", "It is used in the encryption of the message by an API request."], correct: "It is used to authenticate the requesting source.", expl: "API Keys are used to identify and authenticate the client app." },
+        { id: 20, type: 'single', q: "Which two configuration management tools are developed using Ruby?", options: ["Puppet and Chef", "Ansible and SaltStack", "Chef and Ansible", "Puppet and SaltStack"], correct: "Puppet and Chef", expl: "Puppet and Chef use Ruby. Ansible and Salt use Python." },
+        { id: 21, type: 'single', q: "Which term is used to describe a set of instructions for execution by the configuration management tool Puppet?", options: ["Playbook", "Cookbook", "Manifest", "Pillar"], correct: "Manifest", expl: "Puppet = Manifests. Ansible = Playbooks. Chef = Cookbooks. Salt = Pillars/Grains." },
+        { id: 22, type: 'single', q: "Which term is used to describe a set of instructions for execution by the configuration management tool SaltStack?", options: ["Cookbook", "Manifest", "Pillar", "Playbook"], correct: "Pillar", expl: "SaltStack uses Pillars for data distribution." },
+        { id: 23, type: 'single', q: "Which scenario describes the use of a public API?", options: ["It requires a license.", "It can be used with no restrictions.", "It is used between a company and its business partners.", "It is used only within an organization."], correct: "It can be used with no restrictions.", expl: "Public APIs are open to the world (e.g., Google Maps)." },
+        { id: 24, type: 'single', q: "What is YAML?", options: ["It is a scripting language.", "It is a data format and superset of JSON.", "It is a compiled programming language.", "It is a web application."], correct: "It is a data format and superset of JSON.", expl: "YAML is a human-readable data serialization standard." },
+        { id: 25, type: 'single', q: "Which RESTFul operation corresponds to the HTTP GET method?", options: ["post", "patch", "update", "read"], correct: "read", expl: "GET = Read/Retrieve." },
+        { id: 26, type: 'single', q: "Which technology virtualizes the network control plane and moves it to a centralized controller?", options: ["SDN", "fog computing", "cloud computing", "IaaS"], correct: "SDN", expl: "Software Defined Networking separates control plane from data plane." },
+        
+        // MULTI SELECT QUESTION
+        { 
+            id: 27, type: 'multi', 
+            q: "What are two functions of hypervisors?", 
+            options: ["to partition the hard drive to run virtual machines", "to manage virtual machines", "to protect the host from malware infection from the virtual machines", "to share the antivirus software across the virtual machines", "to allocate physical system resources to virtual machines"], 
+            correct: ["to manage virtual machines", "to allocate physical system resources to virtual machines"], 
+            expl: "The hypervisor manages the lifecycle of VMs and acts as the traffic cop for hardware resources (CPU/RAM)." 
         },
+
+        { id: 28, type: 'single', q: "What is a difference between the functions of Cloud computing and virtualization?", options: ["Cloud computing requires hypervisor technology whereas virtualization is a fault tolerance technology.", "Cloud computing separates the application from the hardware whereas virtualization separates the OS from the underlying hardware.", "Cloud computing provides services on web-based access whereas virtualization provides services on data access.", "Cloud computing utilizes data center technology whereas virtualization is not used in data centers."], correct: "Cloud computing separates the application from the hardware whereas virtualization separates the OS from the underlying hardware.", expl: "Virtualization is the tech (OS from HW). Cloud is the service model (App from HW)." },
+        { id: 29, type: 'single', q: "How is the YAML data format structure different from JSON?", options: ["It uses indentations.", "It uses end tags.", "It uses hierarchical levels of nesting.", "It uses brackets and commas."], correct: "It uses indentations.", expl: "YAML relies on whitespace/indentation. JSON relies on braces/brackets." },
+        { id: 30, type: 'single', q: "What is the most widely used API for web services?", options: ["XML-RPC", "SOAP", "JSON-RPC", "REST"], correct: "REST", expl: "REST is the dominant architecture for web APIs today." },
+        { id: 31, type: 'single', q: "What is REST?", options: ["It is a way to store and interchange data in a structured format.", "It is an architecture style for designing web service applications.", "It is a human readable data structure.", "It is a protocol that allows administrators to manage nodes on an IP network."], correct: "It is an architecture style for designing web service applications.", expl: "REST (Representational State Transfer) is an architectural style, not a protocol." },
+        { id: 32, type: 'single', q: "What is a difference between the XML and HTML data formats?", options: ["XML does not use predefined tags whereas HTML does use predefined tags.", "XML encloses data within a pair of tags whereas HTML uses a pair of quotation makes.", "XML formats data in binary whereas HTML formats data in plain text.", "XML does not require indentation for each key/value pair but HTML does."], correct: "XML does not use predefined tags whereas HTML does use predefined tags.", expl: "HTML has fixed tags (<body>, <p>). XML lets you invent tags (<person>, <car>)." },
+        { id: 33, type: 'single', q: "To avoid purchasing new hardware, a company wants to take advantage of idle system resources and consolidate servers... What technology?", options: ["dedicated servers", "Cisco ACI", "virtualization", "software defined networking"], correct: "virtualization", expl: "Virtualization allows server consolidation." },
+        
+        // MATCHING GAME
         {
-            id: 6,
-            q: "Which is a characteristic of a Type 1 hypervisor?",
-            options: ["installed directly on a server", "best suited for consumers and not for an enterprise environment", "does not require management console software", "installed on an existing operating system"],
-            correct: "installed directly on a server",
-            expl: "Type 1 hypervisors are installed directly on a server and are known as 'bare metal' solutions giving direct access to hardware resources."
+            id: 34, type: 'matching',
+            q: "Match the term to the RESTful API request component.",
+            // request: http://www.mapquestapi.com/directions/v2/route?outFormat=json&key=KEY&from=San+Jose,Ca&to=Monterey,Ca
+            pairs: [
+                { term: "resources", value: "directions/v2/route" },
+                { term: "parameters", value: "from=San+Jose,Ca&to=Monterey,Ca" },
+                { term: "query", value: "outFormat=json&key=KEY&from=San+Jose,Ca&to=Monterey,Ca" },
+                { term: "API server", value: "http://www.mapquestapi.com" },
+                { term: "format", value: "outFormat=json" },
+                { term: "key", value: "key=KEY" }
+            ],
+            expl: "Anatomy of a URL: Server -> Resource path -> ? Query String (containing format, key, parameters)."
         },
-        {
-            id: 7,
-            q: "Which two layers of the OSI model are associated with SDN network control plane functions that make forwarding decisions?",
-            options: ["Layer 1 and Layer 2", "Layer 2 and Layer 3", "Layer 3 and Layer 4", "Layer 4 and Layer 5"],
-            correct: "Layer 2 and Layer 3",
-            expl: "The SDN control plane uses the Layer 2 ARP table and the Layer 3 routing table to make decisions about forwarding traffic."
-        },
-        {
-            id: 8,
-            q: "What pre-populates the FIB on Cisco devices that use CEF to process packets?",
-            options: ["the routing table", "the adjacency table", "the ARP table", "the DSP"],
-            correct: "the routing table",
-            expl: "CEF uses the FIB and adjacency table. The adjacency table is pre-populated by the ARP table and the FIB is pre-populated by the routing table."
-        },
-        {
-            id: 9,
-            q: "What is a function of the data plane of a network device?",
-            options: ["sending information to the CPU for processing", "building the routing table", "resolving MAC addresses", "forwarding traffic flows"],
-            correct: "forwarding traffic flows",
-            expl: "Networking devices operate in two planes; the data plane and the control plane. The control plane maintains mechanisms using the CPU. The data plane forwards traffic flows."
-        },
-        {
-            id: 10,
-            q: "Which statement describes the concept of cloud computing?",
-            options: ["separation of application from hardware", "separation of management plane from control plane", "separation of operating system from hardware", "separation of control plane from data plane"],
-            correct: "separation of application from hardware",
-            expl: "Cloud computing is used to separate the application or service from hardware. Virtualization separates the operating system from the hardware."
-        },
-        {
-            id: 11,
-            q: "Which cloud model provides services for a specific organization or entity?",
-            options: ["a public cloud", "a hybrid cloud", "a private cloud", "a community cloud"],
-            correct: "a private cloud",
-            expl: "Private clouds are used to provide services and applications to a specific organization and may be set up within the private network of the organization."
-        },
-        {
-            id: 12,
-            q: "What two benefits are gained when an organization adopts cloud computing and virtualization?",
-            options: ["provides a 'pay-as-you-go' model and enables rapid responses", "distributed processing of large data sets and elimination of cyber attacks", "increases dependence on onsite IT and rapid responses", "pay-as-you-go model and elimination of vulnerabilities"],
-            correct: "provides a 'pay-as-you-go' model and enables rapid responses",
-            expl: "Organizations can use virtualization to consolidate servers. Cloud computing allows organizations to scale their solutions as required (rapid response) and to pay only for the resources they require."
-        },
-        {
-            id: 13,
-            q: "Which type of Hypervisor is implemented when a user with a laptop running the Mac OS installs a Windows virtual OS instance?",
-            options: ["type 2", "virtual machine", "type 1", "bare metal"],
-            correct: "type 2",
-            expl: "Type 2 hypervisors, also known as hosted hypervisors, are installed on top of an existing operating system, such as Mac OS, Windows, or Linux."
-        },
-        {
-            id: 14,
-            q: "A small company is considering moving many of its data center functions to the cloud. What are three advantages of this plan?",
-            options: ["Pay for usage, scalability (increase/decrease), no equipment maintenance", "Fixed fee billing, own administration, scalability", "Single-tenant growth, fixed fee, no equipment concerns", "Own administration, pay for usage, single-tenant growth"],
-            correct: "Pay for usage, scalability (increase/decrease), no equipment maintenance",
-            expl: "Cloud services are billed by usage (not fixed fee usually), allow increasing/decreasing capacity, and remove the burden of maintaining physical equipment."
-        },
-        {
-            id: 15,
-            q: "How does virtualization help with disaster recovery within a data center?",
-            options: ["support of live migration", "guarantee of power", "improvement of business practices", "supply of consistent air flow"],
-            correct: "support of live migration",
-            expl: "Live migration allows moving of one virtual server to another virtual server that could be in a different location that is some distance from the original data center."
-        },
-        {
-            id: 16,
-            q: "What technology allows users to access data anywhere and at any time?",
-            options: ["Cloud computing", "virtualization", "micromarketing", "data analytics"],
-            correct: "Cloud computing",
-            expl: "Cloud computing allows organizations to eliminate the need for on-site IT equipment and allows access to services/data anywhere."
-        },
-        {
-            id: 17,
-            q: "Which action takes place in the assurance element of the IBN model?",
-            options: ["verification and corrective action", "configuring systems", "translation of policies", "integrity checks"],
-            correct: "verification and corrective action",
-            expl: "The assurance element of the IBN model is concerned with end-to-end verification of network-wide behavior."
-        },
-        {
-            id: 18,
-            q: "Refer to the exhibit. Which data format is used to represent the data for network automation applications? (Assume generic context of key/value in braces)",
-            options: ["XML", "YAML", "HTML", "JSON"],
-            correct: "JSON",
-            expl: "In JSON, the data known as an object is one or more key/value pairs enclosed in braces { }. XML uses tags. YAML uses indentation."
-        },
-        {
-            id: 19,
-            q: "What is the function of the key contained in most RESTful APIs?",
-            options: ["It is the top-level object of the API query.", "It is used to authenticate the requesting source.", "It represents the main query components in the API request.", "It is used in the encryption of the message by an API request."],
-            correct: "It is used to authenticate the requesting source.",
-            expl: "Many RESTful APIs require a key. The key is used to identify the source of the request through authentication."
-        },
-        {
-            id: 20,
-            q: "Which two configuration management tools are developed using Ruby?",
-            options: ["Puppet and Chef", "Ansible and SaltStack", "Chef and Ansible", "Puppet and SaltStack"],
-            correct: "Puppet and Chef",
-            expl: "Chef and Puppet are configuration management tools developed using Ruby. Ansible and SaltStack are developed using Python."
-        },
-        {
-            id: 21,
-            q: "Which term is used to describe a set of instructions for execution by the configuration management tool Puppet?",
-            options: ["Playbook", "Cookbook", "Manifest", "Pillar"],
-            correct: "Manifest",
-            expl: "The configuration management tool Puppet uses the name Manifest to describe the set of instructions to be executed."
-        },
-        {
-            id: 22,
-            q: "Which term is used to describe a set of instructions for execution by the configuration management tool SaltStack?",
-            options: ["Cookbook", "Manifest", "Pillar", "Playbook"],
-            correct: "Pillar",
-            expl: "The configuration management tool SaltStack uses the name Pillar to describe the set of instructions to be executed."
-        },
-        {
-            id: 23,
-            q: "Which scenario describes the use of a public API?",
-            options: ["It requires a license.", "It can be used with no restrictions.", "It is used between a company and its business partners.", "It is used only within an organization."],
-            correct: "It can be used with no restrictions.",
-            expl: "Public, or open, APIs have no restrictions (though some might require a free key) and are available to the public."
-        },
-        {
-            id: 24,
-            q: "What is YAML?",
-            options: ["It is a scripting language.", "It is a data format and superset of JSON.", "It is a compiled programming language.", "It is a web application."],
-            correct: "It is a data format and superset of JSON.",
-            expl: "YAML Ain't Markup Language (YAML) is a data format used by applications to store and transport data. YAML is considered a superset of JSON."
-        },
-        {
-            id: 25,
-            q: "Which RESTFul operation corresponds to the HTTP GET method?",
-            options: ["post", "patch", "update", "read"],
-            correct: "read",
-            expl: "RESTful operations correspond to HTTP methods: POST > Create, GET > Read, PUT/PATCH > Update, DELETE > Delete."
-        },
-        {
-            id: 26,
-            q: "Which technology virtualizes the network control plane and moves it to a centralized controller?",
-            options: ["SDN", "fog computing", "cloud computing", "IaaS"],
-            correct: "SDN",
-            expl: "SDN virtualizes the control plane and moves it to a centralized network controller."
-        },
-        {
-            id: 27,
-            q: "What are two functions of hypervisors?",
-            options: ["manage virtual machines and allocate physical system resources", "partition hard drive and protect host from malware", "share antivirus and partition hard drive", "protect host from malware and allocate resources"],
-            correct: "manage virtual machines and allocate physical system resources",
-            expl: "The hypervisor creates and manages virtual machines on a host computer and allocates physical system resources to them."
-        },
-        {
-            id: 28,
-            q: "What is a difference between the functions of Cloud computing and virtualization?",
-            options: ["Cloud computing requires hypervisor technology whereas virtualization is a fault tolerance technology.", "Cloud computing separates the application from the hardware whereas virtualization separates the OS from the underlying hardware.", "Cloud computing provides services on web-based access whereas virtualization provides services on data access.", "Cloud computing utilizes data center technology whereas virtualization is not used in data centers."],
-            correct: "Cloud computing separates the application from the hardware whereas virtualization separates the OS from the underlying hardware.",
-            expl: "Cloud computing separates the application from the hardware. Virtualization separates the OS from the underlying hardware."
-        },
-        {
-            id: 29,
-            q: "How is the YAML data format structure different from JSON?",
-            options: ["It uses indentations.", "It uses end tags.", "It uses hierarchical levels of nesting.", "It uses brackets and commas."],
-            correct: "It uses indentations.",
-            expl: "The structure in YAML is defined by indentations rather than brackets and commas."
-        },
-        {
-            id: 30,
-            q: "What is the most widely used API for web services?",
-            options: ["XML-RPC", "SOAP", "JSON-RPC", "REST"],
-            correct: "REST",
-            expl: "REST accounts for more than 80% of all API types used for web services."
-        },
-        {
-            id: 31,
-            q: "What is REST?",
-            options: ["It is a way to store and interchange data in a structured format.", "It is an architecture style for designing web service applications.", "It is a human readable data structure.", "It is a protocol that allows administrators to manage nodes on an IP network."],
-            correct: "It is an architecture style for designing web service applications.",
-            expl: "REST is not a protocol or service, but rather a style of software architecture for designing web service applications."
-        },
-        {
-            id: 32,
-            q: "What is a difference between the XML and HTML data formats?",
-            options: ["XML does not use predefined tags whereas HTML does use predefined tags.", "XML encloses data within a pair of tags whereas HTML uses a pair of quotation makes.", "XML formats data in binary whereas HTML formats data in plain text.", "XML does not require indentation for each key/value pair but HTML does."],
-            correct: "XML does not use predefined tags whereas HTML does use predefined tags.",
-            expl: "Unlike HTML, XML uses no predefined tags or document structure; it is a meta-language."
-        },
-        {
-            id: 33,
-            q: "To avoid purchasing new hardware, a company wants to take advantage of idle system resources and consolidate the number of servers while allowing for multiple operating systems on a single hardware platform. What service or technology would support this requirement?",
-            options: ["dedicated servers", "Cisco ACI", "virtualization", "software defined networking"],
-            correct: "virtualization",
-            expl: "Virtualization allows running multiple operating systems (VMs) on a single hardware platform, consolidating resources."
-        },
-        {
-            id: 34,
-            q: "In the RESTful API request '.../directions/v2/route?outFormat=json&key=KEY...', which part represents the 'format'?",
-            options: ["outFormat=json", "key=KEY", "directions/v2/route", "http://www.mapquestapi.com"],
-            correct: "outFormat=json",
-            expl: "Matching components: Resources=directions/v2/route, Parameters=from=...&to=..., Query=outFormat=json&key=... (includes format), Format specifically is outFormat=json."
-        },
-        {
-            id: 35,
-            q: "Which cloud computing opportunity would provide the use of network hardware such as routers and switches for a particular company?",
-            options: ["software as a service (SaaS)", "wireless as a service (WaaS)", "infrastructure as a service (IaaS)", "browser as a service (BaaS)"],
-            correct: "infrastructure as a service (IaaS)",
-            expl: "Routers, switches, and firewalls are infrastructure devices that can be provided in the cloud via IaaS."
-        },
-        {
-            id: 36,
-            q: "What component is considered the brains of the ACI architecture and translates application policies?",
-            options: ["the Application Network Profile endpoints", "the Nexus 9000 switch", "the hypervisor", "the Application Policy Infrastructure Controller"],
-            correct: "the Application Policy Infrastructure Controller",
-            expl: "The APIC (Application Policy Infrastructure Controller) serves as the brains of the ACI architecture."
-        },
-        {
-            id: 37,
-            q: "Which statement describes the concept of cloud computing? (Repeated concept)",
-            options: ["separation of management plane from control plane", "separation of control plane from data plane", "separation of application from hardware", "separation of operating system from hardware"],
-            correct: "separation of application from hardware",
-            expl: "Cloud computing separates the application/service from hardware."
-        },
-        {
-            id: 38,
-            q: "In which situation would a partner API be appropriate?",
-            options: ["an internet search engine allowing developers to integrate the search engine into their own software applications", "company sales staff accessing internal sales data from their mobile devices", "someone creating an account on an external app or website by using his or her social media credentials", "a vacation service site interacting with hotel databases to display information from all the hotels on its web site"],
-            correct: "a vacation service site interacting with hotel databases to display information from all the hotels on its web site",
-            expl: "Partner APIs facilitate communication and integration of software between a company and its business partners (e.g., travel agent and hotel chains)."
-        },
-        {
-            id: 39,
-            q: "Because of enormous growth in web traffic, a company has planned to purchase additional servers to help handle the web traffic. What service or technology would support this requirement?",
-            options: ["virtualization", "data center", "cloud services", "dedicated servers"],
-            correct: "cloud services",
-            expl: "Cloud services allow for rapid scaling (elasticity) to handle traffic growth without purchasing and installing physical hardware."
-        },
-        {
-            id: 40,
-            q: "ABCTech is investigating the use of automation for some of its products. In order to control and test these products, the programmers require Windows, Linux, and MAC OS on their computers. What service or technology would support this requirement?",
-            options: ["dedicated servers", "software defined networking", "virtualization", "Cisco ACI"],
-            correct: "virtualization",
-            expl: "Virtualization allows running multiple different OS instances (Windows, Linux, Mac) on a single computer simultaneously."
-        },
-        {
-            id: 41,
-            q: "What are three components used in the query portion of a typical RESTful API request?",
-            options: ["API server, protocol, resources", "format, parameters, key", "protocol, format, key", "resources, API server, parameters"],
-            correct: "format, parameters, key",
-            expl: "The query portion includes the Format (json/xml), Key (auth), and Parameters (specific info)."
-        },
-        {
-            id: 42,
-            q: "A company has recently become multinational. Employees are working remotely, in different time zones, and they need access to company services from any place at any time. What service or technology would support this requirement?",
-            options: ["dedicated servers", "cloud services", "Cisco ACI", "virtualization"],
-            correct: "cloud services",
-            expl: "Cloud services provide 'Anywhere, Anytime' access."
-        },
-        {
-            id: 43,
-            q: "Following a multicontinent advertising campaign for a new product, a company finds its client database and volume of orders are overloading its on-site computer systems but the company does not have any room to expand. What service or technology would support this requirement?",
-            options: ["cloud services", "dedicated servers", "data center", "virtualization"],
-            correct: "cloud services",
-            expl: "Cloud services allow offloading processing and storage to a provider when on-site resources are maxed out (Hybrid cloud/bursting)."
-        },
-        {
-            id: 44,
-            q: "A network administrator has been tasked with creating a disaster recovery plan. As part of this plan, the administrator is looking for a backup site for all of the data on the company servers. What service or technology would support this requirement?",
-            options: ["virtualization", "software defined networking", "data center", "dedicated servers"],
-            correct: "data center",
-            expl: "While Cloud is a valid option, in this specific context of choices, a Data Center (remote) provides the physical location for a backup site."
-        },
-        {
-            id: 45,
-            q: "Which is a requirement of a site-to-site VPN?",
-            options: ["It requires hosts to use VPN client software to encapsulate traffic.", "It requires a VPN gateway at each end of the tunnel to encrypt and decrypt traffic.", "It requires the placement of a VPN server at the edge of the company network.", "It requires a client/server architecture."],
-            correct: "It requires a VPN gateway at each end of the tunnel to encrypt and decrypt traffic.",
-            expl: "Site-to-site VPNs are static and connect entire networks using gateways. Hosts have no knowledge of the VPN (no client software needed)."
-        },
-        {
-            id: 46,
-            q: "Which statement describes an important characteristic of a site-to-site VPN?",
-            options: ["It must be statically set up.", "After the initial connection is established, it can dynamically change connection information.", "It requires using a VPN client on the host PC.", "It is commonly implemented over dialup and cable modem networks."],
-            correct: "It must be statically set up.",
-            expl: "A site-to-site VPN is created between the network devices of two separate networks. The VPN is static and stays established."
-        },
-        {
-            id: 47,
-            q: "Which protocol is attacked when a cybercriminal provides an invalid gateway in order to create a man-in-the-middle attack?",
-            options: ["DHCP", "ICMP", "DNS", "HTTP or HTTPS"],
-            correct: "DHCP",
-            expl: "A cybercriminal could set up a rogue DHCP server that provides a wrong default gateway to intercept traffic."
-        },
-        {
-            id: 48,
-            q: "In which TCP attack is the cybercriminal attempting to overwhelm a target host with half-open TCP connections?",
-            options: ["reset attack", "session hijacking attack", "SYN flood attack", "port scan attack"],
-            correct: "SYN flood attack",
-            expl: "In a TCP SYN flood attack, the attacker sends continuous SYN requests, causing the target to wait for ACKs that never arrive, using up resources."
-        },
-        {
-            id: 49,
-            q: "Which statement describes a VPN?",
-            options: ["VPNs use logical connections to create public networks through the Internet.", "VPNs use open source virtualization software to create the tunnel through the Internet.", "VPNs use dedicated physical connections to transfer data between remote users.", "VPNs use virtual connections to create a private network through a public network."],
-            correct: "VPNs use virtual connections to create a private network through a public network.",
-            expl: "A VPN creates a private tunnel over a public infrastructure (like the Internet)."
-        }
+
+        { id: 35, type: 'single', q: "Which cloud computing opportunity would provide the use of network hardware such as routers and switches?", options: ["software as a service (SaaS)", "wireless as a service (WaaS)", "infrastructure as a service (IaaS)", "browser as a service (BaaS)"], correct: "infrastructure as a service (IaaS)", expl: "IaaS provides raw infrastructure like networking, storage, and servers." },
+        { id: 36, type: 'single', q: "What component is considered the brains of the ACI architecture and translates application policies?", options: ["the Application Network Profile endpoints", "the Nexus 9000 switch", "the hypervisor", "the Application Policy Infrastructure Controller"], correct: "the Application Policy Infrastructure Controller", expl: "APIC (Application Policy Infrastructure Controller) is the brain of Cisco ACI." },
+        { id: 37, type: 'single', q: "Which statement describes the concept of cloud computing?", options: ["separation of management plane from control plane", "separation of control plane from data plane", "separation of application from hardware", "separation of operating system from hardware"], correct: "separation of application from hardware", expl: "Repeated concept: Cloud separates app from hardware." },
+        { id: 38, type: 'single', q: "In which situation would a partner API be appropriate?", options: ["an internet search engine allowing developers...", "company sales staff accessing internal data...", "someone creating an account using social media credentials", "a vacation service site interacting with hotel databases to display information from all the hotels on its web site"], correct: "a vacation service site interacting with hotel databases to display information from all the hotels on its web site", expl: "Partner APIs connect business partners (e.g., travel aggregator + hotel)." },
+        
+        // UPDATED DATA AS REQUESTED
+        { id: 39, type: 'single', q: "Because of enormous growth in web traffic, a company has planned to purchase additional servers to help handle the web traffic. What service or technology would support this requirement?", options: ["virtualization", "data center", "cloud services", "dedicated servers"], correct: "dedicated servers", expl: "The company is purchasing 'additional servers' (physical), which implies expanding their dedicated server fleet, rather than using cloud scaling." },
+        
+        { id: 40, type: 'single', q: "ABCTech is investigating the use of automation... programmers require Windows, Linux, and MAC OS on their computers. What technology?", options: ["dedicated servers", "software defined networking", "virtualization", "Cisco ACI"], correct: "virtualization", expl: "Running multiple OSs on one machine = Virtualization." },
+        { id: 41, type: 'single', q: "What are three components used in the query portion of a typical RESTful API request?", options: ["API server, protocol, resources", "format, parameters, key", "protocol, format, key", "resources, API server, parameters"], correct: "format, parameters, key", expl: "The query string (after the ?) typically holds the key, format, and parameters." },
+        { id: 42, type: 'single', q: "A company has recently become multinational. Employees are working remotely... access from any place at any time. What service?", options: ["dedicated servers", "cloud services", "Cisco ACI", "virtualization"], correct: "cloud services", expl: "Anywhere, anytime access is the hallmark of Cloud." },
+        { id: 43, type: 'single', q: "Company finds client database and volume of orders are overloading on-site systems... no room to expand. What service?", options: ["cloud services", "dedicated servers", "data center", "virtualization"], correct: "cloud services", expl: "Bursting to the cloud when on-prem is full." },
+        { id: 44, type: 'single', q: "Administrator is looking for a backup site for all of the data on the company servers.", options: ["virtualization", "software defined networking", "data center", "dedicated servers"], correct: "data center", expl: "A physical location for backup is a Data Center." },
+        { id: 45, type: 'single', q: "Which is a requirement of a site-to-site VPN?", options: ["It requires hosts to use VPN client software...", "It requires a VPN gateway at each end of the tunnel to encrypt and decrypt traffic.", "It requires a VPN server at the edge...", "It requires a client/server architecture."], correct: "It requires a VPN gateway at each end of the tunnel to encrypt and decrypt traffic.", expl: "Site-to-site is Gateway-to-Gateway. No client software needed on PCs." },
+        { id: 46, type: 'single', q: "Which statement describes an important characteristic of a site-to-site VPN?", options: ["It must be statically set up.", "It can dynamically change connection information.", "It requires using a VPN client on the host PC.", "It is commonly implemented over dialup..."], correct: "It must be statically set up.", expl: "Site-to-Site VPNs are persistent connections." },
+        { id: 47, type: 'single', q: "Which protocol is attacked when a cybercriminal provides an invalid gateway in order to create a man-in-the-middle attack?", options: ["DHCP", "ICMP", "DNS", "HTTP or HTTPS"], correct: "DHCP", expl: "DHCP Spoofing allows an attacker to assign a malicious Default Gateway." },
+        { id: 48, type: 'single', q: "In which TCP attack is the cybercriminal attempting to overwhelm a target host with half-open TCP connections?", options: ["reset attack", "session hijacking attack", "SYN flood attack", "port scan attack"], correct: "SYN flood attack", expl: "SYN Flood exploits the TCP 3-way handshake." },
+        { id: 49, type: 'single', q: "Which statement describes a VPN?", options: ["VPNs use logical connections to create public networks...", "VPNs use open source virtualization...", "VPNs use dedicated physical connections...", "VPNs use virtual connections to create a private network through a public network."], correct: "VPNs use virtual connections to create a private network through a public network.", expl: "VPN = Virtual Private Network over public infra." }
     ];
 
-    // State
+    // --- STATE ---
     let currentIndex = 0;
-    let userAnswers = {}; // Format: { qId: { selected: "option", isCorrect: boolean } }
-    let currentQuestions = [...rawData]; // Start with normal order
+    let userAnswers = {}; // { qId: { selected: any, isCorrect: boolean, attempts: int } }
+    let currentQuestions = [...rawData];
+    
+    // Matching Game State
+    let selectedTerm = null;
+    let matchedPairs = {}; // { term: value }
 
     // Utils
     function shuffleArray(array) {
@@ -659,89 +594,77 @@
         return array;
     }
 
-    // Logic
+    // --- MAIN LOGIC ---
     function init() {
         const shuffleCheck = document.getElementById('shuffleCheck');
-        
         shuffleCheck.addEventListener('change', (e) => {
             if (e.target.checked) {
-                // Shuffle questions
                 currentQuestions = shuffleArray([...rawData]);
             } else {
-                // Restore order
                 currentQuestions = [...rawData];
             }
-            // Reset current index to 0 to avoid bounds errors
             currentIndex = 0;
             loadQuestion();
         });
-
         loadQuestion();
     }
 
     function loadQuestion() {
         const q = currentQuestions[currentIndex];
-        
-        // Update Header
-        document.getElementById('q-progress').innerText = `Question ${currentIndex + 1} of ${currentQuestions.length}`;
-        const statusSpan = document.getElementById('q-status');
-        
-        // Check if answered
         const saved = userAnswers[q.id];
-        if(saved) {
-            statusSpan.innerText = saved.isCorrect ? "Correct" : "Incorrect";
-            statusSpan.style.color = saved.isCorrect ? "var(--correct-text)" : "var(--wrong-text)";
-        } else {
-            statusSpan.innerText = "Not Answered";
-            statusSpan.style.color = "#6b7280";
-        }
 
-        // Render Text
+        // Update UI Elements
+        document.getElementById('q-progress').innerText = `Question ${currentIndex + 1} of ${currentQuestions.length}`;
         document.getElementById('q-text').innerText = q.q;
-
-        // Render Options
-        const optContainer = document.getElementById('options-container');
-        optContainer.innerHTML = '';
-
-        let displayOptions = [...q.options];
-        // If shuffle is on, shuffle options too, unless it's already answered (to keep UI consistent)
-        if(document.getElementById('shuffleCheck').checked && !saved) {
-            displayOptions = shuffleArray(displayOptions);
-        } else if (saved && saved.shuffledOptions) {
-            // Keep the same order as when they answered
-            displayOptions = saved.shuffledOptions;
+        
+        // Status
+        const statusSpan = document.getElementById('q-status');
+        if(saved) {
+            statusSpan.innerHTML = saved.isCorrect 
+                ? '<span style="color:var(--correct-text)"><i class="fas fa-check-circle"></i> Correct</span>' 
+                : '<span style="color:var(--wrong-text)"><i class="fas fa-times-circle"></i> Incorrect</span>';
+        } else {
+            statusSpan.innerHTML = '<span style="color:#9ca3af">Not Answered</span>';
         }
 
-        displayOptions.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = opt;
-            
-            // Logic for styling if answered
-            if(saved) {
-                btn.disabled = true;
-                if(opt === q.correct) {
-                    btn.classList.add('correct');
-                }
-                if(opt === saved.selected && !saved.isCorrect) {
-                    btn.classList.add('wrong');
-                }
-            } else {
-                btn.onclick = () => submitAnswer(q.id, opt, displayOptions);
-            }
-            
-            optContainer.appendChild(btn);
-        });
-
-        // Explanation
+        // Badges & Display Containers
+        const typeBadge = document.getElementById('q-type-badge');
+        const optContainer = document.getElementById('options-container');
+        const matchContainer = document.getElementById('matching-container');
+        const submitBtn = document.getElementById('btn-submit-multi');
         const expBox = document.getElementById('explanation-box');
-        const expText = document.getElementById('explanation-text');
         
-        if(saved) {
-            expBox.classList.add('visible');
-            expText.innerText = q.expl;
+        // Reset Displays
+        optContainer.style.display = 'none';
+        matchContainer.style.display = 'none';
+        submitBtn.style.display = 'none';
+        expBox.style.display = 'none';
+        document.getElementById('ai-explanation').style.display = 'none';
+
+        if (q.type === 'matching') {
+            typeBadge.className = 'badge badge-match';
+            typeBadge.innerText = "Matching Game";
+            matchContainer.style.display = 'grid';
+            renderMatching(q, saved);
+        } else if (q.type === 'multi') {
+            typeBadge.className = 'badge badge-multi';
+            typeBadge.innerText = "Select Multiple";
+            optContainer.style.display = 'flex';
+            // Only show submit if not already correctly answered
+            if(!saved || !saved.isCorrect) submitBtn.style.display = 'block'; 
+            renderMultiSelect(q, saved);
         } else {
-            expBox.classList.remove('visible');
+            typeBadge.className = 'badge badge-single';
+            typeBadge.innerText = "Single Choice";
+            optContainer.style.display = 'flex';
+            renderSingleSelect(q, saved);
+        }
+
+        // Show Explanation if answered
+        if(saved) {
+            document.getElementById('explanation-text').innerText = q.expl;
+            expBox.classList.add('visible');
+            expBox.style.display = 'block';
         }
 
         // Nav Buttons
@@ -749,33 +672,256 @@
         document.getElementById('btn-next').disabled = currentIndex === currentQuestions.length - 1;
     }
 
-    function submitAnswer(qId, selected, currentOptionOrder) {
+    // --- RENDERERS ---
+
+    function renderSingleSelect(q, saved) {
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+
+        let displayOptions = [...q.options];
+        if(!saved && document.getElementById('shuffleCheck').checked) {
+            displayOptions = shuffleArray(displayOptions);
+        } else if (saved && saved.optionOrder) {
+            displayOptions = saved.optionOrder;
+        }
+
+        displayOptions.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span>${opt}</span>`;
+            
+            if(saved) {
+                btn.disabled = true;
+                if(opt === q.correct) {
+                    btn.classList.add('correct');
+                    btn.innerHTML += '<i class="fas fa-check"></i>';
+                }
+                if(opt === saved.selected && !saved.isCorrect) {
+                    btn.classList.add('wrong');
+                    btn.innerHTML += '<i class="fas fa-times"></i>';
+                }
+            } else {
+                btn.onclick = () => submitSingleAnswer(q.id, opt, displayOptions);
+            }
+            container.appendChild(btn);
+        });
+    }
+
+    let tempMultiSelection = new Set();
+
+    function renderMultiSelect(q, saved) {
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        // Reset temp selection if fresh load
+        if(!saved) tempMultiSelection = new Set();
+
+        let displayOptions = [...q.options];
+        // Usually keep order for multi-select readability or shuffle
+        // We'll shuffle only if new
+        if(!saved && document.getElementById('shuffleCheck').checked && !q.shuffledOnce) {
+            displayOptions = shuffleArray(displayOptions);
+            q.shuffledOnce = true; 
+            q.storedOrder = displayOptions;
+        } else if (q.storedOrder) {
+            displayOptions = q.storedOrder;
+        }
+
+        displayOptions.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span>${opt}</span>`;
+
+            if(saved) {
+                btn.disabled = true;
+                const wasSelected = saved.selected.includes(opt);
+                const isActuallyCorrect = q.correct.includes(opt);
+
+                if(isActuallyCorrect) {
+                    btn.classList.add('correct');
+                    if(wasSelected) btn.innerHTML += '<i class="fas fa-check"></i>'; // Correctly picked
+                    else btn.innerHTML += '<i class="fas fa-exclamation" style="opacity:0.5"></i>'; // Missed
+                } else if (wasSelected) {
+                    btn.classList.add('wrong'); // Wrongly picked
+                    btn.innerHTML += '<i class="fas fa-times"></i>';
+                }
+            } else {
+                btn.onclick = () => {
+                    if(tempMultiSelection.has(opt)) {
+                        tempMultiSelection.delete(opt);
+                        btn.classList.remove('selected');
+                    } else {
+                        tempMultiSelection.add(opt);
+                        btn.classList.add('selected');
+                    }
+                };
+            }
+            container.appendChild(btn);
+        });
+    }
+
+    function renderMatching(q, saved) {
+        const container = document.getElementById('matching-container');
+        container.innerHTML = '';
+
+        // Prepare lists
+        const terms = q.pairs.map(p => p.term);
+        const values = q.pairs.map(p => p.value);
+        
+        // Shuffle values for the game aspect
+        // Store shuffled order to prevent re-shuffling on re-render if not saved
+        if(!q.shuffledValues) {
+            q.shuffledValues = shuffleArray([...values]);
+        }
+
+        // Columns
+        const leftCol = document.createElement('div');
+        leftCol.className = 'matching-col';
+        const rightCol = document.createElement('div');
+        rightCol.className = 'matching-col';
+
+        // Logic for local matching state (if not submitted yet)
+        if(!saved) {
+            matchedPairs = {}; 
+            selectedTerm = null;
+        } else {
+            matchedPairs = saved.pairs;
+        }
+
+        // Left Items (Terms)
+        terms.forEach(term => {
+            const div = document.createElement('div');
+            div.className = 'match-item';
+            div.innerText = term;
+            
+            if(saved) {
+                // Show results
+                const userVal = saved.pairs[term];
+                const correctVal = q.pairs.find(p => p.term === term).value;
+                if(userVal === correctVal) {
+                    div.classList.add('matched-correct');
+                    div.innerHTML += ` <i class="fas fa-check" style="margin-left:auto;"></i>`;
+                } else {
+                    div.classList.add('matched-wrong');
+                    div.innerHTML += ` <span style="font-size:0.8em; margin-left:auto;">(Correct: ${correctVal.substring(0,15)}...)</span>`;
+                }
+            } else {
+                // Interaction
+                div.onclick = () => {
+                    // If already matched, allow undo? Simple version: no undo until reset. 
+                    // Actually, let's allow re-clicking to change selection
+                    if (Object.keys(matchedPairs).includes(term)) return; // Already matched
+                    
+                    // Deselect others
+                    Array.from(leftCol.children).forEach(c => c.classList.remove('selected'));
+                    div.classList.add('selected');
+                    selectedTerm = term;
+                };
+            }
+            leftCol.appendChild(div);
+        });
+
+        // Right Items (Values)
+        q.shuffledValues.forEach(val => {
+            const div = document.createElement('div');
+            div.className = 'match-item';
+            div.innerText = val;
+
+            if(saved) {
+                // If this value was correctly matched
+                const correctTerm = q.pairs.find(p => p.value === val).term;
+                const userTerm = Object.keys(saved.pairs).find(key => saved.pairs[key] === val);
+                
+                if(userTerm && saved.pairs[userTerm] === val && userTerm === correctTerm) {
+                    div.classList.add('matched-correct');
+                } else if (userTerm) {
+                     div.classList.add('matched-wrong');
+                }
+            } else {
+                div.onclick = () => {
+                    if(!selectedTerm) return; // Must pick term first
+                    
+                    // Visual feedback
+                    // Find the selected term element
+                    const termEls = Array.from(leftCol.children);
+                    const termEl = termEls.find(el => el.innerText === selectedTerm);
+                    
+                    termEl.classList.remove('selected');
+                    termEl.classList.add('matched-correct'); // Temporarily green to show connection
+                    termEl.style.borderColor = '#2563eb';
+                    termEl.style.backgroundColor = '#eff6ff';
+                    
+                    div.classList.add('matched-correct'); 
+                    div.style.borderColor = '#2563eb';
+                    div.style.backgroundColor = '#eff6ff';
+
+                    // Record match
+                    matchedPairs[selectedTerm] = val;
+                    selectedTerm = null;
+
+                    // Auto-check if all matched
+                    if(Object.keys(matchedPairs).length === terms.length) {
+                        submitMatchingAnswer(q.id);
+                    }
+                };
+            }
+            rightCol.appendChild(div);
+        });
+
+        container.appendChild(leftCol);
+        container.appendChild(rightCol);
+    }
+
+    // --- SUBMISSION LOGIC ---
+
+    function submitSingleAnswer(qId, selected, optionOrder) {
         const q = rawData.find(x => x.id === qId);
         const isCorrect = selected === q.correct;
-
-        userAnswers[qId] = {
-            selected: selected,
-            isCorrect: isCorrect,
-            shuffledOptions: currentOptionOrder // Save order so it doesn't jump if we return
-        };
-
+        userAnswers[qId] = { selected, isCorrect, optionOrder };
         loadQuestion();
     }
 
+    function submitMultiSelect() {
+        const q = currentQuestions[currentIndex];
+        const selectedArr = Array.from(tempMultiSelection);
+        
+        if(selectedArr.length === 0) {
+            alert("Please select at least one option.");
+            return;
+        }
+
+        // Check if arrays match (ignore order)
+        const isCorrect = selectedArr.length === q.correct.length && 
+                          selectedArr.every(val => q.correct.includes(val));
+
+        userAnswers[q.id] = { selected: selectedArr, isCorrect, storedOrder: q.storedOrder };
+        loadQuestion();
+    }
+
+    function submitMatchingAnswer(qId) {
+        const q = rawData.find(x => x.id === qId);
+        let allCorrect = true;
+        
+        // Check every pair
+        for (const [term, val] of Object.entries(matchedPairs)) {
+            const correctVal = q.pairs.find(p => p.term === term).value;
+            if(val !== correctVal) allCorrect = false;
+        }
+
+        userAnswers[qId] = { pairs: matchedPairs, isCorrect: allCorrect };
+        // Slight delay to show the visual snap
+        setTimeout(() => loadQuestion(), 500);
+    }
+
+    // --- NAVIGATION ---
     function prevQuestion() {
-        if(currentIndex > 0) {
-            currentIndex--;
-            loadQuestion();
-        }
+        if(currentIndex > 0) { currentIndex--; loadQuestion(); }
     }
-
     function nextQuestion() {
-        if(currentIndex < currentQuestions.length - 1) {
-            currentIndex++;
-            loadQuestion();
-        }
+        if(currentIndex < currentQuestions.length - 1) { currentIndex++; loadQuestion(); }
     }
 
+    // --- MAP & RESET ---
     function toggleMap() {
         const modal = document.getElementById('map-modal');
         const grid = document.getElementById('q-grid');
@@ -788,20 +934,15 @@
                 const cell = document.createElement('div');
                 cell.className = 'q-cell';
                 cell.innerText = index + 1;
-                
                 if(index === currentIndex) cell.classList.add('current');
-                
                 const saved = userAnswers[q.id];
-                if(saved) {
-                    cell.classList.add(saved.isCorrect ? 'correct' : 'wrong');
-                }
-
+                if(saved) cell.classList.add(saved.isCorrect ? 'correct' : 'wrong');
+                
                 cell.onclick = () => {
                     currentIndex = index;
                     loadQuestion();
                     modal.style.display = 'none';
                 };
-
                 grid.appendChild(cell);
             });
             modal.style.display = 'flex';
@@ -809,19 +950,94 @@
     }
 
     function resetQuiz() {
-        if(confirm("Are you sure you want to reset all progress?")) {
+        if(confirm("Reset all progress?")) {
             userAnswers = {};
             currentIndex = 0;
-            loadQuestion();
-            // Close map if open
-            document.getElementById('map-modal').style.display = 'none';    
+            // Clear shuffling state
+            rawData.forEach(q => {
+                delete q.shuffledOnce;
+                delete q.storedOrder;
+                delete q.shuffledValues;
+            });
+            init();
         }
     }
 
-    // Initialize
+    // --- GEMINI AI FUNCTIONS ---
+    
+    async function callGemini(prompt) {
+        if(!apiKey) {
+            alert("API Key is missing.");
+            return null;
+        }
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        } catch (e) {
+            console.error(e);
+            return "Error contacting AI.";
+        }
+    }
+
+    async function simplifyExplanation() {
+        const q = currentQuestions[currentIndex];
+        const box = document.getElementById('ai-explanation');
+        box.style.display = 'block';
+        box.innerHTML = '<span class="loading-spinner"></span> Simplifying...';
+
+        const prompt = `Explain this networking concept to a 5 year old using a fun analogy. 
+        Question: "${q.q}" 
+        Answer: "${Array.isArray(q.correct) ? q.correct.join(', ') : q.correct}". 
+        Keep it short (2 sentences).`;
+
+        const text = await callGemini(prompt);
+        if(text) box.innerHTML = `<strong><i class="fas fa-robot"></i> ELI5:</strong> ${text}`;
+    }
+
+    async function generateAIQuestion() {
+        const btn = document.getElementById('btn-generate');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+        btn.disabled = true;
+
+        const q = currentQuestions[currentIndex];
+        const prompt = `Create a NEW, unique multiple choice question about the same topic as this one: "${q.q}". 
+        Provide it in JSON format: { "q": "question text", "options": ["A", "B", "C", "D"], "correct": "correct option text", "expl": "explanation" }`;
+
+        const text = await callGemini(prompt);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+
+        if(text) {
+            try {
+                // Extract JSON
+                const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+                const newQ = JSON.parse(jsonStr);
+                
+                // Add to quiz
+                newQ.id = Date.now(); // unique ID
+                newQ.type = 'single';
+                rawData.push(newQ);
+                currentQuestions.push(newQ);
+                
+                // Jump to it
+                currentIndex = currentQuestions.length - 1;
+                loadQuestion();
+                alert("New AI Question Added!");
+            } catch(e) {
+                alert("AI generation format error. Try again.");
+            }
+        }
+    }
+
+    // Start
     init();
 
 </script>
-
 </body>
 </html>
