@@ -1,0 +1,80 @@
+body {
+    margin: 0px;
+}
+
+.button-changecolor {
+    padding: 20px 40px;
+    border-radius: 5px 10px 5px 10px;
+    box-shadow: 3px 3px black;
+    color: white;
+    background-color: rgb(102, 102, 102);
+    margin-left: 200px;
+    margin-top: 60px;
+}
+
+#container {
+    border: solid black;
+    padding: 100px 100px 200px;
+    border-radius: 10px;
+    margin: 20px 200px 200px;
+}
+
+.main-info {
+    font-weight: bold;
+    font-size: 30px;
+}
+
+.info > p{
+    font-size: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.text-image {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.top-left {
+    vertical-align: top;
+    padding-top: 150px;
+}
+
+.top-right {
+    text-align: right;
+}
+
+.image {
+    width: 50%;
+    padding-top: 120px;
+}
+
+.student-information {
+    margin: 100px 0px;
+}
+
+.main-text {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.description {
+    font-size: 20px;
+}
+
+.top-button {
+    display: flex;
+    justify-content: left;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 200px 1fr;
+}
+
+.grid-2 {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+}
