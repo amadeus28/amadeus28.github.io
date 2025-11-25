@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile App Reviewer</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom Scrollbar for Sidebar */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Transitions */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 h-screen overflow-hidden flex flex-col md:flex-row">
+
+    <!-- ==================== START SCREEN ==================== -->
+    <div id="start-screen" class="fixed inset-0 z-50 bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
+        <div class="bg-white p-10 rounded-2xl shadow-xl max-w-lg w-full border border-slate-100">
+            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i data-lucide="refresh-cw" class="w-8 h-8"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold text-slate-800 mb-4">Mobile App Reviewer</h1>
+            <p class="text-slate-600 mb-8 text-lg">
+                Interactive reviewer covering Swift, iOS History, MVC, Xcode, and more.
+                <br/><span class="text-sm text-slate-400 mt-2 block" id="question-count-display">Loading Questions...</span>
+            </p>
+            <button onclick="app.startQuiz()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transform transition hover:scale-[1.02] active:scale-95 text-lg">
+                Start Reviewer
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== RESULT SCREEN ==================== -->
+    <div id="result-screen" class="hidden fixed inset-0 z-50 bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
+        <div class="bg-white p-10 rounded-2xl shadow-xl max-w-md w-full border border-slate-100">
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">Review Complete!</h2>
+            <div id="final-score" class="text-6xl font-black text-blue-600 mb-4">0 / 0</div>
+            <p class="text-slate-500 mb-8">Great job practicing!</p>
+            <button onclick="app.startQuiz()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition">
+                Restart
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN APP LAYOUT ==================== -->
+    
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="bg-white border-r border-slate-200 flex flex-col h-auto md:h-screen w-full md:w-80 shrink-0 transition-all duration-300 md:block hidden fixed md:relative z-40 top-16 md:top-0 bottom-0 shadow-xl md:shadow-none">
+        <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-white z-10">
+            <h2 class="font-bold text-lg text-slate-700">Questions</h2>
+            <div class="flex items-center gap-2">
+                <span id="progress-text" class="text-xs font-mono bg-slate-100 px-2 py-1 rounded text-slate-500">
+                    0/0 Done
+                </span>
+                <button onclick="app.toggleSidebar()" class="md:hidden p-1 bg-slate-100 rounded hover:bg-slate-200">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-2 scrollbar-hide">
+            <div id="question-grid" class="grid grid-cols-5 gap-2">
+                <!-- Grid items injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden w-full relative">
+        
+        <!-- HEADER -->
+        <header class="bg-white border-b border-slate-200 p-4 flex justify-between items-center shadow-sm z-30 h-16 shrink-0">
+            <div class="flex items-center space-x-3">
+                <button onclick="app.toggleSidebar()" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors" title="Toggle Question List">
+                    <i id="menu-icon" data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+                <span id="question-badge" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-bold">
+                    Q1
+                </span>
+                <span id="multi-badge" class="hidden text-xs uppercase tracking-wider text-slate-400 font-semibold sm:inline-block">
+                    Multiple Choice
+                </span>
+            </div>
+            <div class="text-slate-500 font-medium text-sm">
+                Score: <span id="current-score">0</span>
+            </div>
+        </header>
+
+        <!-- QUESTION AREA -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 flex justify-center bg-slate-100" id="main-scroll">
+            <div class="max-w-2xl w-full space-y-6 pb-24 fade-in" id="question-container">
+                
+                <!-- Question Text -->
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 id="question-text" class="text-xl md:text-2xl font-semibold leading-relaxed text-slate-800">
+                        <!-- Question goes here -->
+                    </h2>
+                </div>
+
+                <!-- Options -->
+                <div id="options-list" class="space-y-3">
+                    <!-- Options injected by JS -->
+                </div>
+
+            </div>
+        </main>
+
+        <!-- FOOTER ACTIONS -->
+        <footer class="bg-white border-t border-slate-200 p-4 flex items-center justify-between shrink-0 h-20 z-20">
+            <button id="btn-prev" onclick="app.prevQuestion()" class="flex items-center space-x-2 text-slate-500 hover:text-blue-600 disabled:opacity-30 disabled:hover:text-slate-500 font-medium px-4 py-2 rounded-lg hover:bg-slate-50 transition">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                <span class="hidden sm:inline">Prev</span>
+            </button>
+
+            <!-- Feedback / Check Button -->
+            <div id="feedback-area" class="flex-1 px-4 flex justify-center text-center">
+                <!-- Injected by JS -->
+            </div>
+
+            <button id="btn-next" onclick="app.nextQuestion()" class="flex items-center space-x-2 bg-slate-800 text-white hover:bg-slate-700 px-6 py-2 rounded-lg font-bold shadow-md transform transition hover:scale-105 active:scale-95">
+                <span id="btn-next-text">Next</span>
+                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+        </footer>
+
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // --- DATASET ---
+        const RAW_QUESTIONS = [
+          // --- FROM TEXT PROMPT ---
+          {
+            question: "Associate values with a particular class, structure, or enumeration.",
+            options: ["Properties", "Structure", "Class", "Collection"],
+            correct: ["Properties"],
+            type: "single"
+          },
+          {
+            question: "Are unnamed closures written in a lightweight syntax that can capture values from their surrounding context.",
+            options: ["Closure expressions", "Global Functions", "Nested Functions", "Private Functions"],
+            correct: ["Closure expressions"],
+            type: "single"
+          },
+          {
+            question: "Are a convenient means of naming and defining self-contained blocks of code as part of a larger function.",
+            options: ["Nested Functions", "Functions", "Library", "Class"],
+            correct: ["Nested Functions"],
+            type: "single"
+          },
+          {
+            question: "It doesn’t take any arguments, and when it’s called, it returns the value of the expression that’s wrapped inside of it.",
+            options: ["Autoclosure", "ARC", "AutoReference", "AutoClass"],
+            correct: ["Autoclosure"],
+            type: "single"
+          },
+          {
+            question: "Are closures that have a name and do not capture any values.",
+            options: ["Global functions", "Nested functions", "Unnamed functions", "Private functions"],
+            correct: ["Global functions"],
+            type: "single"
+          },
+          {
+            question: "In Escaping Closures, if you want to capture ________, write ________ explicitly when you use it, or include ________ in the closure’s capture.",
+            options: ["self", "this", "super", "this.self"],
+            correct: ["self"],
+            type: "single"
+          },
+          {
+            question: "is/are general-purpose, flexible constructs that become the building blocks of your program’s code",
+            options: ["Classes", "Structure", "Enumaration", "Closure"],
+            correct: ["Classes", "Structure"],
+            type: "multiple"
+          },
+          {
+            question: "The closure expression examples below illustrate these optimizations by refining a single example of the __________________ method over several iterations, each of which expresses the same functionality in a more succinct way.",
+            options: ["sorted(by:)", "sort(by:)", "order(by:)", "sort(By:)"],
+            correct: ["sorted(by:)"],
+            type: "single"
+          },
+          {
+            question: "Are not copied when they are assigned to a variable or constant, or when they are passed to a function.",
+            options: ["Reference types", "Value Type", "Loosely Type", "Strict Type"],
+            correct: ["Reference types"],
+            type: "single"
+          },
+          {
+            question: "Provide several syntax optimizations for writing closures in a shortened form without loss of clarity or intent.",
+            options: ["Closure expressions", "Functions", "Class", "enumeration"],
+            correct: ["Closure expressions"],
+            type: "single"
+          },
+          {
+            question: "Global functions are closures that have a name and can capture values from their enclosing function.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Closure expressions are named closures written in a complex syntax that can capture values from their surrounding context.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Nested functions, as introduced in Nested Functions, are a convenient means of naming and defining self-contained blocks of code as part of a larger function.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Swift strings are represented by the String type.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Nested functions are closures that have a name and can capture values from their enclosing function.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Swift’s String and Character types provide a fast, ASCII-compliant way to work with text in your code.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Closures can never capture and store references to any constants and variables from the context in which they are defined.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Global functions are closures that have a name and do not capture any values.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "You cannot define properties and methods to add functionality to your classes and structures by using exactly the same syntax as for constants, variables, and functions.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Swift’s String and Character types provide a fast, Unicode-compliant way to work with text in your code.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+
+          // --- FROM MOB APP 4 PDF ---
+          {
+            question: "When one class inherits from another, the inheriting class is known as a ________.",
+            options: ["Object", "subclass", "superclass", "Class"],
+            correct: ["subclass"],
+            type: "single"
+          },
+          {
+            question: "Any class that does not inherit from another class is known as a/an ________.",
+            options: ["inherited class", "base class", "default class", "class"],
+            correct: ["base class"],
+            type: "single"
+          },
+          {
+            question: "________ is the act of basing a new class on an existing class. The subclass inherits characteristics from the existing class, which you can then refine.",
+            options: ["SuperClass", "Object", "Subclassing", "Class"],
+            correct: ["Subclassing"],
+            type: "single"
+          },
+          {
+            question: "A subclass can provide its own custom implementation of an instance method, type method, instance property, type property, or subscript that it would otherwise inherit from a superclass. This is known as ________.",
+            options: ["stackoverflow", "overloading", "reference type", "overriding"],
+            correct: ["overriding"],
+            type: "single"
+          },
+          {
+            question: "You access the superclass version of a method, property, or subscript by using the ________ prefix.",
+            options: ["super", "this", "optional", "sub"],
+            correct: ["super"],
+            type: "single"
+          },
+          {
+            question: "Any attempt to override a final method, property, or subscript in a subclass is reported as a ________ error.",
+            options: ["logic", "compile-time", "syntax", "warning-like"],
+            correct: ["compile-time"],
+            type: "single"
+          },
+          {
+            question: "________ is the process of preparing an instance of a class, structure, or enumeration for use.",
+            options: ["Initialization", "Reference Type", "Instantiation", "Value Type"],
+            correct: ["Initialization"],
+            type: "single"
+          },
+          {
+            question: "You implement this initialization process by defining ________ which are like special methods that can be called to create a new instance of a particular type.",
+            options: ["init", "default", "constructor", "initializers"],
+            correct: ["initializers"],
+            type: "single"
+          },
+          {
+            question: "Properties of optional type are automatically initialized with a value of ________ indicating that the property is deliberately intended to have 'no value yet' during initialization.",
+            options: ["empty", "nil", "null", "\"\""],
+            correct: ["nil"],
+            type: "single"
+          },
+          {
+            question: "When one class inherits from another, the inheriting class is known as a superclass, and the class it inherits from is known as its subclass.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "SuperClassing is the act of basing a new class on an existing class.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "When one class inherits from another, the inheriting class is known as a subclass, and the class it inherits from is known as its superclass.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "The subclass inherits characteristics from the existing class, which you can then refine. You can also add new characteristics to the subclass.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Initialization is the process of preparing an instance of a class, structure, or enumeration for use.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Initializers are called to create a new instance of a particular type. In its simplest form, an initializer is like an instance method with no parameters, written using the init keyword.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "You can provide initialization parameters as part of an initializer's definition, to define the types and names of values that customize the initialization process.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "A/an ________ can inherit methods, properties, and other characteristics from another class.",
+            options: ["class", "object", "enumeration", "structure"],
+            correct: ["class"],
+            type: "single"
+          },
+          {
+            question: "The class where other classes inherits from is known as ________.",
+            options: ["Class", "subclass", "Object", "superclass"],
+            correct: ["superclass"],
+            type: "single"
+          },
+          {
+            question: "Initializers are called to create a new instance of a particular type... written using the ________ keyword:",
+            options: ["init", "closure", "initializers", "final"],
+            correct: ["init"],
+            type: "single"
+          },
+          {
+            question: "You can provide ________ as part of an initializer’s definition, to define the types and names of values that customize the initialization process.",
+            options: ["initialization parameters", "function parameters", "object parameters", "constructor parameters"],
+            correct: ["initialization parameters"],
+            type: "single"
+          },
+          {
+            question: "You access the superclass version of a method, property, or subscript by using the super prefix. Example:",
+            options: ["super.someMethod()", "super.someProperty", "super[someIndex]", "All of the above"],
+            correct: ["super.someMethod()", "super.someProperty", "super[someIndex]", "All of the above"],
+            type: "single" 
+          },
+          {
+            question: "A class can inherit methods, properties, and other characteristics from another class.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Subclassing is the act of basing a new class on an existing class.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Instantiation is the process of preparing an instance of a class, structure, or enumeration for use.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "You can set the initial value of a stored property from within an initializer... Alternatively, specify a default property value as part of the property's declaration.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Properties of optional type are automatically initialized with a value of nil, indicating that the property is deliberately intended to have \"no value yet\" during initialization.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "You can prevent a method, property, or subscript from being overridden by marking it as final.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+
+          // --- FROM MOBILE APP 5-6 PDF ---
+          {
+            question: "Displays device's current battery level, 3G connection, bars of reception, phone carrier, and a whole lot more.",
+            options: ["Menu Bar", "Home", "Status Bar", "Console"],
+            correct: ["Status Bar"],
+            type: "single"
+          },
+          {
+            question: "Appears at the bottom of the iPhone app. This will hold a few icons tied to some functions such as Share, Download, Delete, etc.",
+            options: ["Status Bar", "Option Menu", "Tool Bar", "Menu Bar"],
+            correct: ["Tool Bar"],
+            type: "single"
+          },
+          {
+            question: "Gives your users the option to navigate between page hierarchies. This often includes a button on the left side of the bar to enable the user to return to the previous app view.",
+            options: ["Tool Bar", "Tab Bar", "Multitask", "Status Bar"],
+            correct: ["Tab Bar"],
+            type: "single"
+          },
+          {
+            question: "The following describes a: Is a container, Some properties (rootViewController, viewControllers, topViewControllers)",
+            options: ["Navigation Controller", "Navigation Model", "Navigation Routing", "Navigation View"],
+            correct: ["Navigation Controller"],
+            type: "single"
+          },
+          {
+            question: "Navigation Controller uses segue:",
+            options: ["Deque", "Push", "Queue", "Pop"],
+            correct: ["Push"],
+            type: "single"
+          },
+          {
+            question: "Contains UITableViewCell Objects",
+            options: ["Table Cell", "Table View", "Table Menu", "Table Row"],
+            correct: ["Table View"],
+            type: "single"
+          },
+          {
+            question: "Doesn't necessarily need a custom class if all you need are standard segues",
+            options: ["Dynamic Table", "Static Reference", "Static Table", "Dynamic Reference"],
+            correct: ["Static Table"],
+            type: "single"
+          },
+          {
+            question: "Build one or more prototypes cells in storyboard",
+            options: ["Dynamic Prototypes", "ARC", "Static Prototype", "Garbage Collector"],
+            correct: ["Dynamic Prototypes"],
+            type: "single"
+          },
+          {
+            question: "Notification displays device's current battery level, 3G connection, bars of reception... etc.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Toolbar appears at the bottom of the iPhone app. This will hold a few icons tied to some functions.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Tab Bar gives your users the option to navigate between page hierarchies. This often includes a button on the left side... (Check Logic carefully)",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Navigation Controller is a container.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Tab Bar Controller's View Controllers are loaded concurrently.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Table View is a scroll view.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Table Views can be static or dynamic",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Contains or encapsulates the data that your app uses",
+            options: ["Model", "View", "Controller"],
+            correct: ["Model"],
+            type: "single"
+          },
+          {
+            question: "The model provides ways to be accessed by the controller, sometimes directly (like properties), or through other API calls or objects",
+            options: ["View", "Controller", "Model"],
+            correct: ["Model"],
+            type: "single"
+          },
+          {
+            question: "The visible part of your app",
+            options: ["Controller", "View", "Model"],
+            correct: ["View"],
+            type: "single"
+          },
+          {
+            question: "Interacts with the user",
+            options: ["Controller", "Model", "View"],
+            correct: ["View"],
+            type: "single"
+          },
+          {
+            question: "Talks to the controller when things happen",
+            options: ["Model", "View", "Controller"],
+            correct: ["View"],
+            type: "single"
+          },
+          {
+            question: "Gets and processes interactions from the view",
+            options: ["Controller", "View", "Model"],
+            correct: ["Controller"],
+            type: "single"
+          },
+          {
+            question: "Updates the view based on what happens (in the view, the model, or external factors)",
+            options: ["Model", "Controller", "View"],
+            correct: ["Controller"],
+            type: "single"
+          },
+          {
+            question: "Updates the model based on what happens (in the view, the model or external factors)",
+            options: ["Controller", "View", "Model"],
+            correct: ["Controller"],
+            type: "single"
+          },
+          {
+            question: "Refers to a design pattern where a target object and a method in that object is called in response to specific events",
+            options: ["Target Class", "Target Action", "Action Menu", "Target"],
+            correct: ["Target Action"],
+            type: "single"
+          },
+          {
+            question: "Used to specify code in response to changes to properties",
+            options: ["Property Manager", "Property Observers", "Property Listeners", "Property Responders"],
+            correct: ["Property Observers"],
+            type: "single"
+          },
+          {
+            question: "Controller Contains or encapsulates the data that your app uses",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Views Contains or encapsulates the data that your app uses",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "View is what you create in interface builder",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Model is what you create in interface builder",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Controller gets and processes interactions from the view",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Controller retrieves and updates information in the model",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "View retrieves and updates information in the model",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "The model should be valid for multiple views for things like adaptive layouts",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Protocol to allow multiple objects to communicate",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Property Observers are used to specify code in response to changes to properties",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "VCs are loaded concurrently",
+            options: ["Tab Bar Controller", "Tabs", "Tab Menu", "Tab View"],
+            correct: ["Tab Bar Controller"],
+            type: "single"
+          },
+          {
+            question: "The ________ class defines three properties for this cell content: textLabel, detailTextLabel, imageView",
+            options: ["UITableController", "UITableMenu", "UITableViewCell"],
+            correct: ["UITableViewCell"],
+            type: "single"
+          },
+          {
+            question: "Represent a significant change to how we, as developers, construct our user interfaces using Interface Builder.",
+            options: ["Delegate", "Segue", "Storyboard", "Protocol"],
+            correct: ["Storyboard"],
+            type: "single"
+          },
+          {
+            question: "Navigation Bar gives your users the option to navigate between page hierarchies. This often includes a button on the left side...",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Navigation Model is a container.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Navigation Controller Manages the Navigation Bar",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Table View is a navigation controller.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "The ________ is the transition between view controllers.",
+            options: ["Navigation", "Animation", "segue", "Storyboard"],
+            correct: ["segue"],
+            type: "single"
+          },
+          {
+            question: "Doesn't need to define a data source for the view controller.",
+            options: ["Responsive Table", "Dynamic Table", "Content Table", "Static table"],
+            correct: ["Static table"],
+            type: "single"
+          },
+          {
+            question: "Segue represent a significant change to how we, as developers, construct our user interfaces using Interface Builder.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Storyboarding greatly simplifies the setup between view controllers. It allows a new graphical representation of the flow between screens.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Can be a simple property in the controller, an array or other structure, a local file or database, or data from an external source such as a web service",
+            options: ["View", "Model", "Controller"],
+            correct: ["Model"],
+            type: "single"
+          },
+          {
+            question: "Used to allow multiple objects to communicate",
+            options: ["Segue", "Protocol", "Storyboard", "Delegate"],
+            correct: ["Delegate"],
+            type: "single"
+          },
+          {
+            question: "Model can be a simple property in the controller, an array or other structure, a local file or database, or data from an external source...",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Controller is what you create in interface builder",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Controller interacts with the user",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "The Controller elements are accessed by the controller by name",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Tab Bar Controller's View Controllers are loaded one at a time.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "What you create in interface builder",
+            options: ["Controller", "Model", "View"],
+            correct: ["View"],
+            type: "single"
+          },
+          {
+            question: "Retrieves and updates information in the model",
+            options: ["Model", "View", "Controller"],
+            correct: ["Controller"],
+            type: "single"
+          },
+          {
+            question: "Model contains or encapsulates the data that your app uses",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "View is visible part of your app",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Target Location refers to a design pattern where a target object and a method in that object is called in response to specific events",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Model gets and processes interactions from the view",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Are announcements or broadcasts that can be generated both internal and external to the app",
+            options: ["Menu", "Alert", "Toast", "Notifications"],
+            correct: ["Notifications"],
+            type: "single"
+          },
+
+          // --- FROM FORMATIVE 1 & 2 PDF ---
+          {
+            question: "The latest iOS version (at the time of the quiz)",
+            options: ["12", "13", "14", "11"],
+            correct: ["14"],
+            type: "single"
+          },
+          {
+            question: "Apple's Stephen Jabs introduced the iPhone.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Apple made touch the primary interaction model removing all physical buttons.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "First OS name for iPhone",
+            options: ["IOSys", "iPhone OS", "iOperating System", "iPOS"],
+            correct: ["iPhone OS"],
+            type: "single"
+          },
+          {
+            question: "When did Apple introduced the App Store to iOS",
+            options: ["June 2008", "November 2008", "October 2008", "July 2008"],
+            correct: ["July 2008"],
+            type: "single"
+          },
+          {
+            question: "In iOS 1.0, Apple's marketing literature states that iPhone runs a version of Apple's desktop operating system, OS X.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "In March 6, 2008, with the release of the iPhone software development kit (iPhone SDK), Apple named it iPhone OS",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "iPhone 3GS was released in 2007",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "iOS 3.0 supports cut, copy, and paste",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "In iOS 4.0, Music apps are now able to play in background.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Swift makes programming easier, flexible, and more fun.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Used to jump to a selected files, you can quickly select what information to view in the Assistant editor",
+            options: ["Jump Bar", "Navigator", "Goto", "Filter"],
+            correct: ["Jump Bar"],
+            type: "single"
+          },
+          {
+            question: "These are common tools in developing iOS applications.",
+            options: ["Xcode", "Apple HIG", "Instruments", "Provisions", "iOS Simulator"],
+            correct: ["Xcode", "Instruments", "iOS Simulator"],
+            type: "multiple"
+          },
+          {
+            question: "iOS version where S iPhone was introduced.",
+            options: ["iOS 5.0", "iOS 3.0", "iOS 4.0", "iOS 1.0"],
+            correct: ["iOS 5.0"],
+            type: "single"
+          },
+          {
+            question: "The programming languages that is used to develop an iOS applications.",
+            options: ["Kotlin", "Java", "Objective-C", "Swift"],
+            correct: ["Objective-C", "Swift"],
+            type: "multiple"
+          },
+          {
+            question: "An Integrated Development Environment that enables you to manage, edit, and debug you iOS projects.",
+            options: ["Eclipse", "Sublime Text", "VSCode", "Xcode"],
+            correct: ["Xcode"],
+            type: "single"
+          },
+          {
+            question: "It splits the Xcode editor in two, with your primary work document on the left",
+            options: ["Assistant Editor", "Navigator", "Debug", "Jump Bars"],
+            correct: ["Assistant Editor"],
+            type: "single"
+          },
+          {
+            question: "An analysis tool to assist you both optimize your apps and monitor for memory leaks in real time.",
+            options: ["Debug Area", "Interface Builder", "Instruments", "Utility Area"],
+            correct: ["Instruments"],
+            type: "single"
+          },
+          {
+            question: "The device that was released where iOS named was officially used.",
+            options: ["iPhone 5S", "iPhone 4", "iPhone 4S", "iPhone 5"],
+            correct: ["iPhone 4"],
+            type: "single"
+          },
+          {
+            question: "The iOS version when iPad was unveiled.",
+            options: ["iOS 4", "iOS 14", "iOS 10", "iOS 3.2"],
+            correct: ["iOS 3.2"],
+            type: "single"
+          },
+          {
+            question: "Used to group multiple values into a single compound value.",
+            options: ["square bracket", "range", "tuples", "parenthesis"],
+            correct: ["tuples"],
+            type: "single"
+          },
+          {
+            question: "Defines an alternative name for an existing type.",
+            options: ["type cast", "type declaration", "type definition", "type aliases"],
+            correct: ["type aliases"],
+            type: "single"
+          },
+          {
+            question: "Which of the following is a correct statement",
+            options: ["let a:UInt = -10", "let a:Int8 = 130", "let a = 1_0_1_0", "let a = 1-1-1-1"],
+            correct: ["let a = 1_0_1_0"],
+            type: "single"
+          },
+          {
+            question: "It enables a compiler to deduce the type of a particular expression automatically when it compiles your code, simply by examining the values you provide",
+            options: ["type inference", "interpolator", "type declaration", "type cast"],
+            correct: ["type inference"],
+            type: "single"
+          },
+          {
+            question: "Swift was based on ________.",
+            options: ["C++ and Objective C", "C and Objective C", "C and C#", "C and C++"],
+            correct: ["C and Objective C"],
+            type: "single"
+          },
+          {
+            question: "A double represent a ________ bit floating-point number.",
+            options: ["8", "32", "64", "16"],
+            correct: ["64"],
+            type: "single"
+          },
+          {
+            question: "Used to find out whether an optional contains a value, and if so, to make that value available as a temporary constant or variable.",
+            options: ["unwrapped optionals", "Forced unwrapped optional", "optional binding", "conditions"],
+            correct: ["optional binding"],
+            type: "single"
+          },
+          {
+            question: "Swift provides a simplified memory management with ________.",
+            options: ["Garbage Collector", "ARC", "GIGO", "ART"],
+            correct: ["ARC"],
+            type: "single"
+          },
+          {
+            question: "It is the minimum value of UInt8.",
+            options: ["0", "-128", "-255", "-127"],
+            correct: ["0"],
+            type: "single"
+          },
+          {
+            question: "Which of the following is a correct statement",
+            options: ["let a:Int = Int(\"10\")", "let a = 1_0_1_0", "let a = 1-1-1-1", "let a:UInt = -10"],
+            correct: ["let a = 1_0_1_0"],
+            type: "single"
+          },
+          {
+            question: "You use optionals in situations where a value may be absent.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Swift is a type-safe language.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "In Swift constants and characters can contain unicode characters.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Swift 1, 2, 3 and 4 provides same syntax.",
+            options: ["True", "False"],
+            correct: ["False"],
+            type: "single"
+          },
+          {
+            question: "Xcode provides a playground for testing some swift syntax.",
+            options: ["True", "False"],
+            correct: ["True"],
+            type: "single"
+          },
+          {
+            question: "Write the exact output: let (x,y) = (Int(\"123\"), 123); print(\"\\(x) and \\(y)\")",
+            options: ["Optional(123) and 123", "123 and 123", "nil and 123", "Error"],
+            correct: ["Optional(123) and 123"],
+            type: "single"
+          },
+          {
+            question: "Write the exact output: var x=1; for y in 5..<10 { x+=y }; print(\"x=\\(x)\")",
+            options: ["x=36", "x=35", "x=45", "x=1"],
+            correct: ["x=36"],
+            type: "single"
+          },
+          {
+            question: "Write the exact output: var x:String?=\"Swift\"; print(x!)",
+            options: ["Swift", "Optional(\"Swift\")", "nil", "Error"],
+            correct: ["Swift"],
+            type: "single"
+          },
+          {
+            question: "let abc = (UInt8.max, UInt8.min, Int8.max, Int8.min); print(\"\\(abc.0) \\(abc.2) \\(abc.1) \\(abc.3)\")",
+            options: ["255 127 0 -128", "255 128 0 -127", "127 255 0 -128", "Error"],
+            correct: ["255 127 0 -128"],
+            type: "single"
+          },
+          {
+            question: "Which of the following has the correct syntax.",
+            options: ["let x:Int = Int(\"123\")", "var x:Int? = nil", "var x:Int = Int(\"123\")", "let x:Int = \"123\""],
+            correct: ["var x:Int? = nil"],
+            type: "single"
+          }
+        ];
+
+        // --- APP LOGIC ---
+
+        const app = {
+            questions: [],
+            currentIndex: 0,
+            selectedAnswers: new Set(),
+            wrongSelections: new Set(),
+            score: 0,
+            completedIndices: new Set(),
+            isCorrect: null, // null, true, false
+            
+            init: function() {
+                document.getElementById('question-count-display').innerText = `${RAW_QUESTIONS.length} Questions Loaded`;
+                lucide.createIcons();
+            },
+
+            startQuiz: function() {
+                // Shuffle questions
+                this.questions = [...RAW_QUESTIONS].sort(() => 0.5 - Math.random());
+                
+                // Reset State
+                this.currentIndex = 0;
+                this.selectedAnswers = new Set();
+                this.wrongSelections = new Set();
+                this.score = 0;
+                this.completedIndices = new Set();
+                this.isCorrect = null;
+
+                // UI Updates
+                document.getElementById('start-screen').classList.add('hidden');
+                document.getElementById('result-screen').classList.add('hidden');
+                document.getElementById('sidebar').classList.remove('hidden'); // Ensure visible if responsive
+                
+                // Render
+                this.renderSidebar();
+                this.renderQuestion();
+            },
+
+            renderSidebar: function() {
+                const grid = document.getElementById('question-grid');
+                grid.innerHTML = '';
+                
+                this.questions.forEach((_, idx) => {
+                    const btn = document.createElement('button');
+                    // Styling logic
+                    let classes = "h-10 w-full rounded-lg text-xs font-bold transition-all border ";
+                    if (this.currentIndex === idx) {
+                        classes += "ring-2 ring-blue-500 ring-offset-1 ";
+                    }
+                    if (this.completedIndices.has(idx)) {
+                        classes += "bg-green-100 text-green-700 border-green-200";
+                    } else {
+                        classes += "bg-slate-50 text-slate-400 hover:bg-slate-100 border-slate-100";
+                    }
+
+                    btn.className = classes;
+                    btn.innerText = idx + 1;
+                    btn.onclick = () => this.jumpToQuestion(idx);
+                    grid.appendChild(btn);
+                });
+
+                document.getElementById('progress-text').innerText = `${this.completedIndices.size}/${this.questions.length} Done`;
+            },
+
+            renderQuestion: function() {
+                const q = this.questions[this.currentIndex];
+                const isMulti = q.type === 'multiple';
+                const isCompleted = this.completedIndices.has(this.currentIndex);
+
+                // Update Header
+                document.getElementById('question-badge').innerText = `Q${this.currentIndex + 1}`;
+                document.getElementById('current-score').innerText = this.score;
+                if(isMulti) {
+                    document.getElementById('multi-badge').classList.remove('hidden');
+                } else {
+                    document.getElementById('multi-badge').classList.add('hidden');
+                }
+
+                // Update Question Text
+                document.getElementById('question-text').innerText = q.question;
+
+                // Render Options
+                const optionsList = document.getElementById('options-list');
+                optionsList.innerHTML = '';
+
+                q.options.forEach((opt) => {
+                    const btn = document.createElement('button');
+                    const isSelected = this.selectedAnswers.has(opt);
+                    const isWrongHistory = this.wrongSelections.has(opt);
+                    const isCorrectOption = q.correct.includes(opt);
+
+                    let classes = "w-full p-4 rounded-xl border-2 text-left transition-all duration-200 flex justify-between items-center group ";
+                    let iconHtml = '';
+
+                    // Styling State Machine
+                    if (isCompleted && isCorrectOption) {
+                        // REVEAL CORRECT ANSWER
+                        classes += "border-green-500 bg-green-50 text-green-700";
+                        iconHtml = '<i data-lucide="check" class="w-5 h-5 text-green-600"></i>';
+                    } 
+                    else if (isSelected) {
+                        if (this.isCorrect === true) {
+                            // Selected & Correct
+                            classes += "border-green-500 bg-green-50 text-green-700 shadow-sm";
+                            iconHtml = '<i data-lucide="check" class="w-5 h-5 text-green-600"></i>';
+                        } else if (this.isCorrect === false && !isMulti) {
+                            // Selected & Wrong (Single choice immediate)
+                            classes += "border-red-500 bg-red-50 text-red-700 shadow-sm";
+                            iconHtml = '<i data-lucide="x" class="w-5 h-5 text-red-500"></i>';
+                        } else {
+                            // Selected (Pending Multi)
+                            classes += "border-blue-500 bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-200";
+                        }
+                    } 
+                    else if (isWrongHistory) {
+                        // Was clicked before and wrong
+                        classes += "border-red-200 bg-red-50 text-red-400 opacity-80";
+                        iconHtml = '<i data-lucide="x" class="w-5 h-5 text-red-300"></i>';
+                    } 
+                    else {
+                        // Default
+                        classes += "border-slate-200 hover:border-blue-300 hover:bg-slate-50 bg-white";
+                    }
+
+                    btn.className = classes;
+                    btn.disabled = isCompleted;
+                    btn.innerHTML = `<span class="text-base font-medium">${opt}</span>${iconHtml}`;
+                    
+                    btn.onclick = () => this.handleOptionClick(opt);
+                    optionsList.appendChild(btn);
+                });
+
+                // Update Footer Buttons
+                document.getElementById('btn-prev').disabled = this.currentIndex === 0;
+                document.getElementById('btn-next-text').innerText = (this.currentIndex === this.questions.length - 1) ? "Finish" : "Next";
+                
+                // Render Feedback Area
+                const feedbackArea = document.getElementById('feedback-area');
+                feedbackArea.innerHTML = '';
+
+                if (this.isCorrect === false && !isCompleted) {
+                    feedbackArea.innerHTML = `
+                        <span class="flex items-center text-red-600 font-medium animate-pulse justify-center">
+                            <i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i>
+                            Incorrect, try again!
+                        </span>`;
+                } else if (this.isCorrect === true) {
+                    feedbackArea.innerHTML = `
+                        <span class="flex items-center text-green-600 font-bold justify-center">
+                            <i data-lucide="check" class="w-5 h-5 mr-2"></i>
+                            Correct!
+                        </span>`;
+                } else if (isMulti && !isCompleted) {
+                     const checkBtn = document.createElement('button');
+                     checkBtn.className = "bg-blue-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-700 active:scale-95 transition";
+                     checkBtn.innerText = "Check Answer";
+                     checkBtn.onclick = () => this.checkMultiAnswer();
+                     feedbackArea.appendChild(checkBtn);
+                }
+
+                // Update Sidebar (Active state)
+                this.renderSidebar();
+
+                // Refresh Icons
+                lucide.createIcons();
+
+                // Scroll top
+                document.getElementById('main-scroll').scrollTop = 0;
+            },
+
+            handleOptionClick: function(option) {
+                if (this.completedIndices.has(this.currentIndex)) return;
+
+                const q = this.questions[this.currentIndex];
+                const isMulti = q.type === 'multiple';
+
+                if (isMulti) {
+                    if (this.selectedAnswers.has(option)) {
+                        this.selectedAnswers.delete(option);
+                    } else {
+                        this.selectedAnswers.add(option);
+                    }
+                    this.isCorrect = null; // Reset feedback
+                } else {
+                    // Single choice logic
+                    const isAnswerCorrect = q.correct.includes(option);
+                    
+                    this.selectedAnswers = new Set([option]);
+                    
+                    if (isAnswerCorrect) {
+                        this.isCorrect = true;
+                        this.completedIndices.add(this.currentIndex);
+                        this.score++;
+                    } else {
+                        this.isCorrect = false;
+                        this.wrongSelections.add(option);
+                    }
+                }
+                this.renderQuestion();
+            },
+
+            checkMultiAnswer: function() {
+                const q = this.questions[this.currentIndex];
+                const selectedArray = Array.from(this.selectedAnswers);
+                
+                // Basic Array Compare
+                const isAnswerCorrect = selectedArray.length === q.correct.length && 
+                                        selectedArray.every(val => q.correct.includes(val));
+
+                if (isAnswerCorrect) {
+                    this.isCorrect = true;
+                    this.completedIndices.add(this.currentIndex);
+                    this.score++;
+                } else {
+                    this.isCorrect = false;
+                    // For multi, maybe mark all currently selected as wrong attempts?
+                    selectedArray.forEach(opt => this.wrongSelections.add(opt));
+                }
+                this.renderQuestion();
+            },
+
+            nextQuestion: function() {
+                if (this.currentIndex < this.questions.length - 1) {
+                    this.currentIndex++;
+                    this.resetForNext();
+                } else {
+                    this.showResults();
+                }
+            },
+
+            prevQuestion: function() {
+                if (this.currentIndex > 0) {
+                    this.currentIndex--;
+                    this.resetForNext();
+                }
+            },
+
+            jumpToQuestion: function(index) {
+                this.currentIndex = index;
+                this.resetForNext();
+            },
+
+            resetForNext: function() {
+                this.selectedAnswers = new Set();
+                this.wrongSelections = new Set();
+                this.isCorrect = null;
+                this.renderQuestion();
+            },
+
+            showResults: function() {
+                document.getElementById('final-score').innerText = `${this.score} / ${this.questions.length}`;
+                document.getElementById('result-screen').classList.remove('hidden');
+            },
+            
+            toggleSidebar: function() {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar.classList.contains('hidden')) {
+                    sidebar.classList.remove('hidden');
+                } else {
+                    sidebar.classList.add('hidden');
+                }
+            }
+        };
+
+        // Initialize App
+        window.onload = function() {
+            app.init();
+        };
+
+    </script>
+</body>
+</html>
