@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OS Exam Interactive Reviewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .option-btn {
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        .correct-anim {
+            animation: pulse-green 0.5s;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen pb-10">
+
+    <!-- Header -->
+    <header class="bg-slate-800 text-white sticky top-0 z-50 shadow-lg">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">OS Reviewer</h1>
+            <div class="text-sm bg-slate-700 px-3 py-1 rounded-full">
+                <span id="score">0</span> / 100
+            </div>
+        </div>
+        <!-- Progress Bar -->
+        <div class="h-1 bg-slate-700 w-full">
+            <div id="progress-bar" class="h-1 bg-green-500 w-0 transition-all duration-300"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto px-4 py-6 space-y-6" id="quiz-container">
+        <!-- Questions will be injected here by JS -->
+    </main>
+
+    <!-- Scroll to Top -->
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition z-50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <script>
+        // Data Structure with FULL OPTIONS transcribed from images
+        const examData = [
+            // MODULE 1
+            { 
+                id: 1, 
+                q: "A program that acts as an intermediary between a user of a computer and the computer hardware.", 
+                options: { A: "antivirus software", B: "virus program", C: "operating system", D: "programming language" },
+                correct: "C" 
+            },
+            { 
+                id: 2, 
+                q: "Which of the following are the components of a computer system? (i. User, ii. Hardware, iii. OS, iv. Apps)", 
+                options: { A: "ii, iii, iv only", B: "ii and iv only", C: "i, ii, iii only", D: "i, ii, iii, iv" },
+                correct: "D" 
+            },
+            { 
+                id: 3, 
+                q: "Which of the following is an OS service that detects errors within the computer system and takes the appropriate action?", 
+                options: { A: "error detection", B: "file system handling", C: "I/O operation", D: "program execution" },
+                correct: "A" 
+            },
+            { 
+                id: 4, 
+                q: "What is the multiprocessor system that is designed with two cores on the same chip where each core has its own register set?", 
+                options: { A: "asymmetric", B: "symmetric", C: "dual core", D: "quad core" },
+                correct: "C" 
+            },
+            
+            // MODULE 2
+            { 
+                id: 5, 
+                q: "Which of the following is a function of an operating system?", 
+                options: { A: "manage programs", B: "administer security", C: "configure devices", D: "all of these" },
+                correct: "D" 
+            },
+            { 
+                id: 6, 
+                q: "Which of the following is NOT an example of a network operating system?", 
+                options: { A: "Solaris", B: "UNIX", C: "Linux", D: "Android" },
+                correct: "D" 
+            },
+            { 
+                id: 7, 
+                q: "With ____, a user uses the keyboard to enter data and instructions.", 
+                options: { A: "command line interface", B: "graphical user interface", C: "tactile user interface", D: "menu-driven user interface" },
+                correct: "A" 
+            },
+            { 
+                id: 8, 
+                q: "A small program that tells the operating system how to communicate with a specific device.", 
+                options: { A: "compiler", B: "driver", C: "interpreter", D: "linker" },
+                correct: "B" 
+            },
+            { 
+                id: 9, 
+                q: "It is copying information from slower device into faster device.", 
+                options: { A: "buffering", B: "caching", C: "paging", D: "spooling" },
+                correct: "B" 
+            },
+            { 
+                id: 10, 
+                q: "It is a multiprocessor wherein the processing always be done by the worker/peer-processors.", 
+                options: { A: "asymmetric", B: "symmetric", C: "multicore", D: "client server" },
+                correct: "B" 
+            },
+            { 
+                id: 11, 
+                q: "It refers to computing on handheld smartphones and tablet computers.", 
+                options: { A: "cloud computing", B: "distributed computing", C: "mobile computing", D: "ubiquitous computing" },
+                correct: "C" 
+            },
+            { 
+                id: 12, 
+                q: "Any mechanism for controlling access of processes or users to resources defined by the OS.", 
+                options: { A: "protection", B: "security", C: "user validation", D: "user recognition" },
+                correct: "A" 
+            },
+            { 
+                id: 13, 
+                q: "A single instance of an executable program.", 
+                options: { A: "program", B: "process", C: "throughput", D: "quantum" },
+                correct: "B" 
+            },
+            { 
+                id: 14, 
+                q: "The fastest and the most expensive type of memory.", 
+                options: { A: "RAM", B: "ROM", C: "Register", D: "Cache" },
+                correct: "C" 
+            },
+            { 
+                id: 15, 
+                q: "Which of the following contains the entry for each I/O device indicating its type, address, and state?", 
+                options: { A: "device controller", B: "device-status table", C: "process controller", D: "ready queue" },
+                correct: "B" 
+            },
+            { 
+                id: 16, 
+                q: "What is the technology that allows operating systems to run as applications within other operating systems?", 
+                options: { A: "Client-Server computing", B: "Cloud computing", C: "Distributed computing", D: "Virtualization" },
+                correct: "D" 
+            },
+            { 
+                id: 17, 
+                q: "It is a logical extension in which CPU switches jobs so frequently that users can interact with each job while it is running.", 
+                options: { A: "Multitasking", B: "Multiprocessing", C: "Virtualization", D: "Multiprogramming" },
+                correct: "A" 
+            },
+            { 
+                id: 18, 
+                q: "A process may create several new processes. The creating process is called:", 
+                options: { A: "parent", B: "child", C: "sibling", D: "all of these" },
+                correct: "A" 
+            },
+            { 
+                id: 19, 
+                q: "The ____ scheduler selects process from among the processes that are ready to execute.", 
+                options: { A: "Short-term", B: "Long-term", C: "Medium-term", D: "Average-term" },
+                correct: "A" 
+            },
+            { 
+                id: 20, 
+                q: "The time from submission to completion of a process is called:", 
+                options: { A: "burst time", B: "response time", C: "turnaround time", D: "waiting time" },
+                correct: "C" 
+            },
+            { 
+                id: 21, 
+                q: "The goal of CPU scheduling is to optimize system performance. Which of the following should be maximized?", 
+                options: { A: "response time", B: "throughput", C: "turnaround time", D: "waiting time" },
+                correct: "B" 
+            },
+            { 
+                id: 22, 
+                q: "What is the type of CPU scheduling algorithm that depicts a context switch when time is up (Time Quantum)?", 
+                options: { A: "Shortest Job First", B: "Priority", C: "First Come First Served", D: "Round Robin" },
+                correct: "D" 
+            },
+            { 
+                id: 23, 
+                q: "This refers to switching the CPU to another process requires some time to save the state of the old process and loading the saved state for the new process.", 
+                options: { A: "Program counter", B: "Process control block", C: "Context switch", D: "Compile time" },
+                correct: "C" 
+            },
+            { 
+                id: 24, 
+                q: "Which of the following is the collection of processes on the disk that are waiting to be brought into memory?", 
+                options: { A: "Job queue", B: "memory", C: "process", D: "Job list" },
+                correct: "A" 
+            },
+            
+            // MATH / SCENARIO QUESTIONS (25-34)
+            { 
+                id: 25, 
+                q: "Scenario: What is the correct sequence of the processes when served by CPU using Shortest Job First Non-preemptive?", 
+                options: { A: "ABCD", B: "BDAC", C: "ABDC", D: "DCAB" },
+                correct: "B" 
+            },
+            { 
+                id: 26, 
+                q: "Scenario: What is the correct sequence of the processes when served by the CPU using the Priority Scheduling Non-preemptive?", 
+                options: { A: "ABCD", B: "BDAC", C: "ABDC", D: "DCAB" },
+                correct: "D" 
+            },
+            { 
+                id: 27, 
+                q: "Scenario: What is the correct sequence of the processes when served by the CPU using First-Come-First-Served?", 
+                options: { A: "ABCD", B: "BDCA", C: "DCAB", D: "BADC" },
+                correct: "B" 
+            },
+            { 
+                id: 28, 
+                q: "Scenario: What is the correct sequence of the processes when served by the CPU using Shortest First Non-preemptive?", 
+                options: { A: "ABCD", B: "BDCA", C: "DCAB", D: "BADC" },
+                correct: "D" 
+            },
+            { 
+                id: 29, 
+                q: "Scenario: What is the average waiting time using FCFS?", 
+                options: { A: "5.25", B: "8", C: "11.25", D: "13" },
+                correct: "B" 
+            },
+            { 
+                id: 30, 
+                q: "Scenario: What is the average turnaround time using First-Come-First-Served?", 
+                options: { A: "5.25", B: "8", C: "11.25", D: "13" },
+                correct: "D" 
+            },
+            { 
+                id: 31, 
+                q: "Scenario: What is the average waiting time using Shortest Job First?", 
+                options: { A: "5.25", B: "4.75", C: "4.25", D: "5.75" },
+                correct: "B" 
+            },
+            { 
+                id: 32, 
+                q: "Scenario: What is the average waiting time using Shortest Remaining Time?", 
+                options: { A: "5.25", B: "4.75", C: "4.25", D: "5.75" },
+                correct: "B" 
+            },
+            { 
+                id: 33, 
+                q: "Scenario: What will be the average turn-around time if Priority algorithm non-preemptive will be used?", 
+                options: { A: "11.25", B: "12", C: "13", D: "14.5" },
+                correct: "B" 
+            },
+            { 
+                id: 34, 
+                q: "Scenario: What will be the average turn-around time if Round-Robin will be used?", 
+                options: { A: "3", B: "5.75", C: "9.5", D: "14.5" },
+                correct: "D" 
+            },
+
+            // MODULE 3
+            { 
+                id: 35, 
+                q: "It occurs when a process requiring m memory locations reside in a partition with n memory locations where m < n.", 
+                options: { A: "Internal fragmentation", B: "External fragmentation", C: "dynamic loading", D: "swapping" },
+                correct: "A" 
+            },
+            { 
+                id: 36, 
+                q: "In dynamic partitions, which memory allocation scheme allots the largest free available block to the new job?", 
+                options: { A: "First-fit", B: "Best-fit", C: "Next-fit", D: "Worst-fit" },
+                correct: "D" 
+            },
+            { 
+                id: 37, 
+                q: "It refers to a collection of processes on the disk that are waiting to be brought into memory for execution.", 
+                options: { A: "device queue", B: "ready queue", C: "job queue", D: "thread queue" },
+                correct: "C" 
+            },
+            { 
+                id: 38, 
+                q: "It refers to a collection of processes that are residing in main memory and are ready and waiting to execute.", 
+                options: { A: "device queue", B: "ready queue", C: "job queue", D: "thread queue" },
+                correct: "B" 
+            },
+            { 
+                id: 39, 
+                q: "An address generated by the CPU.", 
+                options: { A: "Logical address", B: "Physical address", C: "offset address", D: "IP address" },
+                correct: "A" 
+            },
+            { 
+                id: 40, 
+                q: "The address used to identify a memory location.", 
+                options: { A: "Logical address", B: "Physical address", C: "offset address", D: "IP address" },
+                correct: "B" 
+            },
+            { 
+                id: 41, 
+                q: "A hardware device that performs the run-time mapping from logical to physical addresses.", 
+                options: { A: "Control unit", B: "Arithmetic logic unit", C: "Memory management unit", D: "Page table" },
+                correct: "C" 
+            },
+            { 
+                id: 42, 
+                q: "In this process, if a new hole is adjacent to other holes, the system merges these adjacent holes to form one larger hole.", 
+                options: { A: "compaction", B: "coalescing", C: "paging", D: "scheduling" },
+                correct: "B" 
+            },
+            { 
+                id: 43, 
+                q: "It occurs when a partition is available but is too small for any waiting job.", 
+                options: { A: "Internal fragmentation", B: "External fragmentation", C: "dynamic loading", D: "swapping" },
+                correct: "B" 
+            },
+            { 
+                id: 44, 
+                q: "Using first-fit allocation, compute the total internal fragmentation (based on diagram).", 
+                options: { A: "3", B: "4", C: "8", D: "12" },
+                correct: "X" // Unsolvable from image
+            },
+            { 
+                id: 45, 
+                q: "Using first-fit allocation, compute the total external fragmentation (based on diagram).", 
+                options: { A: "3", B: "4", C: "8", D: "12" },
+                correct: "X" // Unsolvable from image
+            },
+            { 
+                id: 46, 
+                q: "Compute the memory utilization in percentage.", 
+                options: { A: "18.18%", B: "45.45%", C: "36.36%", D: "50%" },
+                correct: "X" // Unsolvable from image
+            },
+            
+            // RELOCATABLE PARTITION MATH (47-52)
+            { 
+                id: 47, 
+                q: "Relocatable Partition: How much is total memory available?", 
+                options: { A: "224", B: "800", C: "1024", D: "1248" },
+                correct: "B" 
+            },
+            { 
+                id: 48, 
+                q: "Relocatable Partition: At what time did J1 terminate?", 
+                options: { A: "8:40", B: "9:05", C: "10:15", D: "10:45" },
+                correct: "A" 
+            },
+            { 
+                id: 49, 
+                q: "Relocatable Partition: What two jobs terminate simultaneously?", 
+                options: { A: "J1 and J2", B: "J1 and J3", C: "J2 and J4", D: "J2 and J5" },
+                correct: "C" 
+            },
+            { 
+                id: 50, 
+                q: "Relocatable Partition: At what time did all the jobs finish their execution?", 
+                options: { A: "8:05", B: "8:40", C: "9:05", D: "10:45" },
+                correct: "D" 
+            },
+            { 
+                id: 51, 
+                q: "Relocatable Partition: What is the waiting time in minutes of Job 4?", 
+                options: { A: "0", B: "5", C: "20", D: "25" },
+                correct: "C" 
+            },
+            { 
+                id: 52, 
+                q: "Relocatable Partition: How much is the memory available (in Kb) after J5 was allocated?", 
+                options: { A: "25", B: "35", C: "90", D: "100" },
+                correct: "D" 
+            },
+
+            // MODULE 4
+            { 
+                id: 53, 
+                q: "A physical address has two parts:", 
+                options: { A: "page number and page offset", B: "frame number and page offset", C: "page offset and frame offset", D: "page table and page offset" },
+                correct: "B" 
+            },
+            { 
+                id: 54, 
+                q: "A logical address has two parts:", 
+                options: { A: "page number and page offset", B: "page number and frame number", C: "page offset and frame offset", D: "page table and page offset" },
+                correct: "A" 
+            },
+            { 
+                id: 55, 
+                q: "In paging, the operating system divides the process into fixed-sized blocks called:", 
+                options: { A: "pages", B: "frames", C: "sectors", D: "none of these" },
+                correct: "A" 
+            },
+            { 
+                id: 56, 
+                q: "In paging, the operating system divides main memory into fixed-sized blocks called:", 
+                options: { A: "pages", B: "frames", C: "sectors", D: "none of these" },
+                correct: "B" 
+            },
+            { 
+                id: 57, 
+                q: "Which statement is TRUE in paging?", 
+                options: { A: "There is no external fragmentation in paging", B: "There is no internal fragmentation in paging", C: "Frame size is not equal to page size", D: "Logical address is composed of..." },
+                correct: "A" 
+            },
+            { 
+                id: 58, 
+                q: "A technique that allows the execution of processes that may not be completely in memory.", 
+                options: { A: "Thrashing", B: "Virtual Memory", C: "Virtualization", D: "Segmentation" },
+                correct: "B" 
+            },
+            { 
+                id: 59, 
+                q: "It occurs if there is a need to transfer a page from disk to memory but there is no memory space.", 
+                options: { A: "page-fault", B: "Belady's anomaly", C: "underallocation", D: "overallocation" },
+                correct: "D" 
+            },
+            { 
+                id: 60, 
+                q: "Belady's anomaly states that as the number of frames increases, the page-fault rate will decrease. This statement is:", 
+                options: { A: "Unquestionably True!", B: "False, page-fault will increase", C: "False, number of frames is equal to page-fault", D: "False, number of valid bit..." },
+                correct: "B" 
+            },
+            { 
+                id: 61, 
+                q: "It is an event when a process tries to use a page that is not in physical memory.", 
+                options: { A: "Page fault", B: "Hit", C: "Victim page", D: "Lazy swapping" },
+                correct: "A" 
+            },
+            { 
+                id: 62, 
+                q: "It is an algorithm that selects among the pages currently residing in memory to be replaced.", 
+                options: { A: "Page fault", B: "Hit", C: "Victim page", D: "Page replacement" },
+                correct: "D" 
+            },
+            
+            // PAGE TABLE MATH (63-66)
+            { 
+                id: 63, 
+                q: "Compute for the number of process pages.", 
+                options: { A: "4", B: "8", C: "16", D: "24" },
+                correct: "B" 
+            },
+            { 
+                id: 64, 
+                q: "Compute for the number of frames.", 
+                options: { A: "4", B: "8", C: "16", D: "24" },
+                correct: "C" 
+            },
+            { 
+                id: 65, 
+                q: "According to the page table, what is the content of frame 2 offset 2?", 
+                options: { A: "k", B: "o", C: "m", D: "f" },
+                correct: "B" 
+            },
+            { 
+                id: 66, 
+                q: "The logical address 15 maps to what physical address?", 
+                options: { A: "10", B: "11", C: "12", D: "13" },
+                correct: "B" 
+            },
+            
+            // REFERENCE STRING MATH (67-75)
+            { 
+                id: 67, 
+                q: "It is a page-replacement algorithm that requires future knowledge of the reference string.", 
+                options: { A: "Optimal algorithm", B: "Least Recently Used algorithm", C: "First Come First Serve algorithm", D: "Most Recently Used algorithm" },
+                correct: "A" 
+            },
+            { 
+                id: 68, 
+                q: "A page replacement algorithm that replaces the page that has not been used for the longest period of time.", 
+                options: { A: "Optimal algorithm", B: "Least Recently Used algorithm", C: "First Come First Serve algorithm", D: "Most Recently Used algorithm" },
+                correct: "B" 
+            },
+            { 
+                id: 69, 
+                q: "A ____ page-replacement algorithm is one with a ____ page-fault rate.", 
+                options: { A: "good, high", B: "good, low", C: "bad, low", D: "good, zero" },
+                correct: "B" 
+            },
+            { 
+                id: 70, 
+                q: "The number of page-fault occurs if First-In-First-Out with 2 frames will be used.", 
+                options: { A: "5 page-fault", B: "7 page-fault", C: "9 page-fault", D: "11 page-fault" },
+                correct: "D" 
+            },
+            { 
+                id: 71, 
+                q: "The number of hits occurred if First-In-First-Out with 2 frames will be used.", 
+                options: { A: "1 hit", B: "3 hits", C: "5 hits", D: "7 hits" },
+                correct: "A" 
+            },
+            { 
+                id: 72, 
+                q: "The number of page-fault occurred if OPTIMAL with 2 frames will be used.", 
+                options: { A: "5 page-fault", B: "7 page-fault", C: "9 page-fault", D: "11 page-fault" },
+                correct: "B" 
+            },
+            { 
+                id: 73, 
+                q: "The number of hits occurred if OPTIMAL with 2 frames will be used.", 
+                options: { A: "1 hit", B: "3 hits", C: "5 hits", D: "7 hits" },
+                correct: "C" 
+            },
+            { 
+                id: 74, 
+                q: "The number of page-fault occurred if LRU algorithm with 3 frames will be used.", 
+                options: { A: "5 page-fault", B: "7 page-fault", C: "9 page-fault", D: "11 page-fault" },
+                correct: "C" 
+            },
+            { 
+                id: 75, 
+                q: "The number of hits occurred if LRU algorithm with 3 frames will be used.", 
+                options: { A: "1 hit", B: "4 hits", C: "5 hits", D: "7 hits" },
+                correct: "B" 
+            },
+
+            // MODULE 5
+            { 
+                id: 76, 
+                q: "It is the time it takes to move the read-write head to the correct track.", 
+                options: { A: "Transfer time", B: "Seek time", C: "Latency time", D: "Access time" },
+                correct: "B" 
+            },
+            { 
+                id: 77, 
+                q: "It is the time it takes for the sector to rotate under the head.", 
+                options: { A: "Seek time", B: "Access time", C: "Transfer time", D: "Latency time" },
+                correct: "D" 
+            },
+            { 
+                id: 78, 
+                q: "It is the time it takes to actually transfer data between disk and main memory.", 
+                options: { A: "Seek time", B: "Access time", C: "Transfer time", D: "Latency time" },
+                correct: "C" 
+            },
+            { 
+                id: 79, 
+                q: "The disk surface is logically divided into ____ which are subdivided into ____.", 
+                options: { A: "tracks and sectors", B: "sectors and tracks", C: "bytes and bits", D: "files and pages" },
+                correct: "A" 
+            },
+            { 
+                id: 80, 
+                q: "Disks are rigid metal or glass platters covered with magnetic recording material.", 
+                options: { A: "100% True!", B: "False, rigid metal or plastic platters", C: "False, rigid plastic or glass platters", D: "False, rigid wood or glass platters" },
+                correct: "A" 
+            },
+            { 
+                id: 81, 
+                q: "In disks using Constant Linear Velocity... density of bits is uniform...", 
+                options: { A: "100% True!", B: "False, it is used in CD-ROM and DVD-ROM drives", C: "False, it is used in magnetic tapes", D: "False, it is used in tape drive" },
+                correct: "B" 
+            },
+            { 
+                id: 82, 
+                q: "A fixed-head system has a separate read-write head for each track. This arrangement allows...", 
+                options: { A: "100% True!", B: "False, it has movable read-write head per surface", C: "False, it has several read-write heads per surface", D: "False, it has no separate read-write head for each track" },
+                correct: "A" 
+            },
+            { 
+                id: 83, 
+                q: "In disk scheduling techniques, it is also known as elevator algorithm.", 
+                options: { A: "FCFS", B: "SSTF", C: "SCAN", D: "LOOK" },
+                correct: "C" 
+            },
+            { 
+                id: 84, 
+                q: "It refers to a disk wherein its sector cannot be used to allocate a file.", 
+                options: { A: "Bad sector", B: "Bad disk", C: "Bad platter", D: "Bad command" },
+                correct: "A" 
+            },
+
+            // DISK MATH (85-92)
+            { 
+                id: 85, 
+                q: "The total head movement if First-Come-First-Serve will be used.", 
+                options: { A: "109 tracks", B: "110 tracks", C: "111 tracks", D: "112 tracks" },
+                correct: "C" 
+            },
+            { 
+                id: 86, 
+                q: "The total head movement if Shortest-Seek-Time-First will be used.", 
+                options: { A: "30 tracks", B: "31 tracks", C: "32 tracks", D: "33 tracks" },
+                correct: "D" 
+            },
+            { 
+                id: 87, 
+                q: "The total head movement if SCAN will be used and the read-write head is going to direction of track 0.", 
+                options: { A: "47 tracks", B: "48 tracks", C: "49 tracks", D: "50 tracks" },
+                correct: "C" 
+            },
+            { 
+                id: 88, 
+                q: "The total head movement if C-SCAN will be used and the read-write head is going to upward direction.", 
+                options: { A: "195 tracks", B: "196 tracks", C: "197 tracks", D: "198 tracks" },
+                correct: "B" 
+            },
+            { 
+                id: 89, 
+                q: "The total head movement if LOOK will be used and the read-write head is going to downward direction.", 
+                options: { A: "30 tracks", B: "31 tracks", C: "32 tracks", D: "33 tracks" },
+                correct: "D" 
+            },
+            { 
+                id: 90, 
+                q: "The total head movement if LOOK will be used and the read-write head is going to upward direction.", 
+                options: { A: "59 tracks", B: "60 tracks", C: "61 tracks", D: "62 tracks" },
+                correct: "B" 
+            },
+            { 
+                id: 91, 
+                q: "The total head movement if C-LOOK will be used and the read-write head is going to upward direction.", 
+                options: { A: "57 tracks", B: "58 tracks", C: "59 tracks", D: "60 tracks" },
+                correct: "D" 
+            },
+            { 
+                id: 92, 
+                q: "Which disk algorithm will give better performance of the system?", 
+                options: { A: "SSTF", B: "SCAN", C: "C-SCAN", D: "SJF & LOOK" },
+                correct: "A" 
+            },
+
+            // MODULE 6
+            { 
+                id: 93, 
+                q: "Small programs written to alter the way a computer operates, without permission of the user.", 
+                options: { A: "Spyware", B: "Hash code", C: "Virus", D: "Driver" },
+                correct: "C" 
+            },
+            { 
+                id: 94, 
+                q: "The capability of a system to fulfill its mission, in a timely manner, in the presence of attacks, failures, or accidents.", 
+                options: { A: "System integrity", B: "System survivability", C: "System vulnerability", D: "System prevention" },
+                correct: "B" 
+            },
+            { 
+                id: 95, 
+                q: "It is a secret entry point in software that allows someone who is aware of it to enter the system without going through the usual access point.", 
+                options: { A: "Back door", B: "Trap door", C: "Secret door", D: "Open door" },
+                correct: "A" 
+            },
+            { 
+                id: 96, 
+                q: "A type of virus that spreads in a system and known for its replication mechanism.", 
+                options: { A: "Trojan virus", B: "Worm", C: "Macro virus", D: "Boot sector virus" },
+                correct: "B" 
+            },
+            { 
+                id: 97, 
+                q: "A function of antivirus software that isolates infected files on a computer's hard disk.", 
+                options: { A: "Quarantine", B: "Protection", C: "Prevention", D: "Separation" },
+                correct: "A" 
+            },
+            { 
+                id: 98, 
+                q: "A malware that disables a computer or smart-phone until the victim pays a fee.", 
+                options: { A: "Ransomware", B: "Spyware", C: "Rootkits", D: "Phishing" },
+                correct: "A" 
+            },
+            { 
+                id: 99, 
+                q: "A set of hardware and/or software designed to protect a system by disguising its IP address from unauthorized users.", 
+                options: { A: "Router", B: "Packet filtering", C: "Firewall", D: "Repeater" },
+                correct: "C" 
+            },
+            { 
+                id: 100, 
+                q: "The ideal solution to the threat of viruses is ____", 
+                options: { A: "Quarantine", B: "Detection", C: "Prevention", D: "None of the above" },
+                correct: "C" 
+            }
+        ];
+
+        let answeredCount = 0;
+        let score = 0;
+        const container = document.getElementById('quiz-container');
+
+        function renderQuiz() {
+            container.innerHTML = examData.map((item, index) => {
+                // If options are missing (unsolvable), we handle gracefully
+                const opts = item.options || { A:"-", B:"-", C:"-", D:"-" };
+                
+                return `
+                <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100 relative" id="card-${item.id}">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded">Q${item.id}</span>
+                        <div id="status-${item.id}" class="hidden"></div>
+                    </div>
+                    
+                    <p class="text-gray-800 font-medium text-lg mb-6">${item.q}</p>
+
+                    <div class="grid grid-cols-1 gap-3" id="options-${item.id}">
+                        <button onclick="checkAnswer(${item.id}, 'A')" class="option-btn border-2 border-gray-200 text-gray-600 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 focus:outline-none" data-opt="A">
+                            <span class="font-bold mr-3 text-blue-500">A.</span> ${opts.A}
+                        </button>
+                        <button onclick="checkAnswer(${item.id}, 'B')" class="option-btn border-2 border-gray-200 text-gray-600 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 focus:outline-none" data-opt="B">
+                            <span class="font-bold mr-3 text-blue-500">B.</span> ${opts.B}
+                        </button>
+                        <button onclick="checkAnswer(${item.id}, 'C')" class="option-btn border-2 border-gray-200 text-gray-600 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 focus:outline-none" data-opt="C">
+                            <span class="font-bold mr-3 text-blue-500">C.</span> ${opts.C}
+                        </button>
+                        <button onclick="checkAnswer(${item.id}, 'D')" class="option-btn border-2 border-gray-200 text-gray-600 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 focus:outline-none" data-opt="D">
+                            <span class="font-bold mr-3 text-blue-500">D.</span> ${opts.D}
+                        </button>
+                    </div>
+
+                    <!-- Answer Reveal Area -->
+                    <div id="context-${item.id}" class="hidden mt-4 pt-4 border-t border-gray-100">
+                        <div class="flex items-center gap-2 text-green-700 bg-green-50 p-3 rounded-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="font-bold">Correct Answer:</span> ${item.correct}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function checkAnswer(id, selectedOption) {
+            const question = examData.find(q => q.id === id);
+            
+            // Skip logic for unsolvable questions
+            if(question.correct === 'X') return;
+
+            const card = document.getElementById(`card-${id}`);
+            const optionsDiv = document.getElementById(`options-${id}`);
+            const contextDiv = document.getElementById(`context-${id}`);
+            const buttons = optionsDiv.querySelectorAll('button');
+            const statusDiv = document.getElementById(`status-${id}`);
+
+            // Reset visual state for retry
+            buttons.forEach(btn => {
+                btn.className = "option-btn border-2 border-gray-200 text-gray-600 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 focus:outline-none w-full transition-colors flex items-center text-left";
+            });
+
+            const selectedBtn = optionsDiv.querySelector(`button[data-opt="${selectedOption}"]`);
+            
+            // Logic
+            if (selectedOption === question.correct) {
+                // Correct
+                selectedBtn.classList.remove('border-gray-200', 'text-gray-600');
+                selectedBtn.classList.add('bg-green-500', 'border-green-600', 'text-white', 'correct-anim');
+                // Ensure the inner 'A.' span turns white too
+                selectedBtn.querySelector('span').classList.remove('text-blue-500');
+                selectedBtn.querySelector('span').classList.add('text-white');
+                
+                contextDiv.classList.remove('hidden');
+                
+                statusDiv.innerHTML = `<svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+                statusDiv.classList.remove('hidden');
+
+                updateScore(true);
+            } else {
+                // Incorrect
+                selectedBtn.classList.remove('border-gray-200', 'text-gray-600', 'hover:bg-gray-50');
+                selectedBtn.classList.add('bg-red-500', 'border-red-600', 'text-white');
+                selectedBtn.querySelector('span').classList.remove('text-blue-500');
+                selectedBtn.querySelector('span').classList.add('text-white');
+                
+                statusDiv.innerHTML = `<svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                statusDiv.classList.remove('hidden');
+            }
+        }
+
+        function updateScore(isCorrect) {
+            const total = examData.filter(q => q.correct !== 'X').length; // Exclude unsolvable
+            let correctCount = 0;
+            examData.forEach(q => {
+                if(q.correct === 'X') return;
+                const context = document.getElementById(`context-${q.id}`);
+                if (!context.classList.contains('hidden')) {
+                    correctCount++;
+                }
+            });
+
+            document.getElementById('score').innerText = correctCount;
+            document.getElementById('progress-bar').style.width = `${(correctCount / total) * 100}%`;
+        }
+
+        renderQuiz();
+
+    </script>
+</body>
+</html>
