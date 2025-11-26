@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Swift & iOS Quiz - 82 Questions</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .quiz-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .quiz-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .quiz-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .quiz-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .quiz-body {
+            padding: 25px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            background-color: #fafafa;
+        }
+        
+        .question.answered {
+            background-color: #f8f9fa;
+        }
+        
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .option {
+            padding: 10px 15px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option:hover {
+            background-color: #e9ecef;
+        }
+        
+        .option.selected {
+            background-color: #cce5ff;
+            border-color: #b8daff;
+        }
+        
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .feedback {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #6c757d;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto 0;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 20px;
+            color: #333;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .code-block {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Complete Swift & iOS Quiz</h1>
+            <p>82 Questions - Test your knowledge of Swift programming and iOS development</p>
+        </div>
+        
+        <div class="quiz-body">
+            <div class="stats">
+                <div class="score-display">Score: <span id="current-score">0</span>/82</div>
+                <div class="progress-text">Progress: <span id="current-progress">0</span>/82</div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <!-- Questions will be dynamically inserted here -->
+            <div id="questions-container"></div>
+            
+            <button class="btn" id="submit-btn" disabled>Submit Quiz</button>
+            <div class="score" id="final-score"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionsContainer = document.getElementById('questions-container');
+            const submitBtn = document.getElementById('submit-btn');
+            const finalScoreElement = document.getElementById('final-score');
+            const currentScoreElement = document.getElementById('current-score');
+            const currentProgressElement = document.getElementById('current-progress');
+            const progressBar = document.getElementById('progress-bar');
+            
+            let score = 0;
+            let answeredQuestions = 0;
+            const totalQuestions = 82;
+            
+            // Questions data - 82 total questions
+            const questions = [
+                // Original 10 questions
+                {
+                    question: "It is used as the return type for a function to return multiple values as part of one compound return value.",
+                    options: ["inout", "Collection", "Void", "Tuple"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "Version of iPhone where 'S' iPhone introduced.",
+                    options: ["5.0", "7.0", "4.0", "6.0"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "It splits the Xcode editor in two.",
+                    options: ["Code Editor", "Instruments", "Interface Builder", "Assistant Editor"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "Which of the following has the incorrect syntax.",
+                    options: ["var x:Int? = nil", "var x:Int = Int('123')", "var x = Int('10')", "var x:Int = 10"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "Swift provides a simplified memory management with ___________________.",
+                    options: ["ART", "ARC", "GIGO", "Garbage Collector"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "Write the exact output given the code below.",
+                    code: "let A:Set = [1,2,3,4,5]\nlet B:Set = [0,1,2,3,4,5]\nprint(A.isSubset(of: B), A.isStrictSuperset(of: B), A.isStrictSubset(of: B), A.isDisjoint(with: B), separator:', ')",
+                    options: ["true, false, true, false", "true, false, false, false", "false, true, true, false", "true, true, false, false"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Write the exact output given the statements below.",
+                    code: "let str = '123'\nfor ch in str {\n  print(ch,'*',separator:'-', terminator:':')\n}",
+                    options: ["1-*:2-*:3-*:", "1-*-2-*-3-*", "1*2*3*", "1-*2-*3-*"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Write the exact output given the following Swift statements.",
+                    code: "let x: Int! = 10\nlet y: Int = x \nprint(x!, y)",
+                    options: ["10 10", "10, 10", "Optional(10) 10", "x y"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Write the exact output given the statements below.",
+                    code: "let abc = (UInt8.max, UInt8.min, Int8.max, Int8.min)\nprint('\(abc.3) \(abc.1) \(abc.0) \(abc.2) ')",
+                    options: ["-128 0 255 127", "0 255 127 -128", "127 255 0 -128", "255 0 127 -128"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Write the exact output given the statements below.",
+                    code: "var x = 1\nfor y in  5...5 {\n    x *= y % 2\n} \nprint('x = \(x)')",
+                    options: ["x = 1", "x = 5", "x = 0", "x = 2"],
+                    correctAnswer: 0
+                },
+                // PDF Questions (72 questions)
+                {
+                    question: "You can also initialize an array with an array literal, which is a shorthand way to write one or more values as an array collection.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "The parameter name is used in the implementation of the function.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "You can iterate over the entire set of values in an array with the for-in loop.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "If the entire body of the function is a single expression, the function implicitly returns that expression.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "You give a function a name that identifies what it does, and this name is used to call the function to perform its task when needed.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "You can define a default value for any parameter in a function by assigning a value to the parameter after that parameter's type.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "You access and modify an array through its methods and properties, or by using subscript syntax.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "If you create an array, a set, or a dictionary, and assign it to a variable, the collection that is created will be mutable.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "You can return a tuple value using a function.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "In function you cannot return an optional tuple.",
+                    options: ["True", "False"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "Every function has a specific function type, made up of the parameter types and the return type of the function.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Arrays, sets, and dictionaries in Swift are always clear about the types of values and keys that they can store.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Function parameters and return values are extremely flexible in Swift.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "A function always return a value.",
+                    options: ["True", "False"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "The argument label is used when calling the function.",
+                    options: ["True", "False"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "This is used when returning the return type of a function.",
+                    options: ["Void", ": (Colon)", "-> (a hyphen followed by a right angle bracket)", ", (Comma)"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "Swift was based on ______.",
+                    options: ["C++ and Objective C", "C and C#", "C and Objective C", "C and C++"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "These icons generally display a document with an app logo or image that lets you know what application created it or opens it.",
+                    options: ["images", "files", "tools", "applications"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "A self-contained chunk of code that performs a specific task.",
+                    options: ["Control Flow", "Collection", "Function", "Control Structure"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "Which of the following is a correct statement.",
+                    options: ["let a = 1_0_1_0", "let a:UInt8 = 1010", "let a = 1-0-1-0", "let a:Int8 = 1010"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "What will be the exact output given the code print(int('32'))?",
+                    options: ["Program error", "32", "Optional(32)", "Int('32')"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "An integrated development environment (IDE) that enables you to manage, edit and debug your iOS projects.",
+                    options: ["playground", "Xcode", "netbeans", "vscode"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "An ordered type of collection whose values can be duplicated.",
+                    options: ["Array (List)", "Range", "Dictionary", "Set"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "It contains other files, like your documents or apps.",
+                    options: ["icons", "explorer", "finder", "folders"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "Date when iPhone SDK released.",
+                    options: ["March 6, 2009", "March 6, 2008", "April 6, 2009", "April 6, 2008"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "Used to display your folder in a spreadsheet-style manner.",
+                    options: ["Column view", "Cover flow view", "List view", "Icon View"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "It enables a compiler to deduce the type of a particular expression automatically when it compiles your code, simply by examining the values you provide.",
+                    options: ["type inference", "interpolator", "type declaration", "type cast"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "A statement that considers a value and compares it against several possible matching patterns.",
+                    options: ["if", "switch", "for-in", "while"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "Used to jump to a selected file; you can quickly select what information to view in the Assistant editor.",
+                    options: ["Gutter", "Search", "Step into", "Jump Bar"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "A set method used to create a new set with only the values common to both sets.",
+                    options: ["union", "subtracting", "symmetricDifference", "intersection"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "These are closures that have a name and don't capture any values.",
+                    options: ["Global functions", "Nested functions", "Recursive functions", "Local Functions"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Are unnamed closures written in a lightweight syntax that can capture values from their surrounding context.",
+                    options: ["Global functions", "Closure expressions", "Anonymous Functions", "Nested functions"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "Used to find out whether an optional contains a value, and if so, to make that value available as a temporary constant or variable.",
+                    options: ["unwrapped optionals", "conditions", "optional binding", "forced unwrapped optional"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "Used to display the contents of your folder as a series of icons.",
+                    options: ["Icon view", "List View", "Column View", "Cover Flow View"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "An unordered type of collection whose values are unique.",
+                    options: ["Array (List)", "Dictionary", "Tuple", "Set"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "It performs a single pass through the loop block first, before considering the loop's condition.",
+                    options: ["Do-While", "Repeat-While", "For-In", "While"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "On Mac it represents the files on your computer.",
+                    options: ["icons", "images", "folders", "menus"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "A set operation to create a new set with values in either set, but not both.",
+                    options: ["subtracting", "symmetricDifference", "intersection", "union"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "Which of the following is not belong to the group.",
+                    options: ["Tuples", "Dictionaries", "Sets", "Arrays (Lists)"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "It is the minimum value of UInt8.",
+                    options: ["-255", "-127", "-128", "0"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "Used to compare two versions of a file, see commit logs, check who made a code change, and even zoom back through the commit timeline.",
+                    options: ["Version Editor and Source Control", "Version Editor and Git Control", "Git Editor and Source Control", "Git Repository and Source Control"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which of the following is part of iOS Application development.",
+                    options: ["All of the above", "Language", "Design", "Process", "Tools"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Used to display the hierarchy of your folders where each column represents a folder.",
+                    options: ["Cover Flow view", "Column view", "List view", "Icon view"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "It simulates an iPhone or an iPad on your Mac.",
+                    options: ["iOS simulator", "iOS virtual machine", "iOS devices", "iOS emulator"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "When did Apple introduced the App Store to iOS.",
+                    options: ["November 2008", "July 2008", "June 2008", "October 2008"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "The iOS version when iPad was unveiled.",
+                    options: ["iOS 4", "iOS 3.2", "iOS 14", "iOS 10"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "You use this to specify that the parameter can be passed a varying number of input values when the function is called.",
+                    options: ["collection", "array (list)", "variable parameter", "tuple"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "The latest Xcode version.",
+                    options: ["25", "26", "16", "17"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "It defines an alternative name for an existing type.",
+                    options: ["type aliases", "type cast", "type definition", "type declaration"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "It makes it incredibly easy to jump to any test in your project, execute an individual test, or execute a group of tests.",
+                    options: ["Test Navigator", "Instruments", "Monitor", "Debugging"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "The iOS version where Google Maps was removed.",
+                    options: ["5.0", "6.0", "4.0", "7.0"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "A statement ends execution of an entire control flow statement immediately.",
+                    options: ["fallthrough", "continue", "break", "stop"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "A statement tells a loop to stop what it's doing and start again at the beginning of the next iteration through the loop.",
+                    options: ["continue", "return", "break", "fallthrough"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "These are closures that have a name and can capture values from their enclosing function.",
+                    options: ["Closure expressions", "Nested functions", "Global functions", "Recursive functions"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "The iOS version where 3rd party applications is available.",
+                    options: ["2.0", "4.0", "3.0", "1.0"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "When you define a function, you can optionally define one or more named, typed values that the function takes as input, known as ______.",
+                    options: ["signature", "return", "argument", "parameter"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "This character will be able to remove an argument label for a parameter.",
+                    options: ["* (asterisk)", "$ (dollar)", ": (colon)", "_ (underscore)"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "It accepts zero or more values of a specified type.",
+                    options: ["tuples", "functions", "collections", "variadic"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "You 'call' a function with its name and pass it input values known as ______.",
+                    options: ["variadic", "signature", "parameter", "argument"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "Which of the following will produced some error.",
+                    options: ["let b = Ulnt.max + 1", "let b= Int.max + 1", "let b = Ulnt.max - 1", "let b:Ulnt = Int.max + 1"],
+                    correctAnswer: 0
+                },
+                {
+                    question: "OS name for iPhone.",
+                    options: ["OSi", "iPOS", "iPhone OS", "iOperating System"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "The Xcode version where swift programming was introduced.",
+                    options: ["5.0", "6.0", "7.0", "4.0"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "The apple made this as the primary interaction model.",
+                    options: ["audio", "touch", "camera", "screen"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "These are unordered collections of key-value associations.",
+                    options: ["Set", "Array (List)", "Range", "Dictionary"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "Which of the following produced some error.",
+                    options: ["var a = Double('10.25')", "let a: Double = Double('10.25')", "let a: Double? = Double('10.25')", "let a = Double('10.25')"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "It is used to modify a parameter's value, and you want those changes to persist after the function call has ended.",
+                    options: ["var", "tuple", "inout", "& (ampersand)"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "double represent a ______ bit floating-point number.",
+                    options: ["16", "64", "128", "32"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "A visual editor for designing user interfaces for your iPhone and iPad apps.",
+                    options: ["Views", "Instruments", "Storyboard", "Interface Builder"],
+                    correctAnswer: 3
+                },
+                {
+                    question: "Used as simplified ternary operator for nil values.",
+                    options: ["?!", "!=nil", "??", "?:"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "A analysis tool to assist you to both optimize your apps and monitor for memory leaks in real time.",
+                    options: ["Interface Builder", "Xcode", "Instruments", "Simulator"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "Write the exact output given the program code below: let (x,y) = (Int('123'),123); print('\() and \()')",
+                    options: ["123 and Optional(123)", "Optional(123) and 123", "123 and 123", "Program error"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "It provides access to your files and folders.",
+                    options: ["Desktop", "Folders", "Explorer", "Finder"],
+                    correctAnswer: 3
+                }
+            ];
+            
+            // Initialize progress display
+            updateProgress();
+            
+            // Render questions
+            questions.forEach((q, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question';
+                questionElement.id = `question-${index}`;
+                
+                let optionsHtml = '';
+                q.options.forEach((option, optionIndex) => {
+                    optionsHtml += `<div class="option" data-index="${optionIndex}">${option}</div>`;
+                });
+                
+                let codeHtml = '';
+                if (q.code) {
+                    codeHtml = `<div class="code-block">${q.code}</div>`;
+                }
+                
+                questionElement.innerHTML = `
+                    <div class="question-text">${index + 1}. ${q.question}</div>
+                    ${codeHtml}
+                    <div class="options">${optionsHtml}</div>
+                    <div class="feedback" id="feedback-${index}"></div>
+                `;
+                
+                questionsContainer.appendChild(questionElement);
+                
+                // Add event listeners to options
+                const options = questionElement.querySelectorAll('.option');
+                options.forEach(option => {
+                    option.addEventListener('click', function() {
+                        handleOptionClick(this, index, q.correctAnswer);
+                    });
+                });
+            });
+            
+            function handleOptionClick(optionElement, questionIndex, correctAnswerIndex) {
+                const question = document.getElementById(`question-${questionIndex}`);
+                const feedback = document.getElementById(`feedback-${questionIndex}`);
+                const allOptions = question.querySelectorAll('.option');
+                
+                // Check if question already answered
+                if (question.classList.contains('answered')) {
+                    return;
+                }
+                
+                // Remove selected class from all options in the same question
+                allOptions.forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                optionElement.classList.add('selected');
+                
+                // Get selected option index
+                const selectedIndex = parseInt(optionElement.getAttribute('data-index'));
+                
+                // Check if answer is correct
+                const isCorrect = selectedIndex === correctAnswerIndex;
+                
+                // Mark question as answered
+                question.classList.add('answered');
+                
+                // Show immediate feedback
+                if (isCorrect) {
+                    optionElement.classList.add('correct');
+                    feedback.textContent = '✓ Correct!';
+                    feedback.className = 'feedback correct';
+                    score++;
+                } else {
+                    optionElement.classList.add('incorrect');
+                    feedback.textContent = '✗ Incorrect';
+                    feedback.className = 'feedback incorrect';
+                    
+                    // Highlight correct answer
+                    const correctOption = question.querySelector(`.option[data-index="${correctAnswerIndex}"]`);
+                    correctOption.classList.add('correct');
+                }
+                
+                // Update progress
+                answeredQuestions++;
+                updateProgress();
+                
+                // Enable submit button when all questions are answered
+                if (answeredQuestions === totalQuestions) {
+                    submitBtn.disabled = false;
+                }
+            }
+            
+            function updateProgress() {
+                currentScoreElement.textContent = score;
+                currentProgressElement.textContent = answeredQuestions;
+                progressBar.style.width = `${(answeredQuestions / totalQuestions) * 100}%`;
+            }
+            
+            submitBtn.addEventListener('click', function() {
+                // Display final score
+                finalScoreElement.textContent = `Final Score: ${score} out of ${totalQuestions}`;
+                finalScoreElement.style.display = 'block';
+                
+                // Disable submit button
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Quiz Completed';
+                
+                // Show performance message
+                let performanceMessage = '';
+                const percentage = (score / totalQuestions) * 100;
+                
+                if (percentage === 100) {
+                    performanceMessage = 'Perfect! You are a Swift and iOS expert! 🎉';
+                } else if (percentage >= 80) {
+                    performanceMessage = 'Excellent! You have strong Swift and iOS knowledge.';
+                } else if (percentage >= 60) {
+                    performanceMessage = 'Good job! You know Swift and iOS well.';
+                } else if (percentage >= 40) {
+                    performanceMessage = 'Not bad! Keep learning Swift and iOS.';
+                } else {
+                    performanceMessage = 'Keep practicing Swift and iOS programming!';
+                }
+                
+                finalScoreElement.innerHTML += `<br><span style="font-weight: normal;">${performanceMessage}</span>`;
+            });
+        });
+    </script>
+</body>
+</html>
