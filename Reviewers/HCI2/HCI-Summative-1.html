@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCI Reviewer Ultimate</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #22c55e;
+            --error: #ef4444;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 650px;
+        }
+
+        /* Top Bar: Progress and Score */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            color: #4b5563;
+        }
+
+        .score-badge {
+            background-color: #eff6ff;
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 99px;
+        }
+
+        /* Toolbar: Jump and Shuffle */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dropdown {
+            flex-grow: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background-color: #fff;
+        }
+
+        .shuffle-btn {
+            padding: 0.5rem 1rem;
+            background-color: #8b5cf6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .shuffle-btn:hover {
+            background-color: #7c3aed;
+        }
+
+        /* Question Area */
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+            color: #111827;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .option-btn {
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: left;
+            transition: all 0.2s;
+            color: var(--text);
+            position: relative;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background-color: #eff6ff;
+        }
+
+        /* Feedback States */
+        .option-btn.correct {
+            background-color: #dcfce7 !important;
+            border-color: var(--success) !important;
+            color: #14532d !important;
+            font-weight: 600;
+        }
+
+        .option-btn.wrong {
+            background-color: #fee2e2 !important;
+            border-color: var(--error) !important;
+            color: #7f1d1d !important;
+            opacity: 0.8;
+        }
+
+        .feedback-area {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navigation Controls */
+        .footer-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 0.85rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .nav-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .nav-btn.secondary {
+            background-color: #6b7280;
+        }
+        
+        .nav-btn.secondary:hover {
+            background-color: #4b5563;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container" id="quizContainer">
+    <div class="header">
+        <span id="progressText">Question 1 of 50</span>
+        <span class="score-badge" id="scoreText">Score: 0</span>
+    </div>
+
+    <div class="toolbar">
+        <select id="jumpSelect" class="dropdown" onchange="jumpToQuestion()">
+            </select>
+        <button class="shuffle-btn" onclick="shuffleQuestions()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+            Shuffle
+        </button>
+    </div>
+
+    <div class="question-text" id="questionText">
+        Loading...
+    </div>
+
+    <div class="options-grid" id="optionsContainer">
+        </div>
+
+    <div class="feedback-area" id="feedbackArea"></div>
+
+    <div class="footer-controls">
+        <button class="nav-btn secondary" id="prevBtn" onclick="prevQuestion()" disabled>Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+</div>
+
+<script>
+    // Source Data
+    const sourceQuestions = [
+        { q: "What does HCI stand for?", options: ["Hybrid Computing Interface", "Human Cognitive Interface", "Human-Computer Interaction", "Human-Centered Innovation"], answer: 2 },
+        { q: "Who is the author of The Design of Everyday Things?", options: ["Steve Krug", "Ben Shneiderman", "Jakob Nielsen", "Don Norman"], answer: 3 },
+        { q: "What is the focus of industrial designers?", options: ["Emotional impact", "Interface layout", "Form and material"], answer: 2 },
+        { q: "Which type of designer focuses on usability and understandability?", options: ["Experience designer", "Graphic designer", "Industrial designer", "Interaction designer"], answer: 3 },
+        { q: "What are 'signifiers' used for?", options: ["To store user data", "To indicate where actions take place", "To decorate the interface", "To reduce memory load"], answer: 1 },
+        { q: "What does Ben Shneiderman's rule 'Strive for Consistency' mean?", options: ["Change layout frequently", "Use consistent design", "Avoid user feedback", "Use random colors"], answer: 1 },
+        { q: "Which rule helps expert users perform tasks faster?", options: ["Add constraints", "Offer shortcuts", "Reduce memory load", "Use signifiers"], answer: 1 },
+        { q: "What does 'Design Dialog to Yield Closure' mean?", options: ["Avoid user interaction", "Use pop-ups", "Keep users guessing", "Provide clear task completion feedback"], answer: 3 },
+        { q: "What is the purpose of error handling in UI design?", options: ["To help users understand and fix issues", "To log errors silently", "To hide system flaws", "To confuse users"], answer: 0 },
+        { q: "What does 'Permit Easy Reversal of Actions' refer to?", options: ["Disabling undo", "Allowing users to go back or undo actions", "Locking user input", "Encrypting user data"], answer: 1 },
+        { q: "A usability expert is reviewing an interface without knowing the tasks users will perform. What type of testing is this?", options: ["User-based testing", "Summative testing", "Validation testing", "Expert-based testing"], answer: 3 },
+        { q: "A researcher collects data on how long users take to complete tasks. What metric is being measured?", options: ["Task performance", "Clickstream", "Time performance", "User satisfaction"], answer: 2 },
+        { q: "A team uses software to scan their interface for font consistency and button sizes. What testing method is this?", options: ["Expert-based", "Automated usability testing", "Summative testing", "Formative testing"], answer: 1 },
+        { q: "A company wants to test a new smartwatch interface. What should they focus on?", options: ["Network speed", "Physical interaction usability", "Screen resolution", "Battery life"], answer: 1 },
+        { q: "A usability test is conducted using a high-fidelity prototype. What type of testing is this?", options: ["Summative", "Formative", "Expert-based", "Automated"], answer: 0 },
+        { q: "A team wants to understand where users struggle in the interface. What method should they use?", options: ["Usability testing", "Experimental design", "Survey analysis", "Ethnographic observation"], answer: 0 },
+        { q: "A usability test is conducted in a fixed lab. What is a potential benefit?", options: ["Remote access", "Controlled environment", "Real-time feedback", "Natural user behavior"], answer: 1 },
+        { q: "A usability test is conducted with wireframes. What type of prototype is this?", options: ["Functional", "Low-fidelity", "Final version", "High-fidelity"], answer: 1 },
+        { q: "A usability test is conducted with a moderator asking questions during the session. What type of testing is this?", options: ["Formative", "Validation", "Summative", "Automated"], answer: 0 },
+        { q: "A usability test is conducted with users performing tasks in a workplace setting. What is this called?", options: ["Field usability testing", "In-lab testing", "Remote testing", "Expert-based testing"], answer: 0 },
+        { q: "What principle emphasizes placing users at the center of the design process?", options: ["Visual Design", "Cognitive Design", "Human-Centered Design", "Interface Mapping"], answer: 2 },
+        { q: "Which of the following is NOT part of Norman's HCD process?", options: ["Monetize", "Iterate", "Define", "Observe"], answer: 0 },
+        { q: "What are 'affordances' in design?", options: ["Error messages", "Indicators of how a product should be used", "Visual aesthetics", "Cost-saving features"], answer: 1 },
+        { q: "What does 'feedback' in interaction design refer to?", options: ["User complaints", "Error logs", "System responses to user actions", "Marketing surveys"], answer: 2 },
+        { q: "Which of the following is a tangible user interface example?", options: ["Smartphone", "Laptop", "Reactable", "Smartwatch"], answer: 2 },
+        { q: "A company is testing a new mobile app with users who accidentally trigger features while scrolling. What type of testing is most appropriate?", options: ["Usability testing on mobile devices", "Expert-based testing", "Automated testing", "Beta testing"], answer: 0 },
+        { q: "A team wants to evaluate a paper prototype of a new dashboard. Which type of testing should they use?", options: ["Summative testing", "Validation testing", "Automated testing", "Formative testing"], answer: 3 },
+        { q: "A team wants to test a new interface with users from different regions. What method is best?", options: ["In-lab testing", "Validation testing", "Expert review", "Remote usability testing"], answer: 3 },
+        { q: "A team wants to know how many users can complete a task within 1 minute. What type of test is this?", options: ["Expert-based", "Formative", "Validation", "Summative"], answer: 2 },
+        { q: "What does 'discoverability' refer to in interaction design?", options: ["How users feel about a product", "How fast a product loads", "How secure a system is", "How users find possible actions"], answer: 3 },
+        { q: "What is a 'conceptual model'?", options: ["A visual layout", "A database schema", "A user's mental understanding of how a system works", "A wireframe"], answer: 2 },
+        { q: "What should feedback be according to Shneiderman?", options: ["Immediate and informative", "Delayed and vague", "Hidden and encrypted", "Optional and minimal"], answer: 0 },
+        { q: "What does 'Reduce Short-Term Memory Load' aim to do?", options: ["Increase cognitive effort", "Make users memorize steps", "Add more features", "Simplify recognition over recall"], answer: 3 },
+        { q: "A company uses a validated survey to measure user satisfaction. What metric is this?", options: ["Task performance", "Interface efficiency", "User satisfaction", "Time performance"], answer: 2 },
+        { q: "What is the role of 'constraints' in design?", options: ["To increase complexity", "To limit user access", "To reduce feedback", "To challenge the design"], answer: 1 },
+        { q: "A participant completes all tasks correctly but takes longer than expected. What should be analyzed?", options: ["Task abandonment", "User satisfaction", "Interface layout", "Time performance"], answer: 3 },
+        { q: "A usability test reveals users often miss a key button. What should be adjusted?", options: ["Button label", "Button color", "All of the above", "Button placement"], answer: 2 },
+        { q: "A usability test is conducted in users' homes via video call. What kind of testing is this?", options: ["Automated inspection", "In-lab testing", "Remote usability testing", "Expert review"], answer: 2 },
+        { q: "A user struggles with a feature and the moderator asks probing questions. What type of testing is this?", options: ["Validation", "Automated", "Formative", "Summative"], answer: 2 },
+        { q: "A usability test is conducted over the web with screen recording. What is a major drawback?", options: ["High cost", "Slow data collection", "Limited participant pool", "Inability to observe nonverbal cues"], answer: 3 },
+        { q: "During a usability test, a participant struggles with a task and the moderator intervenes. What protocol is this aligned with?", options: ["Open-ended observation", "Ethnographic immersion", "Strict intervention protocol", "Task abandonment"], answer: 2 },
+        { q: "A company wants to compare their new interface against industry benchmarks before launch. What testing type applies?", options: ["Exploratory", "Validation", "Summative", "Formative"], answer: 1 },
+        { q: "A moderator avoids helping users unless they are stuck. What principle is being followed?", options: ["Passive observation", "Full immersion", "Controlled intervention", "Open-ended feedback"], answer: 0 },
+        { q: "A usability test is conducted using screen mock-ups. What type of prototype is this?", options: ["Low-fidelity", "Functional prototype", "Final version", "High-fidelity"], answer: 3 },
+        { q: "A usability test is conducted with only 5 participants. Why is this acceptable?", options: ["Usability testing requires large samples", "It's a survey-based test", "Small samples are sufficient to find major flaws", "It's a pilot study"], answer: 2 },
+        { q: "What is the primary goal of usability testing?", options: ["To replace traditional research methods", "To improve interface quality by identifying flaws", "To create new interfaces", "To generalize findings to other systems"], answer: 1 },
+        { q: "Usability testing is most closely related to which traditional research methods?", options: ["Experimental design and ethnography", "Meta-analysis and content analysis", "Case studies and surveys", "Historical analysis and interviews"], answer: 0 },
+        { q: "Which device type often requires usability testing due to multitouch and small screen size?", options: ["Mobile devices", "Desktop computers", "Printers", "Smart TVs"], answer: 0 },
+        { q: "What is the main purpose of expert-based usability testing?", options: ["To simulate user behavior", "To test code functionality", "To gather user satisfaction data", "To have interface experts inspect the design"], answer: 3 },
+        { q: "What is a key characteristic of formative testing?", options: ["It requires benchmark comparisons", "It uses automated tools", "It evaluates final designs", "It is exploratory and informal"], answer: 3 },
+        { q: "What is the purpose of validation testing?", options: ["To explore early design ideas", "To test paper prototypes", "To compare an interface to benchmarks", "To gather qualitative feedback"], answer: 2 },
+        { q: "What is measured by time performance?", options: ["Number of clicks", "Time spent on incorrect tasks", "Number of errors", "Time to complete tasks successfully"], answer: 3 },
+        { q: "What is a common tool for measuring user satisfaction?", options: ["Survey", "Stopwatch", "Heatmap", "Code analyzer"], answer: 0 },
+        { q: "Which type of usability testing uses software to evaluate interfaces?", options: ["Expert-based", "Formative", "Summative", "Automated"], answer: 3 },
+        { q: "What is the main difference between formative and summative testing?", options: ["Formative is for final designs", "Summative uses paper prototypes", "Formative explores early concepts; summative evaluates design choices", "Summative is more informal"], answer: 2 },
+        { q: "A smart mirror displays weather and news updates. What type of interface is this?", options: ["Tangible UI", "GUI", "Voice UI", "Augmented Reality"], answer: 3 },
+        { q: "A user feels overwhelmed by too many options on a screen. What principle is violated?", options: ["Closure", "Affordance", "Feedback", "Reduce Memory Load"], answer: 3 },
+        { q: "A user interface allows users to undo, redo, and go back easily. Which principle is applied?", options: ["Feedback", "Closure", "Mapping", "Reversal of Actions"], answer: 3 },
+        { q: "A user can complete a task using keyboard shortcuts. Which rule is followed?", options: ["Mapping", "Enable Shortcuts", "Reduce Memory Load", "Feedback"], answer: 1 },
+        { q: "A user interface uses familiar icons and layout. What principle is applied?", options: ["Closure", "Feedback", "Recognition over Recall", "Affordance"], answer: 2 },
+        { q: "A user receives a message: 'Upload complete.' What principle is this?", options: ["Mapping", "Closure", "Feedback", "Constraint"], answer: 2 },
+        { q: "A user interface uses the same color for clickable and non-clickable items. What's wrong?", options: ["Feedback", "Signifier", "Affordance", "Mapping"], answer: 1 },
+        { q: "A user interface shows a progress bar during file upload. What principle is applied?", options: ["Mapping", "Affordance", "Feedback", "Closure"], answer: 2 },
+        { q: "A user interface uses consistent icons across screens. What rule is followed?", options: ["Consistency", "Mapping", "Affordance", "Feedback"], answer: 0 },
+        { q: "A user interface uses a calendar picker for date input. What principle is applied?", options: ["Feedback", "Closure", "Constraint", "Mapping"], answer: 2 },
+        { q: "What is the 'Wizard of Oz' technique?", options: ["A test where users interact with a human pretending to be the system", "A remote usability test", "A method for automating usability tests", "A type of expert review"], answer: 0 },
+        { q: "Which of the following is a benefit of remote usability testing?", options: ["Better for qualitative data", "Greater participant access", "Easy to observe nonverbal cues", "Allows for probing questions"], answer: 1 },
+        { q: "What is a task list used for in usability testing?", options: ["To measure screen resolution", "To evaluate code quality", "To guide users through goal-directed tasks", "To record user feedback"], answer: 2 },
+        { q: "What does task performance measure?", options: ["Interface loading speed", "Time taken to complete tasks", "User satisfaction", "Number of tasks completed correctly"], answer: 3 },
+        { q: "A microwave has a button labeled 'Start' but no indication of what it does. What is missing?", options: ["Signifier", "Mapping", "Feedback", "Constraint"], answer: 0 },
+        { q: "A banking app uses different colors and layouts for each screen. What rule is being broken?", options: ["Enable Shortcuts", "Offer Error Handling", "Strive for Consistency", "Support Locus of Control"], answer: 2 },
+        { q: "A user expects a slider to adjust volume but it changes brightness. What's wrong?", options: ["Mapping", "Feedback", "Affordance", "Signifier"], answer: 0 },
+        { q: "A user sees a red border around a required field. What is this an example of?", options: ["Mapping", "Constraint", "Feedback", "Signifier"], answer: 3 },
+        { q: "A user can preview changes before applying them. What principle is applied?", options: ["Closure", "Mapping", "Feedback", "Reversal of Actions"], answer: 3 },
+        { q: "A user presses a button and nothing happens. What is missing?", options: ["Feedback", "Constraint", "Signifier", "Mapping"], answer: 0 },
+        { q: "A user clicks 'Submit' and sees a confirmation message. What principle is applied?", options: ["Closure", "Mapping", "Feedback", "Affordance"], answer: 0 },
+        { q: "A user interface shows a tooltip when hovering over a button. What is this?", options: ["Signifier", "Feedback", "Constraint", "Mapping"], answer: 0 },
+        { q: "What is a key difference between classical research and usability testing?", options: ["Usability testing uses more participants", "Classical research focuses on fixing interface flaws", "Usability testing does not aim for generalization", "Classical research is informal"], answer: 2 },
+        { q: "When is summative usability testing typically conducted?", options: ["Before any design work", "After interface release", "With high-fidelity prototypes", "During brainstorming"], answer: 2 },
+        { q: "According to Rubin and Chisnell, what is the first step in usability testing?", options: ["Conduct test sessions", "Analyze data", "Develop the test plan", "Select users"], answer: 2 },
+        { q: "A user interface prevents invalid inputs with dropdowns. What principle is used?", options: ["Mapping", "Feedback", "Constraint", "Affordance"], answer: 2 },
+        { q: "Which of the following is NOT a type of usability testing mentioned?", options: ["Wizard of Oz", "Beta testing", "Paper prototype", "Code debugging"], answer: 3 },
+        { q: "What is a key limitation of expert-based testing?", options: ["Experts cannot use prototypes", "Experts are biased", "Experts are unfamiliar with interface tasks", "Experts are too expensive"], answer: 2 },
+        { q: "A user accidentally deletes a file and cannot undo the action. Which principle was violated?", options: ["Feedback", "Closure", "Consistency", "Reversal of Actions"], answer: 3 },
+        { q: "A user receives a vague error message: 'Something went wrong.' What should be improved?", options: ["Affordance", "Mapping", "Error Handling", "Feedback"], answer: 2 },
+        { q: "A user interface prevents submission until all fields are filled. What principle is used?", options: ["Closure", "Affordance", "Constraint", "Feedback"], answer: 2 },
+        { q: "A user is forced to watch a tutorial before using the app. What principle is violated?", options: ["Mapping", "Affordance", "Internal Locus of Control", "Feedback"], answer: 2 },
+        { q: "A user is confused by a button labeled 'Execute.' What's missing?", options: ["Signifier", "Mapping", "Constraint", "Feedback"], answer: 0 },
+        { q: "What is a drawback of remote usability testing?", options: ["Inability to collect clickstream data", "Difficulty in providing real-time help", "High cost", "Limited participant pool"], answer: 1 },
+        { q: "A user struggles to find the 'Save' button in a mobile app. What principle is lacking?", options: ["Affordance", "Discoverability", "Feedback", "Constraint"], answer: 1 },
+        { q: "A user interface uses icons without labels. What might be missing?", options: ["Feedback", "Signifiers", "Closure", "Constraints"], answer: 1 },
+        { q: "A user interface uses a trash icon for deleting files. What principle is this?", options: ["Mapping", "Signifier", "Feedback", "Affordance"], answer: 3 },
+        { q: "A user can easily navigate a form with tab keys. Which rule is followed?", options: ["Mapping", "Closure", "Enable Shortcuts", "Feedback"], answer: 2 },
+        { q: "A user interface allows users to skip tutorials. What principle is applied?", options: ["Closure", "Internal Locus of Control", "Feedback", "Mapping"], answer: 1 }
+    ];
+
+    // State
+    let quizQuestions = [...sourceQuestions]; // Copy for manipulation
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    // DOM Elements
+    const questionText = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const progressText = document.getElementById('progressText');
+    const scoreText = document.getElementById('scoreText');
+    const feedbackArea = document.getElementById('feedbackArea');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const jumpSelect = document.getElementById('jumpSelect');
+    const quizContainer = document.getElementById('quizContainer');
+
+    function init() {
+        populateDropdown();
+        loadQuestion();
+    }
+
+    function populateDropdown() {
+        jumpSelect.innerHTML = '';
+        quizQuestions.forEach((_, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.text = `Question ${index + 1}`;
+            jumpSelect.appendChild(option);
+        });
+    }
+
+    function jumpToQuestion() {
+        const selectedIndex = parseInt(jumpSelect.value);
+        currentQuestionIndex = selectedIndex;
+        // If jumping to a new question, reset answered state? 
+        // For a reviewer, we probably want to see the question fresh if it wasn't answered yet.
+        // However, if we track state per question, it gets complex. 
+        // Simplest approach: Load it fresh.
+        loadQuestion();
+    }
+
+    function updateDropdownSelect() {
+        jumpSelect.value = currentQuestionIndex;
+    }
+
+    function shuffleQuestions() {
+        // Fisher-Yates Shuffle
+        for (let i = quizQuestions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [quizQuestions[i], quizQuestions[j]] = [quizQuestions[j], quizQuestions[i]];
+        }
+        
+        // Reset everything
+        currentQuestionIndex = 0;
+        score = 0;
+        scoreText.innerText = `Score: 0`;
+        
+        // Re-init
+        populateDropdown();
+        loadQuestion();
+        
+        // Visual feedback for shuffle
+        quizContainer.style.opacity = '0.5';
+        setTimeout(() => quizContainer.style.opacity = '1', 200);
+    }
+
+    function loadQuestion() {
+        answered = false;
+        feedbackArea.style.display = 'none';
+        nextBtn.disabled = true;
+
+        const currentQ = quizQuestions[currentQuestionIndex];
+        
+        progressText.innerText = `Question ${currentQuestionIndex + 1} of ${quizQuestions.length}`;
+        questionText.innerText = currentQ.q;
+        optionsContainer.innerHTML = '';
+
+        updateDropdownSelect();
+
+        currentQ.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(index, btn);
+            optionsContainer.appendChild(btn);
+        });
+
+        // Navigation state
+        prevBtn.disabled = currentQuestionIndex === 0;
+        if(currentQuestionIndex === quizQuestions.length - 1) {
+            nextBtn.innerText = "Finish";
+        } else {
+            nextBtn.innerText = "Next";
+        }
+    }
+
+    function checkAnswer(selectedIndex, btnElement) {
+        if(answered) return; 
+        answered = true;
+
+        const currentQ = quizQuestions[currentQuestionIndex];
+        const allButtons = optionsContainer.children;
+        
+        if (selectedIndex === currentQ.answer) {
+            btnElement.classList.add('correct');
+            feedbackArea.style.display = 'block';
+            feedbackArea.style.backgroundColor = '#dcfce7';
+            feedbackArea.style.color = '#14532d';
+            feedbackArea.innerText = "Correct!";
+            score++;
+        } else {
+            btnElement.classList.add('wrong');
+            allButtons[currentQ.answer].classList.add('correct');
+            feedbackArea.style.display = 'block';
+            feedbackArea.style.backgroundColor = '#fee2e2';
+            feedbackArea.style.color = '#7f1d1d';
+            feedbackArea.innerText = "Wrong. The correct answer is highlighted in green.";
+        }
+
+        scoreText.innerText = `Score: ${score}`;
+        nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+        if(currentQuestionIndex < quizQuestions.length - 1) {
+            currentQuestionIndex++;
+            loadQuestion();
+        } else {
+            alert(`Quiz Finished! Final Score: ${score}/${quizQuestions.length}`);
+        }
+    }
+
+    function prevQuestion() {
+        if(currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            loadQuestion();
+        }
+    }
+
+    // Start
+    init();
+
+</script>
+
+</body>
+</html>
