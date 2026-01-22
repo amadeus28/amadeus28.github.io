@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DevNet Associate Exam Reviewer</title>
+<title>DevNet Associate Complete Reviewer</title>
 <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
     .container { background-color: white; width: 90%; max-width: 800px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -38,7 +38,7 @@
 <body>
 
 <div class="container">
-    <h1>DevNet Associate Reviewer</h1>
+    <h1>DevNet Associate Reviewer (29 Questions)</h1>
     
     <div class="controls">
         <button class="control-btn secondary" onclick="shuffleQuestions()">🔀 Shuffle Order</button>
@@ -59,148 +59,153 @@
 </div>
 
 <script>
-    // --- DATA EXTRACTION FROM FILES ---
-    // The following data was parsed from the uploaded DevNet Associate HTML files.
-    // Red text in the source was identified as the Correct Answer based on the source explanations.
-    
+    // FULL DATA SET (29 Questions parsed from your text)
     const rawData = [
         {
-            q: "What is network programmability?",
+            q: "A system administrator issues the 'apt-get upgrade' command on a Linux operating system. What is the purpose of this command?",
             options: [
-                "the ability to easily monitor network devices using traditional network protocols",
-                "the ability to configure virtualized networks and deploy virtualized services in real time",
-                "the ability to program network devices using repetitive manual configuration via a terminal and command sets",
-                "the ability to configure, monitor, and react to events in the network in real time"
+                "The remote repository of applications and dependencies will be updated to the latest version.",
+                "Every application installed will update itself to the latest version.",
+                "Operating system updates are downloaded and will be installed.",
+                "A specific application named upgrade will be installed."
             ],
-            answer: 3 // Index of correct answer (0-based)
+            answer: 1 // Explanation: "all installed applications will attempt to upgrade"
         },
         {
-            q: "What resources are available in the Cisco DevNet sandboxes?",
+            q: "A network engineer needs to review the status of all network interfaces... The engineer enters 'ifconfig -a'. What is the result?",
             options: [
-                "production-like development and code testing environments",
-                "social media discussion tools",
-                "code sharing",
-                "technical support for developers"
+                "All active interfaces will display information.",
+                "Both active and inactive interfaces will display information.",
+                "The ARP table of the computer will be displayed.",
+                "The host routing table will be displayed."
             ],
-            answer: 0
+            answer: 1 // Explanation: "provide information for all network interfaces, even if they are down"
         },
         {
-            q: "What are two reasons to use the Cisco DevNet learning labs? (Choose two.)",
+            q: "A system administrator... issues the 'ps' command. What is displayed by this command?",
             options: [
-                "to provide direct technical support for developers",
-                "to submit a developer support case",
-                "to learn how to use the API for a Cisco product",
-                "to test code in a production-like environment",
-                "to practice making API calls against a simulated network"
+                "current RAM usage",
+                "current HDD usage",
+                "current NIC status",
+                "active processes using CPU time"
             ],
-            answer: [2, 4] // Multiple correct answers
+            answer: 3 // Explanation: "display all processes running"
         },
         {
-            q: "What is the purpose of the Cisco DevNet Exchange?",
+            q: "A Linux administrator receives a message that they do not have necessary permissions... What should be done prior to the configuration command?",
             options: [
-                "It is a code repository for developers to upload and share code with the community.",
-                "It contains a shared list of equipment that is used in the DevNet Sandboxes.",
-                "It is a repository of solutions that developers have created using Cisco platforms.",
-                "It provides a discussion forum for developers to exchange ideas."
+                "use a different user account",
+                "use the 'sudo' command",
+                "identify a different network interface",
+                "change the 'chmod' permissions on the network configuration file"
             ],
-            answer: 2
+            answer: 1 // Explanation: "require the use of the sudo command"
         },
         {
-            q: "Which two forums are available on the Cisco DevNet developer community? (Choose two.)",
+            q: "A user issues a Linux command and sees a detailed list (drwxr-xr-x...). Which Linux command is used to display the contents as shown?",
             options: [
-                "Developer Support",
-                "Public Communities",
-                "Technical Support",
-                "Customer Support",
-                "Network Support"
+                "ls",
+                "ls -l",
+                "ls -a",
+                "ls -lr"
             ],
-            answer: [0, 1]
+            answer: 1 // Explanation: "ls command with the -l option"
         },
         {
-            q: "What are two main components of the Cisco DevNet site? (Choose two.)",
+            q: "Current directory is '/home/devasc/labs/ansible/backups'. The user issues 'cd ../..'. Which directory is current now?",
             options: [
-                "Cisco Learning Network",
-                "DevNet Sandbox",
-                "DevNet Exchange",
-                "Cisco Networking Academy",
-                "Cisco Support Community"
+                "/",
+                "/home",
+                "/home/devasc/",
+                "/home/devasc/labs",
+                "/home/devasc/labs/ansible"
             ],
-            answer: [1, 2]
+            answer: 3 // Moves up two levels from 'backups' -> 'ansible' -> 'labs'
         },
         {
-            q: "Which DevNet resource allows a developer to run code against a live network?",
+            q: "A user issues 'ls -l myfile.sh'. Output: '-rwxr-xr-- 1 self test...'. Which two statements describe the permissions? (Choose two.)",
             options: [
-                "DevNet Sandbox",
-                "DevNet Learning Labs",
-                "DevNet Exchange",
-                "DevNet Code Exchange"
+                "All users can execute the file.",
+                "The user with the user ID of self can modify the file.",
+                "The user with the user ID of devasc can modify the file.",
+                "Any user in the test group can execute the file.",
+                "Any user in the self group can read, modify, and execute the file."
             ],
-            answer: 0
+            answer: [1, 3] // Owner (self) has rwx (modify); Group (test) has r-x (execute)
         },
         {
-            q: "What is an Application Programming Interface (API)?",
-            options: [
-                "a type of physical interface on a router",
-                "software that allows two applications to talk to each other",
-                "a GUI used to configure network devices",
-                "a protocol used to monitor network devices"
-            ],
-            answer: 1
-        },
-        {
-            q: "Which three formats are used for data structures in network programmability? (Choose three.)",
-            options: [
-                "JSON",
-                "XML",
-                "YAML",
-                "HTML",
-                "CSS",
-                "SQL"
-            ],
-            answer: [0, 1, 2]
-        },
-        {
-            q: "In the context of RESTful APIs, which HTTP method is used to create a new resource?",
-            options: [
-                "GET",
-                "PUT",
-                "POST",
-                "DELETE"
-            ],
-            answer: 2
-        },
-        {
-            q: "Which statement describes a synchronous API call?",
-            options: [
-                "The client sends a request and continues processing without waiting for a response.",
-                "The client sends a request and pauses execution until the server responds.",
-                "The server pushes data to the client automatically when an event occurs.",
-                "The client polls the server periodically for updates."
-            ],
-            answer: 1
-        },
-        {
-            q: "A Linux system administrator is searching the passwd file for any username that starts with a digit. Which grep command should the administrator use?",
+            q: "A Linux system administrator is searching the passwd file for any username that starts with a digit. Which grep command should they use?",
             options: [
                 "grep ‘{0-9}’ /etc/passwd",
                 "grep ‘[0-9]’ /etc/passwd",
                 "grep ‘^[0-9]’ /etc/passwd",
                 "grep ‘_[0-9]’ /etc/passwd"
             ],
-            answer: 2
+            answer: 2 // ^ indicates start of string
         },
         {
-            q: "What is displayed after the following code is entered into a Python interpreter? addition = 22 + 10 print(addition)",
+            q: "User is in '.../Documents'. Issues: 'mv myfile.sh ../Desktop/myfile2.sh'. What is the result?",
             options: [
-                "(syntaxerror)-…as there should not be a space between the numerical values",
-                "[22]+[10]",
-                "32",
-                "nothing ( because the print command is wrong)"
+                "The file myfile.sh is copied and renamed to myfile2.sh in the current directory.",
+                "The file myfile.sh is copied to the /home/devasc/Desktop directory and renamed as myfile2.sh.",
+                "The file myfile.sh is moved to the /home/devasc/Desktop directory and renamed as myfile2.sh.",
+                "The file myfile.sh is copied to the /home/devasc/Desktop directory and replaces the file myfile2.sh."
+            ],
+            answer: 2 // mv moves (not copies) and renames
+        },
+        {
+            q: "Which Python command creates a conditional control structure?",
+            options: [
+                "def",
+                "delay",
+                "if",
+                "from"
             ],
             answer: 2
         },
         {
-            q: "Which data type is used to represent the variable ipAddress = {'R1':'10.1.1.1', 'R2':'10.2.2.1'}?",
+            q: "What is displayed after the following code? 'addition = 22 + 10' then 'print(addition)'",
+            options: [
+                "(syntaxerror)...",
+                "[22]+[10]",
+                "32",
+                "nothing"
+            ],
+            answer: 2
+        },
+        {
+            q: "What is the output of: '[1,2,4,5] + [3,6]' ?",
+            options: [
+                "[1,2,4,5,3,6]",
+                "[1,2,3,4,5,6]",
+                "[12]+[9]",
+                "[21]"
+            ],
+            answer: 0 // Concatenation without reordering
+        },
+        {
+            q: "y=2. What is the result of: 'Test'*y ?",
+            options: [
+                "‘Test2’",
+                "‘Test6’",
+                "‘TestTest’",
+                "‘TestTestTestTestTestTest’",
+                "TypeError"
+            ],
+            answer: 2
+        },
+        {
+            q: "devicenames=['RT1', 'RT2', 'SW1', 'SW2']. hostnames adds ['RT3', 'SW3']. Then 'del hostnames[3]'. What is the result?",
+            options: [
+                "[‘RT1’, ‘RT2’, ‘SW2’, ‘RT3’, ‘SW3’]",
+                "[‘RT1’, ‘RT2’, ‘SW1’, ‘RT3’, ‘SW3’]", // Removed index 3 (SW2)
+                "[‘RT1’, ‘RT2’, ‘RT3’, ‘SW2’, ‘SW3’]",
+                "[‘RT1’, ‘RT2’, ‘SW1’, ‘SW2’, ‘SW3’]"
+            ],
+            answer: 1 // Original: RT1, RT2, SW1, SW2, RT3, SW3. Index 3 is SW2. Remove it -> RT1, RT2, SW1, RT3, SW3.
+        },
+        {
+            q: "ipAddress = {'R1':'10.1.1.1'...}. Which data type is used?",
             options: [
                 "list",
                 "tuple",
@@ -210,24 +215,148 @@
             answer: 3
         },
         {
-            q: "Which Python command is used to input data from the user?",
+            q: "ipAddress = {'R1':'10.1.1.1'...}. Which expression retrieves the IP of R2?",
             options: [
-                "cin",
-                "input",
-                "read",
-                "get"
+                "ipAddress[R2]",
+                "ipAddress['R2']",
+                "ipAddress{'R2'}",
+                "ipAddress{'R2'}"
+            ],
+            answer: 1 // String key requires quotes and brackets
+        },
+        {
+            q: "Script has: if... elif... else. Under which condition will the 'elif' statement be evaluated?",
+            options: [
+                "when the input is a string",
+                "when the if statement is false",
+                "when the input is a float number",
+                "when the first print statement fails"
             ],
             answer: 1
         },
         {
-            q: "What is the correct syntax to create a list in Python?",
+            q: "Which technology trend enables an industry shift towards automation, applications, and integrations?",
             options: [
-                "myList = (1, 2, 3)",
-                "myList = {1, 2, 3}",
-                "myList = [1, 2, 3]",
-                "myList = <1, 2, 3>"
+                "advanced API capabilities",
+                "increased internet connection bandwidth",
+                "smaller and faster CPUs",
+                "increased storage and RAM"
+            ],
+            answer: 0
+        },
+        {
+            q: "What are two benefits of using APIs and integrations? (Choose two.)",
+            options: [
+                "Integrations enable the applications to request actions from each other.",
+                "Integrations enable the applications to run a Docker instance using Hyper-V.",
+                "Integrations are used to verify compatibility between different applications.",
+                "Integrations are used to provide applications the ability to notify each other when a specific event happens.",
+                "Integrations enable the applications to be installed on any operating system type."
+            ],
+            answer: [0, 3]
+        },
+        {
+            q: "What is network programmability?",
+            options: [
+                "the ability to easily monitor network devices using traditional network protocols",
+                "the ability to configure virtualized networks and deploy virtualized services in real time",
+                "the ability to program network devices using repetitive manual configuration via a terminal and command sets",
+                "the ability to configure, monitor, and react to events in the network in real time"
+            ],
+            answer: 3
+        },
+        {
+            q: "What resources are available in the Cisco DevNet Code Exchange?",
+            options: [
+                "self-paced tutorials",
+                "support for developer-related issues",
+                "a repository of sample code written by other developers",
+                "production-like development and code testing environments"
             ],
             answer: 2
+        },
+        {
+            q: "What is the purpose of Cisco DevNet?",
+            options: [
+                "to teach specific coding courses such as advanced Python",
+                "to be the central resource for everything about networking at Cisco",
+                "to be the central resource for advanced software developers",
+                "to teach everyone about the different Cisco API offerings and how to use them"
+            ],
+            answer: 3
+        },
+        {
+            q: "What resources are available in the Cisco DevNet sandboxes?",
+            options: [
+                "production-like development and code testing environments",
+                "a repository of sample code written by developers",
+                "self-paced tutorials",
+                "support for developer-related issues"
+            ],
+            answer: 0
+        },
+        {
+            q: "What are two requirements when participating in the DevNet Learning Labs? (Choose two.)",
+            options: [
+                "The user must have successfully passed the 200-901 DEVASC exam.",
+                "The user must successfully log in with a DevNet account.",
+                "The user must have purchased the DevNet Learning Labs activation license.",
+                "The user must have an active internet connection.",
+                "The user must install a developer environment on a local computer."
+            ],
+            answer: [1, 3]
+        },
+        {
+            q: "Which Cisco DevNet developer support option provides 1-on-1 support to the members of the Solution Partner program?",
+            options: [
+                "community forum",
+                "case-based ticket",
+                "chat with DevNet",
+                "knowledge base"
+            ],
+            answer: 1
+        },
+        {
+            q: "Which Cisco DevNet online resource provides use cases for network automation, including listing data and activating policies?",
+            options: [
+                "Automation Exchange",
+                "DevNet Sandbox",
+                "Code Exchange",
+                "DevNet Learning Labs"
+            ],
+            answer: 0
+        },
+        {
+            q: "What is the contracted response time after a developer opens a case-based ticket with the DevNet support service?",
+            options: [
+                "one hour",
+                "one week",
+                "one business day",
+                "five business days"
+            ],
+            answer: 2
+        },
+        {
+            q: "What are three major areas that comprise DevNet? (Choose three.)",
+            options: [
+                "interactive and collaborative developer community",
+                "integrated community forums",
+                "coordinated developer tools",
+                "automation and programmability standards development area",
+                "on-line training site for various technology vendors",
+                "providing support for website creation and maintenance"
+            ],
+            answer: [0, 1, 2]
+        },
+        {
+            q: "Which link is used from the Cisco DevNet Learning Labs to access the largest collections of labs?",
+            options: [
+                "Modules",
+                "Sections",
+                "Bookends",
+                "Tracks"
+            ],
+            answer: 3
         }
     ];
 
@@ -263,7 +392,6 @@
     }
 
     function checkAnswer(qIndex, optIndex, element) {
-        // Prevent re-clicking
         if (element.parentElement.classList.contains('answered')) return;
 
         const q = questions[qIndex];
@@ -272,35 +400,40 @@
         const options = element.parentElement.children;
 
         // Handle Multiple Choice vs Single Choice
-        let isCorrect = false;
         if (Array.isArray(correct)) {
-            // For now, simplify multiple choice to "reveal answers" style for the reviewer
-            // If the user clicks ANY correct answer, highlight it green.
+            // Multiple Choice Logic
             if (correct.includes(optIndex)) {
                 element.classList.add('correct');
-                feedbackEl.innerText = "Correct! This is one of the right choices.";
+                feedbackEl.innerText = "Correct choice! Select the others.";
                 feedbackEl.className = "feedback correct";
             } else {
                 element.classList.add('wrong');
-                feedbackEl.innerText = "Incorrect.";
+                feedbackEl.innerText = "Incorrect. Revealing correct answers...";
                 feedbackEl.className = "feedback wrong";
-                // Highlight missed correct answers
+                // Reveal all correct
                 correct.forEach(cIndex => {
                     options[cIndex].classList.add('correct');
                 });
-                element.parentElement.classList.add('answered'); // Lock after wrong
+                element.parentElement.classList.add('answered'); 
             }
-            // Check if all correct answers are selected? (Simplified for reviewer: Show all correct if wrong clicked)
+            
+            // Check if all correct answers selected
+            const selectedCorrects = element.parentElement.querySelectorAll('.option-item.correct').length;
+            if (selectedCorrects === correct.length && !element.parentElement.classList.contains('answered')) {
+                feedbackEl.innerText = "All correct answers selected! ✅";
+                element.parentElement.classList.add('answered');
+            }
+
         } else {
-            // Single Choice
-            element.parentElement.classList.add('answered'); // Lock options
+            // Single Choice Logic
+            element.parentElement.classList.add('answered'); 
             if (optIndex === correct) {
                 element.classList.add('correct');
                 feedbackEl.innerText = "Correct! ✅";
                 feedbackEl.className = "feedback correct";
             } else {
                 element.classList.add('wrong');
-                options[correct].classList.add('correct'); // Show correct answer
+                options[correct].classList.add('correct'); 
                 feedbackEl.innerText = "Wrong! ❌ The correct answer is highlighted.";
                 feedbackEl.className = "feedback wrong";
             }
@@ -313,14 +446,11 @@
         
         currentIndex += direction;
         
-        // Bounds check
         if (currentIndex < 0) currentIndex = 0;
         if (currentIndex >= questions.length) currentIndex = questions.length - 1;
         
         cards[currentIndex].classList.add('active');
         updateNavigation();
-        
-        // Update Dropdown
         document.getElementById('jumpTo').value = currentIndex;
     }
 
@@ -337,11 +467,8 @@
         document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
         document.getElementById('progressText').innerText = `Question ${currentIndex + 1} of ${questions.length}`;
         
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        
-        prevBtn.style.opacity = currentIndex === 0 ? "0.5" : "1";
-        nextBtn.style.opacity = currentIndex === questions.length - 1 ? "0.5" : "1";
+        document.getElementById('prevBtn').style.opacity = currentIndex === 0 ? "0.5" : "1";
+        document.getElementById('nextBtn').style.opacity = currentIndex === questions.length - 1 ? "0.5" : "1";
     }
 
     function populateDropdown() {
@@ -369,9 +496,7 @@
         init();
     }
 
-    // Initialize on load
     init();
-
 </script>
 
 </body>
