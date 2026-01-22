@@ -390,12 +390,12 @@
             answer: 2
         },
         {
-            q: "A user issues `ls -l myfile.sh`. Output: `-rwxr-xr-- 1 self test ...`. Which two statements describe the permissions? (Choose two)",
+            q: "A user issues the Linux command ls -l myfile.sh to check the permission of the file myfile.sh. /n/n devasc@labvm:~/Documents$ ls -l myfile.sh /n-rwxr-xr-- 1 self test 15 Mar 30 21:24 myfile.sh /n/n Which two statements describe the permissions assigned to the file?",
             options: [
-                "User 'devasc' can modify. / All users execute.",
-                "User 'self' can modify. / Group 'test' can execute.",
-                "User 'self' can modify. / Group 'test' can write.",
-                "Group 'self' can read. / All users can write."
+                "User with the user ID of 'devasc' can modify. / All users execute.",
+                "User with the user ID of 'self' can modify. / Any user in the 'test' group can execute.",
+                "User with the user ID of 'self' can modify. / Any user in the 'test' group can write.",
+                "Any user in the 'self' group can read. / All users can write."
             ],
             answer: 1 
         },
