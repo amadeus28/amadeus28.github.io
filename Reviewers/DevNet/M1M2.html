@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevNet Associate Exam Reviewer</title>
+<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; color: #333; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+    .container { background-color: white; width: 90%; max-width: 800px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+    .controls { display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    .control-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; background-color: #3498db; color: white; font-weight: bold; transition: background 0.3s; }
+    .control-btn:hover { background-color: #2980b9; }
+    .control-btn.secondary { background-color: #95a5a6; }
+    .control-btn.secondary:hover { background-color: #7f8c8d; }
+    .select-box { padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    
+    .question-card { display: none; }
+    .question-card.active { display: block; animation: fadeIn 0.5s; }
+    .question-text { font-size: 1.2em; font-weight: 600; margin-bottom: 20px; color: #2c3e50; }
+    .options-list { list-style: none; padding: 0; }
+    .option-item { background: #ecf0f1; margin-bottom: 10px; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; display: flex; align-items: center; }
+    .option-item:hover { background: #dfe6e9; }
+    .option-item.correct { background-color: #d4edda; border-color: #28a745; color: #155724; }
+    .option-item.wrong { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .option-item.disabled { pointer-events: none; opacity: 0.7; }
+    
+    .feedback { margin-top: 15px; font-weight: bold; padding: 10px; border-radius: 5px; display: none; }
+    .feedback.correct { background-color: #d4edda; color: #155724; display: block; }
+    .feedback.wrong { background-color: #f8d7da; color: #721c24; display: block; }
+
+    .navigation { margin-top: 30px; display: flex; justify-content: space-between; }
+    .progress { text-align: center; margin-top: 10px; color: #7f8c8d; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>DevNet Associate Reviewer</h1>
+    
+    <div class="controls">
+        <button class="control-btn secondary" onclick="shuffleQuestions()">🔀 Shuffle Order</button>
+        <select id="jumpTo" class="select-box" onchange="jumpToQuestion(this.value)">
+            <option value="" disabled selected>Jump to Question...</option>
+        </select>
+        <button class="control-btn secondary" onclick="resetReviewer()">🔄 Reset</button>
+    </div>
+
+    <div id="quiz-container">
+        </div>
+
+    <div class="navigation">
+        <button class="control-btn" id="prevBtn" onclick="navigate(-1)">⬅️ Previous</button>
+        <div class="progress" id="progressText">Question 1 of --</div>
+        <button class="control-btn" id="nextBtn" onclick="navigate(1)">Next ➡️</button>
+    </div>
+</div>
+
+<script>
+    // --- DATA EXTRACTION FROM FILES ---
+    // The following data was parsed from the uploaded DevNet Associate HTML files.
+    // Red text in the source was identified as the Correct Answer based on the source explanations.
+    
+    const rawData = [
+        {
+            q: "What is network programmability?",
+            options: [
+                "the ability to easily monitor network devices using traditional network protocols",
+                "the ability to configure virtualized networks and deploy virtualized services in real time",
+                "the ability to program network devices using repetitive manual configuration via a terminal and command sets",
+                "the ability to configure, monitor, and react to events in the network in real time"
+            ],
+            answer: 3 // Index of correct answer (0-based)
+        },
+        {
+            q: "What resources are available in the Cisco DevNet sandboxes?",
+            options: [
+                "production-like development and code testing environments",
+                "social media discussion tools",
+                "code sharing",
+                "technical support for developers"
+            ],
+            answer: 0
+        },
+        {
+            q: "What are two reasons to use the Cisco DevNet learning labs? (Choose two.)",
+            options: [
+                "to provide direct technical support for developers",
+                "to submit a developer support case",
+                "to learn how to use the API for a Cisco product",
+                "to test code in a production-like environment",
+                "to practice making API calls against a simulated network"
+            ],
+            answer: [2, 4] // Multiple correct answers
+        },
+        {
+            q: "What is the purpose of the Cisco DevNet Exchange?",
+            options: [
+                "It is a code repository for developers to upload and share code with the community.",
+                "It contains a shared list of equipment that is used in the DevNet Sandboxes.",
+                "It is a repository of solutions that developers have created using Cisco platforms.",
+                "It provides a discussion forum for developers to exchange ideas."
+            ],
+            answer: 2
+        },
+        {
+            q: "Which two forums are available on the Cisco DevNet developer community? (Choose two.)",
+            options: [
+                "Developer Support",
+                "Public Communities",
+                "Technical Support",
+                "Customer Support",
+                "Network Support"
+            ],
+            answer: [0, 1]
+        },
+        {
+            q: "What are two main components of the Cisco DevNet site? (Choose two.)",
+            options: [
+                "Cisco Learning Network",
+                "DevNet Sandbox",
+                "DevNet Exchange",
+                "Cisco Networking Academy",
+                "Cisco Support Community"
+            ],
+            answer: [1, 2]
+        },
+        {
+            q: "Which DevNet resource allows a developer to run code against a live network?",
+            options: [
+                "DevNet Sandbox",
+                "DevNet Learning Labs",
+                "DevNet Exchange",
+                "DevNet Code Exchange"
+            ],
+            answer: 0
+        },
+        {
+            q: "What is an Application Programming Interface (API)?",
+            options: [
+                "a type of physical interface on a router",
+                "software that allows two applications to talk to each other",
+                "a GUI used to configure network devices",
+                "a protocol used to monitor network devices"
+            ],
+            answer: 1
+        },
+        {
+            q: "Which three formats are used for data structures in network programmability? (Choose three.)",
+            options: [
+                "JSON",
+                "XML",
+                "YAML",
+                "HTML",
+                "CSS",
+                "SQL"
+            ],
+            answer: [0, 1, 2]
+        },
+        {
+            q: "In the context of RESTful APIs, which HTTP method is used to create a new resource?",
+            options: [
+                "GET",
+                "PUT",
+                "POST",
+                "DELETE"
+            ],
+            answer: 2
+        },
+        {
+            q: "Which statement describes a synchronous API call?",
+            options: [
+                "The client sends a request and continues processing without waiting for a response.",
+                "The client sends a request and pauses execution until the server responds.",
+                "The server pushes data to the client automatically when an event occurs.",
+                "The client polls the server periodically for updates."
+            ],
+            answer: 1
+        },
+        {
+            q: "A Linux system administrator is searching the passwd file for any username that starts with a digit. Which grep command should the administrator use?",
+            options: [
+                "grep ‘{0-9}’ /etc/passwd",
+                "grep ‘[0-9]’ /etc/passwd",
+                "grep ‘^[0-9]’ /etc/passwd",
+                "grep ‘_[0-9]’ /etc/passwd"
+            ],
+            answer: 2
+        },
+        {
+            q: "What is displayed after the following code is entered into a Python interpreter? addition = 22 + 10 print(addition)",
+            options: [
+                "(syntaxerror)-…as there should not be a space between the numerical values",
+                "[22]+[10]",
+                "32",
+                "nothing ( because the print command is wrong)"
+            ],
+            answer: 2
+        },
+        {
+            q: "Which data type is used to represent the variable ipAddress = {'R1':'10.1.1.1', 'R2':'10.2.2.1'}?",
+            options: [
+                "list",
+                "tuple",
+                "array",
+                "dictionary"
+            ],
+            answer: 3
+        },
+        {
+            q: "Which Python command is used to input data from the user?",
+            options: [
+                "cin",
+                "input",
+                "read",
+                "get"
+            ],
+            answer: 1
+        },
+        {
+            q: "What is the correct syntax to create a list in Python?",
+            options: [
+                "myList = (1, 2, 3)",
+                "myList = {1, 2, 3}",
+                "myList = [1, 2, 3]",
+                "myList = <1, 2, 3>"
+            ],
+            answer: 2
+        }
+    ];
+
+    // --- LOGIC ---
+    let questions = [...rawData];
+    let currentIndex = 0;
+
+    function init() {
+        renderQuestions();
+        updateNavigation();
+        populateDropdown();
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = '';
+        
+        questions.forEach((q, index) => {
+            const card = document.createElement('div');
+            card.className = `question-card ${index === 0 ? 'active' : ''}`;
+            card.id = `q-${index}`;
+            
+            let html = `<div class="question-text">${index + 1}. ${q.q}</div><ul class="options-list">`;
+            
+            q.options.forEach((opt, optIndex) => {
+                html += `<li class="option-item" onclick="checkAnswer(${index}, ${optIndex}, this)">${opt}</li>`;
+            });
+            
+            html += `</ul><div class="feedback" id="feedback-${index}"></div>`;
+            card.innerHTML = html;
+            container.appendChild(card);
+        });
+    }
+
+    function checkAnswer(qIndex, optIndex, element) {
+        // Prevent re-clicking
+        if (element.parentElement.classList.contains('answered')) return;
+
+        const q = questions[qIndex];
+        const correct = q.answer;
+        const feedbackEl = document.getElementById(`feedback-${qIndex}`);
+        const options = element.parentElement.children;
+
+        // Handle Multiple Choice vs Single Choice
+        let isCorrect = false;
+        if (Array.isArray(correct)) {
+            // For now, simplify multiple choice to "reveal answers" style for the reviewer
+            // If the user clicks ANY correct answer, highlight it green.
+            if (correct.includes(optIndex)) {
+                element.classList.add('correct');
+                feedbackEl.innerText = "Correct! This is one of the right choices.";
+                feedbackEl.className = "feedback correct";
+            } else {
+                element.classList.add('wrong');
+                feedbackEl.innerText = "Incorrect.";
+                feedbackEl.className = "feedback wrong";
+                // Highlight missed correct answers
+                correct.forEach(cIndex => {
+                    options[cIndex].classList.add('correct');
+                });
+                element.parentElement.classList.add('answered'); // Lock after wrong
+            }
+            // Check if all correct answers are selected? (Simplified for reviewer: Show all correct if wrong clicked)
+        } else {
+            // Single Choice
+            element.parentElement.classList.add('answered'); // Lock options
+            if (optIndex === correct) {
+                element.classList.add('correct');
+                feedbackEl.innerText = "Correct! ✅";
+                feedbackEl.className = "feedback correct";
+            } else {
+                element.classList.add('wrong');
+                options[correct].classList.add('correct'); // Show correct answer
+                feedbackEl.innerText = "Wrong! ❌ The correct answer is highlighted.";
+                feedbackEl.className = "feedback wrong";
+            }
+        }
+    }
+
+    function navigate(direction) {
+        const cards = document.querySelectorAll('.question-card');
+        cards[currentIndex].classList.remove('active');
+        
+        currentIndex += direction;
+        
+        // Bounds check
+        if (currentIndex < 0) currentIndex = 0;
+        if (currentIndex >= questions.length) currentIndex = questions.length - 1;
+        
+        cards[currentIndex].classList.add('active');
+        updateNavigation();
+        
+        // Update Dropdown
+        document.getElementById('jumpTo').value = currentIndex;
+    }
+
+    function jumpToQuestion(index) {
+        const cards = document.querySelectorAll('.question-card');
+        cards[currentIndex].classList.remove('active');
+        currentIndex = parseInt(index);
+        cards[currentIndex].classList.add('active');
+        updateNavigation();
+    }
+
+    function updateNavigation() {
+        document.getElementById('prevBtn').disabled = currentIndex === 0;
+        document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+        document.getElementById('progressText').innerText = `Question ${currentIndex + 1} of ${questions.length}`;
+        
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        prevBtn.style.opacity = currentIndex === 0 ? "0.5" : "1";
+        nextBtn.style.opacity = currentIndex === questions.length - 1 ? "0.5" : "1";
+    }
+
+    function populateDropdown() {
+        const dropdown = document.getElementById('jumpTo');
+        dropdown.innerHTML = '<option value="" disabled selected>Jump to...</option>';
+        questions.forEach((_, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.text = `Question ${index + 1}`;
+            dropdown.appendChild(option);
+        });
+    }
+
+    function shuffleQuestions() {
+        for (let i = questions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+        currentIndex = 0;
+        init();
+    }
+
+    function resetReviewer() {
+        currentIndex = 0;
+        init();
+    }
+
+    // Initialize on load
+    init();
+
+</script>
+
+</body>
+</html>
