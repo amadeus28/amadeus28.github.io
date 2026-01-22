@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevNet & Python Exam Reviewer</title>
+    <style>
+        :root {
+            --primary: #007bff; /* Student Blue */
+            --success: #28a745;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #0056b3; }
+        
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #545b62; }
+
+        .btn-nav { background: var(--dark); color: white; min-width: 100px;}
+        .btn-nav:disabled { background: #ccc; cursor: not-allowed; }
+
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .question-card {
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            text-align: left;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1em;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: #f8f9fa;
+        }
+
+        .option-btn.correct {
+            background-color: #d4edda;
+            border-color: var(--success);
+            color: #155724;
+        }
+
+        .option-btn.wrong {
+            background-color: #f8d7da;
+            border-color: var(--danger);
+            color: #721c24;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+        }
+
+        .feedback.correct { background: #d4edda; color: #155724; display: block; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; display: block; }
+
+        .footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .controls { flex-direction: column; align-items: stretch; }
+            .btn-nav { width: 48%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>DevNet & Python Reviewer</h1>
+    
+    <div class="controls">
+        <button class="btn-secondary" onclick="toggleShuffle()" id="shuffleBtn">Shuffle: OFF</button>
+        <select id="questionJump" onchange="jumpToQuestion()">
+            </select>
+        <span id="progressText">Question 1 of 50</span>
+    </div>
+
+    <div id="quizArea">
+        </div>
+
+    <div class="footer-nav">
+        <button class="btn-nav" id="prevBtn" onclick="changeQuestion(-1)">Previous</button>
+        <button class="btn-nav" id="nextBtn" onclick="changeQuestion(1)">Next</button>
+    </div>
+</div>
+
+<script>
+    // Full dataset extracted from the PDF and corrected for OCR errors
+    const rawData = [
+        {
+            q: "A network engineer needs to review the status of all network interfaces of a server running a Linux operating system. The engineer enters the command `ifconfig -a`. What is the result of this command?",
+            options: [
+                "The ARP table of the computer will be displayed.",
+                "Both active and inactive interfaces will display information.",
+                "All active interfaces will display information.",
+                "The host routing table will be displayed."
+            ],
+            answer: 1
+        },
+        {
+            q: "A Linux system administrator is searching the passwd file for any username that starts with a digit. Which grep command should the administrator use?",
+            options: [
+                "grep '(0-9 ' /etc/passwd",
+                "grep '[0-9]' /etc/passwd",
+                "grep '^[0-9]' /etc/passwd",
+                "grep '^ [0-9]' /etc/passwd"
+            ],
+            answer: 2
+        },
+        {
+            q: "A user issues a series of Linux commands as shown.<br><br><code>$ pwd<br>/home/devasc/labs/ansible/backups<br>$ cd ../..</code><br><br>Which directory is the current directory after the cd command is entered?",
+            options: [
+                "/home/devasc/labs",
+                "/home/devasc/labs/ansible",
+                "/home/devasc",
+                "/home"
+            ],
+            answer: 0
+        },
+        {
+            q: "A student new to Python is working in the interactive interpreter mode. The student issues the commands:<br><br><code>>>> devicenames=[\"RT1\", \"RT2\", \"SW1\", \"SW2\"]<br>>>> hostnames=devicenames + [\"RT3\", \"SW3\"]<br>>>> del hostnames[3]<br>>>> hostnames</code><br><br>What is the result?",
+            options: [
+                "['RT1', 'RT2', 'SW1', 'RT3', 'SW3']",
+                "['RT1', 'RT2', 'SW1', 'SW2', 'SW3']",
+                "['RT1', 'RT2', 'SW2', 'RT3', 'SW3']",
+                "['RT1', 'RT2', 'RT3', 'SW2', 'SW3']"
+            ],
+            answer: 0
+        },
+        {
+            q: "A student is learning Python and is reviewing a Python script as follows:<br><br><code>if aclNum >= 1 and aclNum <= 99:<br> print(\"Standard\")<br>elif aclNum >= 100 and aclNum <= 199:<br> print(\"Extended\")<br>else:<br> print(\"Not Standard or Extended\")</code><br><br>Under which condition will the <b>elif</b> statement be evaluated?",
+            options: [
+                "when the input is a string",
+                "when the first print statement fails",
+                "when the input is a float number",
+                "when the if statement is false"
+            ],
+            answer: 3
+        },
+        {
+            q: "What Linux command is used to display the contents of the current directory?",
+            options: [
+                "pwd",
+                "cat",
+                "ls",
+                "ln"
+            ],
+            answer: 2
+        },
+        {
+            q: "A system administrator of a Linux server is searching the passwd file for the username 'taylor' that appears at the beginning of the line. Which grep command should the administrator use?",
+            options: [
+                "grep '[taylor]' /etc/passwd",
+                "grep ' taylor' /etc/passwd",
+                "grep '^taylor' /etc/passwd",
+                "grep 'taylor' /etc/passwd"
+            ],
+            answer: 2
+        },
+        {
+            q: "A user issues the `apt-get upgrade` command to update system files in a Ubuntu Linux system and receives an error message of \"permission denied.\" What should the user do to complete the task?",
+            options: [
+                "Issue the `sudo apt-get upgrade` command.",
+                "Issue the `apt-get install -allow` command.",
+                "Issue the `sudo apt-get install` command.",
+                "Issue the `allow apt-get upgrade` command."
+            ],
+            answer: 0
+        },
+        {
+            q: "A student is learning Python using the interactive interpreter mode. The student issues the commands:<br><br><code>>>> routers=[]<br>>>> switches=[]<br>>>> devices=[\"RT1\", \"RT2\", \"RT3\", \"SW1\", \"SW2\", \"SW3\"]<br>>>> devices=devices + [\"RT4\", \"SW4\"]<br>>>> for i in devices:<br>...  if \"R\" in i:<br>...   routers.append(i)<br>...  else:<br>...   switches.append(i)<br>>>> switches</code><br><br>What is the result?",
+            options: [
+                "['SW4', 'SW1', 'SW2', 'SW3']",
+                "['SW1', 'SW2', 'SW3', 'SW4']",
+                "['SW4']",
+                "['SW4', 'SW3', 'SW2', 'SW1']"
+            ],
+            answer: 1
+        },
+        {
+            q: "Which Python programming function is used to display output?",
+            options: [
+                "while",
+                "print",
+                "if",
+                "for"
+            ],
+            answer: 1
+        },
+        {
+            q: "What is displayed after the following code is entered into a Python interpreter?<br><br><code>addition = 22 + 10<br>print(addition)</code>",
+            options: [
+                "32",
+                "nothing (because the print command is wrong)",
+                "(syntaxerror)...",
+                "[22]+[10]"
+            ],
+            answer: 0
+        },
+        {
+            q: "A Linux administrator is attempting to use a terminal to configure the network interface card on a computer. The administrator receives a message that the administrator does not have necessary permissions. What should be done prior to the configuration command?",
+            options: [
+                "use a different user account",
+                "change the chmod permissions on the network configuration file",
+                "use the sudo command",
+                "identify a different network interface"
+            ],
+            answer: 2
+        },
+        {
+            q: "A user enters the commands as shown. What is the result after the mv command is entered?<br><br><code>devasc@labvm:~/Documents$ mv myfile.sh ../Desktop/myfile2.sh</code>",
+            options: [
+                "The file myfile.sh is copied and renamed to myfile2.sh in the current directory.",
+                "The file myfile.sh is copied to the /home/devasc/Desktop directory and replaces myfile2.sh.",
+                "The file myfile.sh is copied to the /home/devasc/Desktop directory and renamed as myfile2.sh.",
+                "The file myfile.sh is moved to the /home/devasc/Desktop directory and renamed as myfile2.sh."
+            ],
+            answer: 3
+        },
+        {
+            q: "A user issues a Linux command and the result is shown (listing file permissions, user, group, size).<br><br><code>drwxr-xr-x 2 devasc devasc 4096 ... Desktop</code><br><br>Which Linux command is used to display the contents of the current directory as shown?",
+            options: [
+                "ls -l",
+                "ls -a",
+                "ls -lr",
+                "ls"
+            ],
+            answer: 0
+        },
+        {
+            q: "What command is used to rename a file in a Linux system?",
+            options: [
+                "cp",
+                "mv",
+                "rm",
+                "dd"
+            ],
+            answer: 1
+        },
+        {
+            q: "A user issues a Linux command and the result is shown. The output lists files in reverse alphabetical order (Videos -> Desktop).<br>Which Linux command is used?",
+            options: [
+                "ls -lr",
+                "ls -l",
+                "ln",
+                "ls -a"
+            ],
+            answer: 0
+        },
+        {
+            q: "A student is learning Python. The student issues the commands:<br><br><code>>>> devicenames=[\"RT1\", \"RT2\", \"SW1\", \"SW2\"]<br>>>> devicenames[-1]</code><br><br>What is the result?",
+            options: [
+                "SW1",
+                "RT1",
+                "an error message",
+                "SW2"
+            ],
+            answer: 3
+        },
+        {
+            q: "A system administrator issues the `apt-get upgrade` command on a Linux operating system. What is the purpose of this command?",
+            options: [
+                "Operating system updates are downloaded and will be installed.",
+                "The remote repository of applications and dependencies will be updated.",
+                "Every application installed will update itself.",
+                "A specific application named upgrade will be installed."
+            ],
+            answer: 0
+        },
+        {
+            q: "A system administrator attempts to determine what is causing a computer to perform slower than normal. The administrator issues the `ps` command. What is displayed by this command?",
+            options: [
+                "active processes using CPU time",
+                "current NIC status",
+                "current HDD usage",
+                "current RAM usage"
+            ],
+            answer: 0
+        },
+        {
+            q: "A student issues the command:<br><code>>>> ipAddress = {\"R1\":\"10.1.1.1\", \"R2\":\"10.2.2.1\", \"R3\":\"10.3.3.1\"}</code><br>Which Python expression can be used to retrieve the IP address of R2?",
+            options: [
+                "ipAddress{\"R2\"}",
+                "ipAddress['R2']",
+                "ipAddress[R2]",
+                "ipAddress{'R2'}"
+            ],
+            answer: 1
+        },
+        {
+            q: "What is the output when the following code is entered into a Python interpreter?<br><br><code>[1,2,4,5] + [3,6]</code>",
+            options: [
+                "[12] + [9]",
+                "[21]",
+                "[1,2,4,5,3,6]",
+                "[1,2,3,4,5,6]"
+            ],
+            answer: 2
+        },
+        {
+            q: "A user issues `ls -l myfile.sh`. Output: `-rwxr-xr-- 1 self test ...`. Which two statements describe the permissions? (Choose two)",
+            options: [
+                "User 'devasc' can modify. / All users execute.",
+                "User 'self' can modify. / Group 'test' can execute.",
+                "User 'self' can modify. / Group 'test' can write.",
+                "Group 'self' can read. / All users can write."
+            ],
+            answer: 1 
+        },
+        {
+            q: "A developer needs to check the version of the running Python package. Which command should the developer use?",
+            options: [
+                "python3 -v",
+                "python3 -V",
+                "python3 -i",
+                "python3 -q"
+            ],
+            answer: 1
+        },
+        {
+            q: "Student command: <code>ipAddress = {\"R1\":\"10.1.1.1\"...}</code>. Which data type is used?",
+            options: [
+                "dictionary",
+                "tuple",
+                "array",
+                "list"
+            ],
+            answer: 0
+        },
+        {
+            q: "Which Python command creates a conditional control structure?",
+            options: [
+                "from",
+                "def",
+                "if",
+                "delay"
+            ],
+            answer: 2
+        },
+        {
+            q: "Student command:<br><code>>>> y=2<br>>>> y*3<br>6<br>>>> 'Test'*y</code><br>What is the result?",
+            options: [
+                "TypeError",
+                "'Test6'",
+                "'Test2'",
+                "'TestTest'"
+            ],
+            answer: 3
+        },
+        {
+            q: "Student command: <code>>>> type(True)</code><br>What is the data type reported?",
+            options: [
+                "integer",
+                "float",
+                "Boolean",
+                "string"
+            ],
+            answer: 2
+        },
+        {
+            q: "What is the purpose of Cisco DevNet?",
+            options: [
+                "to teach everyone about the different Cisco API offerings and how to use them",
+                "to be the central resource for everything about networking at Cisco",
+                "to teach specific coding courses such as advanced Python",
+                "to be the central resource for advanced software developers only"
+            ],
+            answer: 0
+        },
+        {
+            q: "What are two benefits of using APIs and integrations? (Choose two)",
+            options: [
+                "Enable applications to request actions from each other / Provide ability to notify when events happen",
+                "Verify compatibility / Install on any OS",
+                "Install on any OS / Run Docker",
+                "Verify compatibility / Run Docker"
+            ],
+            answer: 0
+        },
+        {
+            q: "Which technology trend enables an industry shift towards automation, applications, and integrations?",
+            options: [
+                "increased storage and RAM",
+                "increased internet bandwidth",
+                "smaller and faster CPUs",
+                "advanced API capabilities"
+            ],
+            answer: 3
+        },
+        {
+            q: "Which link is used from the Cisco DevNet Learning Labs to access the largest collections of labs?",
+            options: [
+                "Sections",
+                "Tracks",
+                "Bookends",
+                "Modules"
+            ],
+            answer: 1
+        },
+        {
+            q: "Which Cisco DevNet online resource provides use cases for network automation, including listing data and activating policies?",
+            options: [
+                "DevNet Learning Labs",
+                "Code Exchange",
+                "Automation Exchange",
+                "DevNet Sandbox"
+            ],
+            answer: 2
+        },
+        {
+            q: "What are two requirements when participating in the DevNet Learning Labs? (Choose two)",
+            options: [
+                "Log in with DevNet account / Active internet connection",
+                "Pass DEVASC exam / Purchase license",
+                "Purchase license / Install local environment",
+                "Active internet / Install local environment"
+            ],
+            answer: 0
+        },
+        {
+            q: "What type of learner should take the DevNet Associate course?",
+            options: [
+                "only new software developers",
+                "only new network engineers",
+                "anyone interested in network automation and programmability",
+                "anyone that does not like working in teams"
+            ],
+            answer: 2
+        },
+        {
+            q: "Which two DevNet resources are available online? (Choose two)",
+            options: [
+                "Code Exchange / Automation Exchange",
+                "API Tokens / Python Exchange",
+                "Python Exchange / DevNet Zone",
+                "DevNet Zone / API Tokens"
+            ],
+            answer: 0
+        },
+        {
+            q: "What is the purpose of the Cisco DevNet Learning Labs?",
+            options: [
+                "Game development space",
+                "Allow participants to add their own Python labs",
+                "Allow participants to add any coding labs",
+                "They provide self-paced tutorials including coding"
+            ],
+            answer: 3
+        },
+        {
+            q: "What is a requirement when creating a Cisco DevNet account?",
+            options: [
+                "Must share personally created code first",
+                "Must contain a purchased license",
+                "Must use a Cisco email address",
+                "Must be created using an existing online identity or via a new Cisco account"
+            ],
+            answer: 3
+        },
+        {
+            q: "What is network programmability?",
+            options: [
+                "the ability to configure, monitor, and react to events in the network in real time",
+                "the ability to program devices using repetitive manual configuration",
+                "the ability to configure virtualized networks only",
+                "the ability to easily monitor devices using traditional protocols"
+            ],
+            answer: 0
+        },
+        {
+            q: "Which Cisco DevNet developer support option provides 1-on-1 support to Solution Partner members?",
+            options: [
+                "case-based ticket",
+                "knowledge base",
+                "community forum",
+                "chat with DevNet"
+            ],
+            answer: 0
+        },
+        {
+            q: "What is contained within a DevNet Sandbox?",
+            options: [
+                "collection of API documentation",
+                "a preconfigured environment already installed with Cisco platforms",
+                "instructor-led videos",
+                "collection of self-paced tutorials"
+            ],
+            answer: 1
+        },
+        {
+            q: "Which DevNet resource would a developer use if they need help understanding an error message?",
+            options: [
+                "DevNet Learning Labs",
+                "Code Exchange",
+                "DevNet Support / Community",
+                "DevNet Sandbox"
+            ],
+            answer: 2
+        },
+        {
+            q: "What is Cisco DevNet?",
+            options: [
+                "a developer program",
+                "a way to create networks using software alone",
+                "a Cisco-proprietary virtual network",
+                "a vendor-neutral type of virtual networking"
+            ],
+            answer: 0
+        },
+        {
+            q: "What is required in order to ensure that clients are able to talk to applications that are outside a local system?",
+            options: [
+                "a script",
+                "a network",
+                "an application",
+                "an API"
+            ],
+            answer: 1
+        },
+        {
+            q: "What is the contracted response time after a developer opens a case-based ticket with DevNet support?",
+            options: [
+                "one business day",
+                "one hour",
+                "one week",
+                "five business days"
+            ],
+            answer: 0
+        },
+        {
+            q: "What are three major areas that comprise DevNet? (Choose three)",
+            options: [
+                "Website creation / Standards / Tools",
+                "Interactive Community / Coordinated Tools / Integrated Forums (or Learning/Build/Connect)",
+                "This answer combines: Interactive Community, Integrated Forums, Coordinated Tools",
+                "Website maintenance / Training / Standards"
+            ],
+            answer: 1 
+        },
+        {
+            q: "Which DevNet event is provided by Cisco partners and Cisco offices?",
+            options: [
+                "DevNet Express",
+                "DevNet Hackathon",
+                "DevNet Learn In",
+                "DevNet Codearama"
+            ],
+            answer: 0
+        },
+        {
+            q: "Which website provides the entry point for Cisco DevNet?",
+            options: [
+                "developer.cisco.com",
+                "devnet.com",
+                "cisco.com",
+                "talosintelligence.com"
+            ],
+            answer: 0
+        },
+        {
+            q: "What resources are available in the Cisco DevNet Code Exchange?",
+            options: [
+                "a repository of sample code written by other developers",
+                "support for developer-related issues",
+                "production-like testing environments",
+                "self-paced tutorials"
+            ],
+            answer: 0
+        },
+        {
+            q: "What resources are available in the Cisco DevNet sandboxes?",
+            options: [
+                "production-like development and code testing environments",
+                "support forums",
+                "repository of sample code",
+                "self-paced tutorials"
+            ],
+            answer: 0
+        }
+    ];
+
+    let quizData = [...rawData]; // Working copy
+    let currentQuestion = 0;
+    let isShuffle = false;
+
+    const quizArea = document.getElementById('quizArea');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const jumpSelect = document.getElementById('questionJump');
+    const progressText = document.getElementById('progressText');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+
+    // Fisher-Yates Shuffle
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function toggleShuffle() {
+        isShuffle = !isShuffle;
+        if (isShuffle) {
+            shuffleBtn.innerText = "Shuffle: ON";
+            shuffleBtn.classList.replace('btn-secondary', 'btn-primary');
+            shuffleArray(quizData);
+        } else {
+            shuffleBtn.innerText = "Shuffle: OFF";
+            shuffleBtn.classList.replace('btn-primary', 'btn-secondary');
+            quizData = [...rawData]; // Reset order
+        }
+        currentQuestion = 0;
+        loadQuestion();
+        updateJumpDropdown();
+    }
+
+    function updateJumpDropdown() {
+        jumpSelect.innerHTML = "";
+        quizData.forEach((_, index) => {
+            let option = document.createElement("option");
+            option.value = index;
+            option.text = `Question ${index + 1}`;
+            jumpSelect.add(option);
+        });
+        jumpSelect.value = currentQuestion;
+    }
+
+    function jumpToQuestion() {
+        currentQuestion = parseInt(jumpSelect.value);
+        loadQuestion();
+    }
+
+    function changeQuestion(dir) {
+        if (currentQuestion + dir >= 0 && currentQuestion + dir < quizData.length) {
+            currentQuestion += dir;
+            loadQuestion();
+        }
+    }
+
+    function checkAnswer(selectedIndex, btn) {
+        // Prevent multiple clicks
+        const parent = btn.parentElement;
+        if (parent.classList.contains('answered')) return;
+        parent.classList.add('answered');
+
+        const data = quizData[currentQuestion];
+        const buttons = parent.getElementsByClassName('option-btn');
+        const feedback = document.getElementById('feedback');
+
+        // Highlight Correct and Wrong
+        if (selectedIndex === data.answer) {
+            btn.classList.add('correct');
+            feedback.innerHTML = "✅ Correct!";
+            feedback.className = "feedback correct";
+        } else {
+            btn.classList.add('wrong');
+            buttons[data.answer].classList.add('correct'); // Show correct one
+            feedback.innerHTML = "❌ Wrong. The correct answer is highlighted in green.";
+            feedback.className = "feedback wrong";
+        }
+    }
+
+    function loadQuestion() {
+        const data = quizData[currentQuestion];
+        
+        let html = `
+            <div class="question-card">
+                <div class="question-text">${data.q}</div>
+                <div class="options-grid">
+        `;
+
+        data.options.forEach((opt, index) => {
+            html += `<button class="option-btn" onclick="checkAnswer(${index}, this)">${opt}</button>`;
+        });
+
+        html += `
+                </div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+        `;
+
+        quizArea.innerHTML = html;
+        
+        // Update UI Controls
+        progressText.innerText = `Question ${currentQuestion + 1} of ${quizData.length}`;
+        prevBtn.disabled = currentQuestion === 0;
+        nextBtn.disabled = currentQuestion === quizData.length - 1;
+        jumpSelect.value = currentQuestion;
+    }
+
+    // Initialize
+    updateJumpDropdown();
+    loadQuestion();
+
+</script>
+
+</body>
+</html>
