@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCI & Research Methods Reviewer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --error: #dc2626;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            background-color: #e2e8f0;
+            color: var(--text);
+        }
+
+        button:hover {
+            background-color: #cbd5e1;
+        }
+
+        button.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        button.primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            text-align: left;
+            background: white;
+        }
+
+        .option:hover:not(.disabled) {
+            border-color: var(--primary);
+            background-color: #eff6ff;
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background-color: #dcfce7;
+            color: #14532d;
+        }
+
+        .option.incorrect {
+            border-color: var(--error);
+            background-color: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .stats {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #64748b;
+            text-align: center;
+        }
+
+        select {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            .controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .question-text {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="title">HCI & Research Methods Reviewer</div>
+        <div class="controls">
+            <select id="jumpSelect" onchange="jumpToQuestion(this.value)">
+                <option value="">Jump to...</option>
+            </select>
+            <button onclick="shuffleQuestions()">Shuffle 🔀</button>
+            <button class="primary" onclick="resetQuiz()">Restart 🔄</button>
+        </div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <div id="quiz-area">
+        <div class="question-card">
+            <div class="question-text" id="question">Loading...</div>
+            <div class="options-grid" id="options"></div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button onclick="prevQuestion()" id="prevBtn" disabled>← Previous</button>
+        <div id="counter">1 / 50</div>
+        <button class="primary" onclick="nextQuestion()" id="nextBtn">Next →</button>
+    </div>
+    <div class="stats" id="scoreDisplay">Score: 0</div>
+</div>
+
+<script>
+    // Data extracted from the provided PDF
+    const rawQuestions = [
+        { q: "Which tool allows remote screen sharing and integrated audio for usability studies?", options: ["Google Docs", "Online forums", "Email", "Web conferencing tools"], a: 3 },
+        { q: "What is a key benefit of contextual inquiries in online research?", options: ["Participants can control the researcher's computer", "No need for participant consent", "Researchers can observe real-time user behavior", "It eliminates the need for surveys"], a: 2 },
+        { q: "What type of content is best suited for automated analysis in online communities?", options: ["Text", "Images", "Audio", "Video"], a: 0 },
+        { q: "What is an API used for in online research?", options: ["Extracting data from platforms", "Encrypting data", "Designing surveys", "Hosting websites"], a: 0 },
+        { q: "Which platform is commonly studied in social media research?", options: ["Zoom", "Excel", "Twitter", "PowerPoint"], a: 2 },
+        { q: "What is a challenge in designing online research studies?", options: ["Lack of participants", "Limited internet access", "High cost", "Ethical concerns about privacy"], a: 3 },
+        { q: "What is a benefit of crowdsourced studies?", options: ["Guaranteed accuracy", "Real-time feedback", "Reduced researcher bias", "No need for software"], a: 2 },
+        { q: "Which element is NOT part of a human computation task design?", options: ["Incentives", "Hardware specifications", "Introductory description", "Success criteria"], a: 1 },
+        { q: "What technology allows sensing of objects via radio frequencies?", options: ["RFID", "Bluetooth", "Wi-Fi", "GPS"], a: 0 },
+        { q: "Who introduced the concept of 'embodied virtuality'?", options: ["Bill Gates", "Marc Weiser", "Alan Turing", "Steve Jobs"], a: 1 },
+        { q: "A user is asked to rate an app from 1 to 5. What type of question is this?", options: ["Open-ended", "Descriptive", "Ordered closed-ended", "Unordered closed-ended"], a: 2 },
+        { q: "You want to understand how a team adopted a new project management tool. What method fits best?", options: ["Case study", "Observation", "Survey", "Interview"], a: 0 },
+        { q: "A researcher is already part of a development team and wants to study their workflow. What observation type is this?", options: ["Total participation", "External", "Balanced", "Passive"], a: 0 },
+        { q: "A researcher uses a list of pre-written questions and asks them in the same order to all participants. What type of interview is this?", options: ["Informal", "Semi-structured", "Unstructured", "Structured"], a: 3 },
+        { q: "You want to understand the challenges users face when using your app. Which method is best?", options: ["Closed-ended survey", "Random sampling", "Likert scale", "Open-ended survey"], a: 3 },
+        { q: "You want to know how many users completed a task in under 5 minutes. What type of data is this?", options: ["Descriptive", "Qualitative", "Quantitative", "Subjective"], a: 2 },
+        { q: "A researcher asks users to describe their experience using a new app. What type of question is this?", options: ["Binary", "Likert scale", "Closed-ended", "Open-ended"], a: 3 },
+        { q: "You want to gather feedback from a group of users discussing a new feature. What method is this?", options: ["Focus group", "Survey", "Case study", "Interview"], a: 0 },
+        { q: "A researcher uses both surveys and interviews in a study. What is this approach called?", options: ["Qualitative", "Mixed methods", "Quantitative", "Experimental"], a: 1 },
+        { q: "You want to ensure your sample represents different user types. What should you use?", options: ["Convenience sampling", "Judgement sampling", "Stratified sampling", "Snowball sampling"], a: 2 },
+        { q: "What is the primary aim of research in HCI?", options: ["To solve specific problems", "To contribute to general knowledge", "To entertain users", "To develop software faster"], a: 1 },
+        { q: "Which of the following is NOT a type of quantitative research?", options: ["Experimental", "Correlational", "Phenomenological", "Descriptive"], a: 2 },
+        { q: "What does qualitative research primarily focus on?", options: ["Lived experiences and meanings", "Random sampling", "Numerical data", "Statistical analysis"], a: 0 },
+        { q: "Which research method combines both quantitative and qualitative approaches?", options: ["Experimental", "Ethnographic", "Mixed-methods", "Survey"], a: 2 },
+        { q: "What is the main characteristic of experimental research?", options: ["Measuring variables without control", "Observing natural behavior", "Conducting interviews", "Manipulating variables to test hypotheses"], a: 3 },
+        { q: "Which of the following is a common data collection method in qualitative research?", options: ["Rating scales", "Surveys", "Interviews", "Questionnaires"], a: 2 },
+        { q: "Which research design is most flexible and evolving?", options: ["Quantitative", "Experimental", "Cross-sectional", "Qualitative"], a: 3 },
+        { q: "What distinguishes problem solving from research?", options: ["Problem solving is broader", "Problem solving contributes to theory", "Research aims for generalization", "Research is less rigorous"], a: 2 },
+        { q: "Which type of research is concerned with a specific problem and ends once it is solved?", options: ["Longitudinal", "Mixed-methods", "Research", "Problem solving"], a: 3 },
+        { q: "Which of the following is a characteristic of quantitative research?", options: ["Natural settings", "Deductive analysis", "Flexible design", "Small, theoretical samples"], a: 1 },
+        { q: "Julius is analyzing survey responses from 100 users. He wants to find the most frequently selected interface design. What statistical measure should he use?", options: ["Mode", "Median", "Range", "Mean"], a: 0 },
+        { q: "You have a dataset with only one variable: screen brightness levels. What type of analysis applies?", options: ["Bivariate", "Univariate", "Inferential", "Multivariate"], a: 1 },
+        { q: "A team wants to compare typing speed before and after using a new predictive keyboard. What test is appropriate?", options: ["ANOVA", "Chi-square", "Paired-samples t-test", "Independent-samples t-test"], a: 2 },
+        { q: "A researcher wants to know if gender affects device preference. What test should be used?", options: ["Chi-square", "Regression", "T-test", "Correlation"], a: 0 },
+        { q: "A participant's task time is far from the average. What measure helps identify this?", options: ["Standard deviation", "Frequency", "Mode", "Mean"], a: 0 },
+        { q: "A researcher wants to test if prediction software improves typing speed. What hypothesis is tested?", options: ["The data is normal", "There is no significant difference", "The mean is equal", "There is a relationship"], a: 1 },
+        { q: "You want to know if task time differs between two software versions used by the same participants. What test applies?", options: ["Independent-samples t-test", "Paired-samples t-test", "Chi-square", "Correlation"], a: 1 },
+        { q: "A UX team wants to compare satisfaction scores between two unrelated groups. What test should they use?", options: ["Chi-square", "Correlation", "Independent-samples t-test", "Paired-samples t-test"], a: 2 },
+        { q: "You want to measure how two variables vary together. What do you calculate?", options: ["Covariance", "Mean", "Variance", "Mode"], a: 0 },
+        { q: "You want to test if device preference differs by age group. What kind of table do you create first?", options: ["Contingency table", "Histogram", "Line graph", "Scatter plot"], a: 0 },
+        { q: "What is a major concern with using convenience samples in HCI research?", options: ["Cost", "Time", "Validity and generalizability", "Technology limitations"], a: 2 },
+        { q: "Which of the following is NOT a method of online data collection?", options: ["Face-to-face interviews", "Instrumented software", "Web log analysis", "Online surveys"], a: 0 },
+        { q: "What does CAPTCHA stand for?", options: ["Completely Automated Public Turing test to tell Computers and Humans Apart", "Captured Human Algorithm", "Computerized Authentication Process", "Computer Access Protocol"], a: 0 },
+        { q: "What was the goal of reCAPTCHA?", options: ["Digitize difficult text for OCR", "Track user behavior", "Prevent spam", "Encrypt passwords"], a: 0 },
+        { q: "Which platform is popular for DIY sensor projects?", options: ["Excel", "Photoshop", "Slack", "Arduino"], a: 3 },
+        { q: "You are designing a mobile app and want to know how many users prefer dark mode. What method should you use?", options: ["Interview", "Observation", "Survey", "Case Study"], a: 2 },
+        { q: "A company wants to test a new feature with a group that represents their entire user base. What sampling method should they use?", options: ["Convenience sampling", "Simple random sampling", "Snowball sampling", "Judgement sampling"], a: 1 },
+        { q: "You are studying a rare user group. What sampling method is most effective?", options: ["Cluster sampling", "Stratified sampling", "Snowball sampling", "Systematic sampling"], a: 2 },
+        { q: "A researcher wants to compare user satisfaction across different age groups. Which sampling method is best?", options: ["Simple random", "Convenience", "Stratified", "Quota"], a: 2 },
+        { q: "You want to compare user satisfaction between two different app versions. What method is best?", options: ["Focus group", "Case study", "Observation", "Survey"], a: 3 },
+        { q: "What is 'A/B testing' used for?", options: ["Measuring bandwidth", "Comparing alternative website designs", "Comparing user demographics", "Testing hardware"], a: 1 },
+        { q: "Which type of study is easiest to conduct online?", options: ["Sensor calibration", "Mobile app testing", "Hardware usability", "Ethnographic studies of support groups"], a: 3 },
+        { q: "What is a drawback of crowdsourced studies?", options: ["Limited participant pool", "Lack of direct observation", "High cost", "Complex infrastructure"], a: 1 },
+        { q: "What is the flagship conference for ubiquitous computing?", options: ["WWW", "ICML", "UbiComp", "SIGCHI"], a: 2 },
+        { q: "A researcher wants to understand why users abandon a checkout process. Which method is most appropriate?", options: ["Observation", "Interview", "Questionnaire", "Sampling"], a: 1 },
+        { q: "You want to gather data from 10,000 users quickly and cheaply. What should you use?", options: ["Focus group", "Passive observation", "Web-based questionnaire", "Case study"], a: 2 },
+        { q: "A UX designer wants to observe how users interact with a kiosk without influencing them. Which method is best?", options: ["Total participation", "Active participation", "Passive participation", "Structured interview"], a: 2 },
+        { q: "You want to know how many users prefer iOS over Android. What type of question should you ask?", options: ["Open-ended", "Likert scale", "Unordered closed-ended", "Ordered closed-ended"], a: 2 },
+        { q: "What is a major challenge in sensor-based HCI research?", options: ["Software licensing", "Survey design", "Recruiting participants", "Data transfer and processing"], a: 3 },
+        { q: "A researcher sends out a paper questionnaire but gets few responses. What is a likely drawback?", options: ["Inaccurate questions", "Biased data", "High cost", "Low response rate"], a: 3 },
+        { q: "You want to explore user behavior in a natural setting without interfering. What method should you use?", options: ["Survey", "Focus group", "Interview", "Passive observation"], a: 3 },
+        { q: "A team wants to test a new feature with users who are easy to reach. What sampling method are they using?", options: ["Cluster", "Stratified", "Convenience", "Systematic"], a: 2 },
+        { q: "A researcher wants to explore how users interact with a new interface in real time. What method is best?", options: ["Survey", "Interview", "Observation", "Case study"], a: 2 },
+        { q: "You want to know how users feel about a feature immediately after using it. What method avoids recall bias?", options: ["Interview after one month", "Survey after one week", "Observation during use", "Focus group"], a: 2 },
+        { q: "A researcher wants to study a group of users over time to see how their behavior changes. What method is best?", options: ["Case study", "Interview", "Observation", "Survey"], a: 0 },
+        { q: "A user is asked to choose their favorite app from a list. What type of question is this?", options: ["Open-ended", "Unordered closed-ended", "Likert scale", "Ordered closed-ended"], a: 1 },
+        { q: "You want to know how many users clicked a button last week. What kind of data is this?", options: ["Subjective", "Quantitative", "Observational", "Qualitative"], a: 1 },
+        { q: "A researcher wants to understand cultural differences in app usage. What method is most appropriate?", options: ["Likert scale", "Survey", "Interview", "Random sampling"], a: 2 },
+        { q: "You want to explore how users feel about a new feature. Which question type is best?", options: ["Open-ended", "Closed-ended", "Multiple choice", "Likert scale"], a: 3 },
+        { q: "Which type of research is best for studying changes over time?", options: ["Cross-sectional", "Longitudinal", "Correlational", "Descriptive"], a: 1 },
+        { q: "Which type of HCI contribution involves creating new tools or systems?", options: ["Methodological", "Theoretical", "Artifact", "Survey"], a: 2 },
+        { q: "What is the focus of phenomenological research?", options: ["Statistical relationships", "Cultural practices", "Common lived experiences", "Market trends"], a: 2 },
+        { q: "What is the purpose of a survey contribution in HCI?", options: ["To test a new interface", "To collect user feedback", "To observe user behavior", "To synthesize existing research"], a: 3 },
+        { q: "A researcher wants to compare the average task completion time between users who used a mouse and those who used a touchscreen. What test should be used?", options: ["Independent-samples t-test", "Chi-square test", "Correlation test", "Paired-samples t-test"], a: 0 },
+        { q: "In a usability study, a participant's age is recorded as 222. What should be done first?", options: ["Code the data", "Calculate variance", "Run analysis", "Clean the data"], a: 3 },
+        { q: "A student wants to summarize how often each device was preferred. What should they create?", options: ["Scatter plot", "Histogram", "Box plot", "Frequency distribution"], a: 3 },
+        { q: "You want to find the average satisfaction score from a survey. What measure do you use?", options: ["Median", "Range", "Mode", "Mean"], a: 3 },
+        { q: "You want to compare the popularity of four ads among men and women. What type of data is this?", options: ["Multivariate", "Univariate", "Bivariate", "Qualitative"], a: 2 },
+        { q: "You want to know the difference between the highest and lowest satisfaction scores. What do you calculate?", options: ["Median", "Range", "Mode", "Mean"], a: 1 },
+        { q: "A researcher finds r = 0.325 between two task times. What does this mean?", options: ["Perfect correlation", "Strong correlation", "No significant correlation", "Negative correlation"], a: 2 }, // Note: Based on elimination in original PDF logic
+        { q: "A student finds the variance of task times is 21704. What is the standard deviation?", options: ["21704", "394", "76", "147"], a: 3 },
+        { q: "What is the goal of correlational research?", options: ["To test a new product", "To determine causality", "To measure relationships between variables", "To describe a phenomenon"], a: 2 },
+        { q: "What does empirical contribution in HCI research involve?", options: ["Observing and analyzing user behavior", "Creating new theories", "Designing new interfaces", "Writing opinions"], a: 0 },
+        { q: "What is the main goal of dataset contributions in HCI?", options: ["To test user interfaces", "To develop new theories", "To provide benchmarks and data for future research", "To conduct interviews"], a: 2 },
+        { q: "You want to know how spread out the task completion times are. What measure should you use?", options: ["Mean", "Mode", "Frequency", "Standard deviation"], a: 3 },
+        { q: "A developer wants to know which age group prefers stylus input. What kind of test should be used?", options: ["Correlation", "Regression", "T-test", "Chi-square"], a: 3 },
+        { q: "What is the purpose of methodological contributions in HCI?", options: ["To create new datasets", "To analyze cultural impact", "To describe user behavior", "To propose new research processes or tools"], a: 3 },
+        { q: "Which type of qualitative research involves studying people in their natural environment?", options: ["Narrative", "Ethnographic", "Experimental", "Correlational"], a: 1 },
+        { q: "A UX designer wants to know if older users prefer touchscreens more than younger users. What test should be used?", options: ["Chi-square test", "Regression", "Correlation", "T-test"], a: 3 },
+        { q: "You want to analyze how three age groups prefer three different devices. What is the degree of freedom for the chi-square test?", options: ["4", "6", "2", "9"], a: 0 },
+        { q: "You want to visualize how many users selected each device. What should you use?", options: ["Line graph", "Frequency table", "Scatter plot", "Box plot"], a: 1 },
+        { q: "Which of the following is a theoretical contribution in HCI?", options: ["A predictive model like Fitts's Law", "A usability test", "A new dataset", "A new interface design"], a: 0 },
+        { q: "You collected data on age, gender, and device preference. What type of data analysis is appropriate?", options: ["Univariate", "Multivariate", "Bivariate", "Qualitative"], a: 1 },
+        { q: "A student wants to know if there's a relationship between time spent on a task and years of computer experience. What test should they use?", options: ["Pearson correlation", "Mode", "Chi-square", "T-test"], a: 0 },
+        { q: "You want to find the midpoint of a class interval 10–12. What is it?", options: ["12", "11", "10", "13"], a: 1 },
+        { q: "A researcher uses SPSS to run a t-test. How should the data be arranged for independent samples?", options: ["Frequency table", "Separate columns", "Same row", "Same column with group coding"], a: 3 },
+        { q: "You're analyzing data with three variables: age, device type, and satisfaction score. What analysis applies?", options: ["Bivariate", "Univariate", "Multivariate", "Descriptive"], a: 2 },
+        { q: "A student codes gender as Male = 1, Female = 0. What is this process called?", options: ["Cleaning", "Coding", "Tabulation", "Organizing"], a: 1 },
+        { q: "A researcher finds that as experience increases, task time decreases. What does a negative Pearson's r indicate?", options: ["No relationship", "Positive correlation", "Negative correlation", "Error in data"], a: 2 }
+    ];
+
+    let questions = [...rawQuestions];
+    let currentIdx = 0;
+    let score = 0;
+
+    // Initialization
+    function init() {
+        populateJumpDropdown();
+        renderQuestion();
+        updateCounter();
+        updateProgressBar();
+    }
+
+    // Shuffle Logic
+    function shuffleQuestions() {
+        for (let i = questions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+        currentIdx = 0;
+        score = 0;
+        updateScore();
+        resetUI();
+        renderQuestion();
+    }
+
+    // Reset Logic
+    function resetQuiz() {
+        questions = [...rawQuestions]; // Restore original order
+        currentIdx = 0;
+        score = 0;
+        updateScore();
+        resetUI();
+        renderQuestion();
+    }
+
+    function resetUI() {
+        document.getElementById("prevBtn").disabled = true;
+        document.getElementById("nextBtn").innerText = "Next →";
+    }
+
+    // Jump Dropdown
+    function populateJumpDropdown() {
+        const select = document.getElementById("jumpSelect");
+        select.innerHTML = '<option value="">Jump to...</option>';
+        questions.forEach((q, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.text = `Q${index + 1}: ${q.q.substring(0, 30)}...`;
+            select.appendChild(option);
+        });
+    }
+
+    function jumpToQuestion(index) {
+        if (index === "") return;
+        currentIdx = parseInt(index);
+        renderQuestion();
+    }
+
+    // Render Question
+    function renderQuestion() {
+        const qData = questions[currentIdx];
+        document.getElementById("question").innerText = `${currentIdx + 1}. ${qData.q}`;
+        
+        const optionsContainer = document.getElementById("options");
+        optionsContainer.innerHTML = "";
+
+        qData.options.forEach((opt, index) => {
+            const btn = document.createElement("div");
+            btn.className = "option";
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(btn, index, qData.a);
+            optionsContainer.appendChild(btn);
+        });
+
+        updateCounter();
+        updateProgressBar();
+        document.getElementById("prevBtn").disabled = currentIdx === 0;
+    }
+
+    // Check Answer
+// Check Answer (Updated for Retry Mode)
+    function checkAnswer(btn, selectedIndex, correctIndex) {
+        const parent = document.getElementById("options");
+        
+        // 1. If the correct answer (Green) is already revealed, stop interactions.
+        if (parent.querySelector(".correct")) return; 
+
+        // 2. If the clicked button is already marked wrong (Red), do nothing.
+        if (btn.classList.contains("incorrect")) return;
+
+        if (selectedIndex === correctIndex) {
+            // CORRECT: Turn Green and lock the question
+            btn.classList.add("correct");
+            
+            // Only add score if they didn't make a mistake on this question yet
+            // (Check if any 'incorrect' class exists in the container)
+            if (!parent.querySelector(".incorrect")) {
+                score++;
+                updateScore();
+            }
+        } else {
+            // INCORRECT: Turn Red, but DO NOT reveal the correct answer yet.
+            // This allows the user to click other options.
+            btn.classList.add("incorrect");
+        }
+    }
+
+    // Navigation
+    function nextQuestion() {
+        if (currentIdx < questions.length - 1) {
+            currentIdx++;
+            renderQuestion();
+        } else {
+            alert(`Quiz Finished! Final Score: ${score} / ${questions.length}`);
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIdx > 0) {
+            currentIdx--;
+            renderQuestion();
+        }
+    }
+
+    // UI Updates
+    function updateCounter() {
+        document.getElementById("counter").innerText = `${currentIdx + 1} / ${questions.length}`;
+        document.getElementById("jumpSelect").value = currentIdx;
+    }
+
+    function updateScore() {
+        document.getElementById("scoreDisplay").innerText = `Score: ${score}`;
+    }
+
+    function updateProgressBar() {
+        const percent = ((currentIdx + 1) / questions.length) * 100;
+        document.getElementById("progress").style.width = `${percent}%`;
+    }
+
+    // Start
+    init();
+
+</script>
+</body>
+</html>
