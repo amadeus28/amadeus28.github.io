@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Integration & Architecture Reviewer</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+    }
+    .container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 600px;
+    }
+    h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background-color: #3498db;
+        color: white;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+    button:hover {
+        background-color: #2980b9;
+    }
+    button:disabled {
+        background-color: #bdc3c7;
+        cursor: not-allowed;
+    }
+    .question-box {
+        margin-bottom: 20px;
+    }
+    .question-text {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        line-height: 1.4;
+    }
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .option {
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #fff;
+        text-align: left;
+    }
+    .option:hover {
+        background-color: #f0f8ff;
+        border-color: #3498db;
+    }
+    .option.correct {
+        background-color: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+    }
+    .option.incorrect {
+        background-color: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
+    }
+    .feedback {
+        margin-top: 15px;
+        font-weight: bold;
+        text-align: center;
+        min-height: 24px;
+    }
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    .jump-box {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    input[type="number"] {
+        padding: 8px;
+        width: 60px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+    .status {
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #666;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Reviewer</h1>
+    
+    <div class="controls">
+        <button onclick="shuffleQuestions()">🔀 Shuffle Questions</button>
+        <div class="jump-box">
+            <input type="number" id="jumpInput" min="1" placeholder="#">
+            <button onclick="jumpToQuestion()">Go</button>
+        </div>
+    </div>
+
+    <div class="status" id="status">Question 1 of 60</div>
+
+    <div class="question-box">
+        <div class="question-text" id="question">Loading...</div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="navigation">
+        <button id="prevBtn" onclick="prevQuestion()">Previous</button>
+        <button id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+</div>
+
+<script>
+    // Data extracted from FA4-SYS-INTEG.pdf and verified with Module 4
+    const originalQuestions = [
+        {
+            q: "It show how the system reacts to internal and external events",
+            options: ["State diagrams", "Class Diagrams", "Activity diagrams"],
+            answer: "State diagrams"
+        },
+        {
+            q: "These reveal how the system being developed is used in broader business processes.",
+            options: ["Process models", "UML activity diagrams", "Context Models"],
+            answer: "Process models"
+        },
+        {
+            q: "This software display the organization of a system in terms of the components that make up that system and their relationships",
+            options: ["Structural models", "System Structure", "Sequence diagrams"],
+            answer: "Structural models"
+        },
+        {
+            q: "Sequence diagrams which show interactions between actors and the system and between system components.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "A model the interactions between a system and its environment, or between the components of a system.",
+            options: ["interaction perspective", "structural perspective", "external perspective"],
+            answer: "interaction perspective"
+        },
+        {
+            q: "Context Models they show what lies inside the system boundaries.",
+            options: ["False", "True"],
+            answer: "False"
+        },
+        {
+            q: "System boundaries are not established to define what is inside and what is outside the system.",
+            options: ["False", "True"],
+            answer: "False"
+        },
+        {
+            q: "UML activity diagrams it may be used to define business process models.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "UML activity diagrams it may not use to define business process models.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Localise safety-critical features in a small number of sub-systems.",
+            options: ["Safety", "Security", "Performance"],
+            answer: "Safety"
+        },
+        {
+            q: "What is Layered architecture?",
+            options: [
+                "Organises the system into a set of layers (or abstract machines) each of which provide a set of services.",
+                "Distributed system model which shows how data and processing is distributed across a range of components.",
+                "is a stylized description of good design practice, which has been tried and tested in different environments."
+            ],
+            answer: "Organises the system into a set of layers (or abstract machines) each of which provide a set of services."
+        },
+        {
+            q: "What is Software Architecture?",
+            options: [
+                "The design process for identifying the sub-systems making up a system and the framework for sub-system control and communication",
+                "is concerned with the way that an individual program is decomposed into components.",
+                "The output of design process"
+            ],
+            answer: "The design process for identifying the sub-systems making up a system and the framework for sub-system control and communication"
+        },
+        {
+            q: "These are transaction-based systems as interaction with these systems generally involves database transactions.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "The database server moves information to and from the database and handles transaction management.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "The database server doesn't move information to and from the database and handles transaction management.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "A syntax tree, which is an internal structure representing the program being compiled.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "A code generator that 'walks' the syntax tree and generates abstract machine code.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "It helps the analyst to understand the functionality of the system and models are used to communicate with customers.",
+            options: ["System modeling", "System perspectives", "Graphical models"],
+            answer: "System modeling"
+        },
+        {
+            q: "External perspective where you model the context or environment of the system.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Interaction perspective where you model the context or environment of the system.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Activity diagrams shows the activities involved in a process or in data processing.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Context Models simply show the other systems in the environment, not how the system being developed is used in that environment.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Process models these reveal how not the system being developed is used in broader business processes.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Data-centred applications that process user requests and update information in a system database.",
+            options: ["Transaction processing applications", "Data processing applications", "Event processing systems"],
+            answer: "Transaction processing applications"
+        },
+        {
+            q: "A lexical analyzer, which takes input language tokens and converts them to an internal form.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "A lexical analyzer, which takes output language tokens and converts them to an internal form.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "A symbol table, which holds information about the names of entities (variables, class names, object names, etc.) used in the text that is being translated.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Semantic analyzer that uses information from the syntax tree and the symbol table to check the semantic correctness of the output language text.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Process view which shows how, at run-time, the system is composed of interacting processes.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "What is Context Models?",
+            options: [
+                "they show what lies outside the system boundaries.",
+                "Models should be an accurate representation of the system but need not be complete.",
+                "Models have to be both correct and complete."
+            ],
+            answer: "they show what lies outside the system boundaries."
+        },
+        {
+            q: "This is important as it helps to identify user requirements.",
+            options: ["Modeling user interaction", "Modeling component interaction", "Modeling system-to-system interaction"],
+            answer: "Modeling user interaction"
+        },
+        {
+            q: "System modeling is the process of developing abstract models of a system, with each model presenting a different view or perspective of that system.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "State diagrams it shows how the system not reacts to internal and external events.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Information systems have a generic architecture that can be organised as a layered architecture.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "A syntax analyzer, which checks the syntax of the language being translated.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Architecture may be used as a focus of discussion by system stakeholders.",
+            options: ["Stakeholder communication", "Large-scale reuse", "System analysis"],
+            answer: "Stakeholder communication"
+        },
+        {
+            q: "It may be used to define business process models.",
+            options: ["UML activity diagrams", "Context Models", "Process models"],
+            answer: "UML activity diagrams"
+        },
+        {
+            q: "External perspective where you model the interactions between a system and its environment, or between the components of a system.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Context Models they show what lies outside the system boundaries.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "System boundaries are established to define what is inside and what is outside the system.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Context Models simply not show the other systems in the environment, not how the system being developed is used in that environment.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Modeling user interaction this is important as it helps to identify user requirements.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "This show the activities involved in a process or in data processing.",
+            options: ["Activity diagrams", "Case diagrams", "Sequence diagrams"],
+            answer: "Activity diagrams"
+        },
+        {
+            q: "It show the object classes in the system and the associations between these classes.",
+            options: ["Class Diagrams", "Activity diagrams", "State diagrams"],
+            answer: "Class Diagrams"
+        },
+        {
+            q: "At this level, we are concerned with the way that an individual program is decomposed into components",
+            options: ["Architecture in the small", "Architecture in the large", "Architecture in the medium"],
+            answer: "Architecture in the small"
+        },
+        {
+            q: "The web server is irresponsible for all user communications, with the user interface implemented using a web browser.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "The architecture may be reusable across a range of systems.",
+            options: ["Large-scale reuse", "System analysis", "Stakeholder communication"],
+            answer: "Large-scale reuse"
+        },
+        {
+            q: "Localize critical operations and minimize communications. Use large rather than fine-grain components.",
+            options: ["Performance", "Safety", "Security"],
+            answer: "Performance"
+        },
+        {
+            q: "It helps us understand if a proposed system structure is likely to deliver the required system performance and dependability",
+            options: ["Modeling component interaction", "Modeling user interaction", "Modeling system-to-system interaction"],
+            answer: "Modeling component interaction"
+        },
+        {
+            q: "What is Sequence diagrams?",
+            options: [
+                "is part of the UML and are used to model the interactions between the actors and the objects within a system.",
+                "Use cases were developed originally to support requirements elicitation and now incorporated into the UML.",
+                "use case may be people or other systems."
+            ],
+            answer: "is part of the UML and are used to model the interactions between the actors and the objects within a system."
+        },
+        {
+            q: "Activity diagrams shows the activities are not involved in a process or in data processing.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Sequence diagrams which not show interactions between actors and the system and between system components.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Class Diagrams it show the object classes in the system and the associations between system component.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Modeling user interaction this is not important as it helps to identify user requirements.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "It show the interactions between a system and its environment.",
+            options: ["Case diagrams", "Activity diagrams", "Sequence diagrams"],
+            answer: "Case diagrams"
+        },
+        {
+            q: "It shows how the software is decomposed for development.",
+            options: ["development view", "logical view", "physical view"],
+            answer: "development view"
+        },
+        {
+            q: "What is Architectural Patterns?",
+            options: [
+                "is a stylized description of good design practice, which has been tried and tested in different environments.",
+                "Used to model the interfacing of sub-systems.",
+                "Distributed system model which shows how data and processing is distributed across a range of components."
+            ],
+            answer: "is a stylized description of good design practice, which has been tried and tested in different environments."
+        },
+        {
+            q: "Information systems have a generic architecture that cannot be organised as a layered architecture.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Process view which shows how, at walk- time, the system is composed of interacting processes.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Means that analysis of whether the system can meet its non-functional requirements is possible.",
+            options: ["System analysis", "Stakeholder communication", "Large-scale reuse"],
+            answer: "System analysis"
+        },
+        {
+            q: "Process models these reveal how the system being developed is used in broader business processes.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "These are transaction-based systems as interaction with these systems generally not involves database transactions.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "A syntax analyzer, which checks the syntax of the language not translated.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "It shows the system hardware and how software components are distributed across the processors in the system.",
+            options: ["physical view", "logical view", "process view"],
+            answer: "physical view"
+        },
+        {
+            q: "Language processing systems applications where system actions depend on interpreting events from the system's environment.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Information and resource management systems are now usually web-based systems where the user interfaces are implemented using a web browser.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "A syntax tree, which is an external structure representing the program being compiled.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "A code generator that 'runs' the syntax tree and generates abstract machine code.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Large-scale reuse the architecture may be reusable across a range of systems.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "A model the context or environment of the system.",
+            options: ["external perspective", "interaction perspective", "structural perspective"],
+            answer: "external perspective"
+        },
+        {
+            q: "Case diagrams which not shows the interactions between a system and its environment.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "What is Architectural Design?",
+            options: [
+                "The design process for identifying the sub-systems making up a system and the framework for sub-system control and communication",
+                "An early stage of the system design process.",
+                "is concerned with the way that an individual program is decomposed into components."
+            ],
+            answer: "The design process for identifying the sub-systems making up a system and the framework for sub-system control and communication"
+        },
+        {
+            q: "That process data in batches without explicit user intervention during the processing.",
+            options: ["Data processing applications", "Transaction processing applications", "Event processing systems"],
+            answer: "Data processing applications"
+        },
+        {
+            q: "Event processing systems applications where system actions depend on interpreting events from the system's environment.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Use a layered architecture with critical assets in the inner layers.",
+            options: ["Security", "Safety", "Performance"],
+            answer: "Security"
+        },
+        {
+            q: "Case diagrams which shows the interactions between a system and its environment.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Use fine-grain, replaceable components.",
+            options: ["Maintainability", "Availability", "Safety"],
+            answer: "Maintainability"
+        },
+        {
+            q: "Structural perspective where you model the organization of a system or the structure of the data that is not processed by the system.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "Include redundant components and mechanisms for fault tolerance.",
+            options: ["Availability", "Safety", "Maintainability"],
+            answer: "Availability"
+        },
+        {
+            q: "State diagrams it shows how the system reacts to internal and external events.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Small-scale reuse the architecture may be reusable across a range of systems.",
+            options: ["True", "False"],
+            answer: "False"
+        },
+        {
+            q: "These are established to define what is inside and what is outside the system.",
+            options: ["System boundaries", "Process perspective", "Interaction models"],
+            answer: "System boundaries"
+        },
+        {
+            q: "It shows how, at run-time, the system is composed of interacting processes.",
+            options: ["process view", "logical view", "physical view"],
+            answer: "process view"
+        },
+        {
+            q: "Structural perspective where you model the organization of a system or the structure of the data that is processed by the system.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Interaction perspective model where you model the interactions between a system and its environment, or between the components of a system.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "Class Diagrams it show the object classes in the system and the associations between these classes.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "The web server is responsible for all user communications, with the user interface implemented using a web browser.",
+            options: ["True", "False"],
+            answer: "True"
+        },
+        {
+            q: "System modeling is not the process of developing abstract models of a system, with each model presenting a different view or perspective of that system.",
+            options: ["True", "False"],
+            answer: "False"
+        }
+    ];
+
+    let questions = [...originalQuestions];
+    let currentIndex = 0;
+    let isShuffled = false;
+
+    // Initialize
+    loadQuestion();
+
+    function loadQuestion() {
+        const qData = questions[currentIndex];
+        document.getElementById('question').textContent = qData.q;
+        document.getElementById('status').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+        document.getElementById('jumpInput').max = questions.length;
+        
+        const optionsDiv = document.getElementById('options');
+        optionsDiv.innerHTML = '';
+        document.getElementById('feedback').textContent = '';
+
+        qData.options.forEach(opt => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            div.textContent = opt;
+            div.onclick = () => checkAnswer(div, opt, qData.answer);
+            optionsDiv.appendChild(div);
+        });
+
+        // Navigation state
+        document.getElementById('prevBtn').disabled = currentIndex === 0;
+        document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+    }
+
+    function checkAnswer(element, selected, correct) {
+        const allOptions = document.querySelectorAll('.option');
+        
+        // Reset classes
+        allOptions.forEach(opt => {
+            opt.classList.remove('correct', 'incorrect');
+        });
+
+        const feedback = document.getElementById('feedback');
+
+        if (selected === correct) {
+            element.classList.add('correct');
+            feedback.textContent = "✅ Correct!";
+            feedback.style.color = "#28a745";
+        } else {
+            element.classList.add('incorrect');
+            feedback.textContent = "❌ Wrong! Try again or choose another option.";
+            feedback.style.color = "#dc3545";
+            
+            // Allow retry (do nothing else here, clicking another option calls checkAnswer again)
+        }
+    }
+
+    function nextQuestion() {
+        if (currentIndex < questions.length - 1) {
+            currentIndex++;
+            loadQuestion();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            loadQuestion();
+        }
+    }
+
+    function jumpToQuestion() {
+        const num = parseInt(document.getElementById('jumpInput').value);
+        if (num >= 1 && num <= questions.length) {
+            currentIndex = num - 1;
+            loadQuestion();
+        } else {
+            alert('Please enter a valid question number.');
+        }
+    }
+
+    function shuffleQuestions() {
+        if (!isShuffled) {
+            // Fisher-Yates shuffle
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+            isShuffled = true;
+            currentIndex = 0;
+            alert("Questions shuffled!");
+        } else {
+            // Restore order
+            questions = [...originalQuestions];
+            isShuffled = false;
+            currentIndex = 0;
+            alert("Order reset!");
+        }
+        loadQuestion();
+    }
+</script>
+
+</body>
+</html>
