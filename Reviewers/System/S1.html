@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Integration & Requirements Reviewer</title>
+    <title>System Integration Reviewer (Complete 84)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #f0f2f5;
             color: #333;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
@@ -19,17 +19,19 @@
         .container {
             background-color: #ffffff;
             width: 100%;
-            max-width: 700px;
-            padding: 30px;
+            max-width: 800px;
+            padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-top: 20px;
         }
         h1 {
             text-align: center;
             color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 24px;
+            margin-bottom: 30px;
+            font-size: 28px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
         }
         .controls {
             display: flex;
@@ -38,8 +40,9 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 10px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
         }
         button {
             padding: 10px 20px;
@@ -47,7 +50,8 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.2s;
+            font-size: 14px;
         }
         button:active {
             transform: scale(0.98);
@@ -62,51 +66,58 @@
         .btn-nav:disabled {
             background-color: #bdc3c7;
             cursor: not-allowed;
+            opacity: 0.7;
         }
         .btn-func {
-            background-color: #95a5a6;
+            background-color: #e67e22;
             color: white;
-            font-size: 14px;
         }
         .btn-func:hover {
-            background-color: #7f8c8d;
+            background-color: #d35400;
         }
         select {
-            padding: 8px;
+            padding: 10px;
             border-radius: 6px;
             border: 1px solid #ddd;
             font-family: inherit;
+            flex-grow: 1;
+            max-width: 200px;
         }
         .question-box {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            min-height: 200px;
         }
         .question-number {
-            font-size: 14px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             color: #7f8c8d;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             font-weight: bold;
         }
         .question-text {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 500;
-            line-height: 1.5;
-            margin-bottom: 20px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #2c3e50;
         }
         .options {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
         .option {
-            padding: 15px;
+            padding: 18px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s;
             font-size: 16px;
+            position: relative;
         }
         .option:hover {
-            background-color: #f9f9f9;
+            background-color: #f8f9fa;
             border-color: #bdc3c7;
         }
         .option.correct {
@@ -119,41 +130,57 @@
             border-color: #dc3545;
             color: #721c24;
         }
+        /* Icon for feedback */
+        .option.correct::after {
+            content: "✓";
+            position: absolute;
+            right: 20px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .option.wrong::after {
+            content: "✕";
+            position: absolute;
+            right: 20px;
+            font-weight: bold;
+            font-size: 20px;
+        }
         .feedback {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 6px;
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
             text-align: center;
             font-weight: bold;
             display: none;
+            font-size: 16px;
         }
         .feedback.correct {
             background-color: #d4edda;
             color: #155724;
-            display: block;
+            border: 1px solid #c3e6cb;
         }
         .feedback.wrong {
             background-color: #f8d7da;
             color: #721c24;
-            display: block;
+            border: 1px solid #f5c6cb;
         }
-        .progress-bar {
-            height: 6px;
-            background-color: #ecf0f1;
-            border-radius: 3px;
-            margin-top: 20px;
+        .progress-container {
+            margin-top: 30px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            height: 8px;
             overflow: hidden;
         }
-        .progress-fill {
+        .progress-bar {
             height: 100%;
             background-color: #2ecc71;
             width: 0%;
-            transition: width 0.3s;
+            transition: width 0.3s ease;
         }
         .stats {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 14px;
+            text-align: right;
+            margin-top: 8px;
+            font-size: 13px;
             color: #95a5a6;
         }
     </style>
@@ -161,13 +188,13 @@
 <body>
 
 <div class="container">
-    <h1>Module 3: Requirements Engineering</h1>
+    <h1>Requirement Engineering & Modeling Reviewer</h1>
     
     <div class="controls">
-        <button id="btn-prev" class="btn-nav" onclick="prevQuestion()">Back</button>
+        <button id="btn-prev" class="btn-nav" onclick="prevQuestion()">← Previous</button>
         <select id="jump-select" onchange="jumpToQuestion()"></select>
-        <button id="btn-shuffle" class="btn-func" onclick="shuffleQuestions()">🔀 Shuffle</button>
-        <button id="btn-next" class="btn-nav" onclick="nextQuestion()">Next</button>
+        <button id="btn-shuffle" class="btn-func" onclick="shuffleQuestions()">🔀 Randomize</button>
+        <button id="btn-next" class="btn-nav" onclick="nextQuestion()">Next →</button>
     </div>
 
     <div class="question-box">
@@ -178,15 +205,16 @@
 
     <div id="feedback" class="feedback"></div>
 
-    <div class="progress-bar">
-        <div class="progress-fill" id="progress-fill"></div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
     </div>
-    <div class="stats" id="stats">0 / 0 Completed</div>
+    <div class="stats" id="stats">0 / 84 Completed</div>
 </div>
 
 <script>
-    // Data extracted from FA3-SYS-INTEG.pdf and verified against Module 3 & 4
-    const initialQuestions = [
+    // FULL DATABASE OF 84+ QUESTIONS EXTRACTED FROM FA3-SYS-INTEG.PDF
+    // Verified against Module 3 and Module 4
+    const db = [
         {
             q: "Functional Requirements is a statement of services the system should provide, how the system should react to particular inputs, and how the system should behave in particular situations.",
             options: ["True", "False"],
@@ -197,7 +225,7 @@
             q: "Requirements engineering is the process of establishing the customer service but not requiring from the system and constraints.",
             options: ["True", "False"],
             answer: "False",
-            ref: "Module 3, Page 5 (Definition is: establishing services... AND constraints)"
+            ref: "Module 3, Page 5 (Establishing services AND constraints)"
         },
         {
             q: "In practice, requirements and design are inseparable.",
@@ -206,7 +234,7 @@
             ref: "Module 3, Page 35"
         },
         {
-            q: "The requirements themselves are the descriptions of the system services and constraints that are non-generated during the requirements engineering process.",
+            q: "The requirements themselves are the descriptions of the system services and constraints that are NON-generated during the requirements engineering process.",
             options: ["True", "False"],
             answer: "False",
             ref: "Module 3, Page 5 (They ARE generated)"
@@ -218,7 +246,7 @@
             ref: "Module 3, Page 19"
         },
         {
-            q: "What is the problem when several different requirements are expressed together?",
+            q: "Several different requirements may be expressed together. This problem is called:",
             options: ["Requirements confusion", "Lack of clarity", "Requirements amalgamation"],
             answer: "Requirements amalgamation",
             ref: "Module 3, Page 38"
@@ -236,7 +264,7 @@
             ref: "Module 3, Page 38"
         },
         {
-            q: "Requirements may serve a dual function (basis for a bid vs basis for a contract).",
+            q: "This is inevitable as requirements may serve a dual function.",
             options: ["True", "False"],
             answer: "True",
             ref: "Module 3, Page 6"
@@ -245,7 +273,7 @@
             q: "Tabular specification is used to supplement unnatural language.",
             options: ["True", "False"],
             answer: "False",
-            ref: "Module 3, Page 45 (Used to supplement NATURAL language)"
+            ref: "Module 3, Page 45 (Supplements NATURAL language)"
         },
         {
             q: "Requirements discovery is the process of gathering information about the required and existing systems and distilling the user and system requirements from this information.",
@@ -272,43 +300,55 @@
             ref: "Module 3, Page 65"
         },
         {
-            q: "Which type of interview is based on a pre-determined list of questions?",
-            options: ["Open interviews", "Closed interviews", "Effective interview"],
+            q: "Which interviews are based on a pre-determined list of questions?",
+            options: ["Open interviews", "Effective interview", "Closed interviews"],
             answer: "Closed interviews",
             ref: "Module 3, Page 58"
         },
         {
-            q: "Which requirements check asks: 'Can the requirements be implemented given available budget and technology'?",
+            q: "Which check asks: Can the requirements be implemented given available budget and technology?",
             options: ["Completeness", "Validity", "Realism"],
             answer: "Realism",
             ref: "Module 3, Page 63"
         },
         {
-            q: "In Requirements Change Management, which stage involves modifying the requirements document and system design?",
+            q: "During this stage, the requirements document and, where necessary, the system design and implementation, are modified.",
             options: ["Change implementation", "Change analysis and costing", "Problem analysis and change specification"],
             answer: "Change implementation",
             ref: "Module 3, Page 69"
         },
         {
-            q: "True or False: One problem of requirements analysis is that stakeholders know EXACTLY what they really want.",
+            q: "Problem of requirements analysis: stakeholders know exactly what they really want.",
             options: ["True", "False"],
             answer: "False",
-            ref: "Module 3, Page 50 (They DON'T know what they want)"
+            ref: "Module 3, Page 50 (They DON'T know)"
         },
         {
-            q: "Requirements which specify that the delivered product must behave in a particular way (e.g. execution speed, reliability).",
+            q: "Functional Requirements may state what the system should do in overall systematic view.",
+            options: ["True", "False"],
+            answer: "True",
+            ref: "Module 3, Page 12 (High-level abstract statements)"
+        },
+        {
+            q: "Requirements which specify that the delivered product must behave in a particular way e.g. execution speed, reliability, etc.",
             options: ["External requirements", "Product requirements", "Organisational requirements"],
             answer: "Product requirements",
             ref: "Module 3, Page 19"
         },
         {
-            q: "Precision is difficult without making the document difficult to read. This describes which problem with natural language?",
+            q: "Precision is difficult without making the document difficult to read.",
             options: ["Requirements amalgamation", "Lack of clarity", "Requirements confusion"],
             answer: "Lack of clarity",
             ref: "Module 3, Page 38"
         },
         {
-            q: "This document section might include graphical system models showing the relationships between the system components and the system and its environment.",
+            q: "Functional and non-functional requirements tend to be mixed-up.",
+            options: ["Requirements amalgamation", "Requirements confusion", "Lack of clarity"],
+            answer: "Requirements confusion",
+            ref: "Module 3, Page 38"
+        },
+        {
+            q: "This section might include graphical system models showing the relationships between the system components and the system and its environment.",
             options: ["System Index", "System evolution", "System models"],
             answer: "System models",
             ref: "Module 3, Page 32"
@@ -320,7 +360,7 @@
             ref: "Module 3, Page 32"
         },
         {
-            q: "A requirement may range from a high-level abstract statement of a service to a detailed mathematical functional specification.",
+            q: "Requirement is a range from a high-level abstract statement of a service or of a system constraint to a detailed mathematical functional specification.",
             options: ["True", "False"],
             answer: "True",
             ref: "Module 3, Page 6"
@@ -329,7 +369,7 @@
             q: "Organisational and political factors may NOT influence the system requirements.",
             options: ["True", "False"],
             answer: "False",
-            ref: "Module 3, Page 50 (They MAY influence)"
+            ref: "Module 3, Page 50 (They DO influence)"
         },
         {
             q: "Systems normally have a range of stakeholders.",
@@ -341,25 +381,25 @@
             q: "Requirements management planning establishes the level of requirements management detail that is NOT required.",
             options: ["True", "False"],
             answer: "False",
-            ref: "Module 3, Page 68 (It establishes detail that IS required)"
+            ref: "Module 3, Page 68 (Detail that IS required)"
         },
         {
-            q: "Using an executable model of the system to check requirements is called:",
+            q: "Using an executable model of the system to check requirements.",
             options: ["Requirements review", "Prototyping", "Test-case generation"],
             answer: "Prototyping",
             ref: "Module 3, Page 63"
         },
         {
-            q: "In Change Management, during which stage is the problem/change proposal analyzed to check if it is valid?",
+            q: "During this stage, the problem or the change proposal is analyzed to check that it is valid.",
             options: ["Problem analysis and change specification", "Change analysis and costing", "Change implementation"],
             answer: "Problem analysis and change specification",
             ref: "Module 3, Page 69"
         },
         {
-            q: "True or False: An effective interviewer should NOT be willing to listen to stakeholders.",
+            q: "Effective Interview: Be open-minded, avoid pre-conceived ideas about the requirements and NOT willing to listen to stakeholders.",
             options: ["True", "False"],
             answer: "False",
-            ref: "Module 3, Page 58"
+            ref: "Module 3, Page 58 (Must be willing to listen)"
         },
         {
             q: "Different stakeholders may have conflicting requirements.",
@@ -368,16 +408,40 @@
             ref: "Module 3, Page 50"
         },
         {
-            q: "Requirements engineering is the process of establishing the services that the customer requires from a system and the constraints under which it operates.",
+            q: "Requirements engineering is the process of establishing the services that the customer requires from a system and the constraints under which it operates and is developed.",
             options: ["True", "False"],
             answer: "True",
             ref: "Module 3, Page 5"
         },
         {
-            q: "What defines what should be implemented and may be part of a contract?",
+            q: "What defines what should be implemented so may be part of a contract between client and contractor?",
             options: ["Functional Requirements", "System Requirements", "User Requirements"],
             answer: "System Requirements",
             ref: "Module 3, Page 8"
+        },
+        {
+            q: "Which document is the official statement of what is required of the system developers?",
+            options: ["Software Requirements document", "Project Plan", "Feasibility Study"],
+            answer: "Software Requirements document",
+            ref: "Module 3, Page 27"
+        },
+        {
+            q: "What are Functional Requirements?",
+            options: ["Often apply to system as a whole", "Describe functionality or system services", "Defines what should be implemented"],
+            answer: "Describe functionality or system services",
+            ref: "Module 3, Page 12"
+        },
+        {
+            q: "The requirements themselves are the descriptions of the system services and constraints that are generated during the requirements engineering process.",
+            options: ["True", "False"],
+            answer: "True",
+            ref: "Module 3, Page 5"
+        },
+        {
+            q: "Organisational and political factors may influence the system requirements.",
+            options: ["True", "False"],
+            answer: "True",
+            ref: "Module 3, Page 50"
         },
         {
             q: "Which process groups related requirements and organises them into coherent clusters?",
@@ -410,43 +474,61 @@
             ref: "Module 3, Page 63"
         },
         {
+            q: "Requirements management planning establishes the level of requirements management detail that is required.",
+            options: ["True", "False"],
+            answer: "True",
+            ref: "Module 3, Page 68"
+        },
+        {
             q: "Which check ensures the system provides the functions which best support the customer's needs?",
             options: ["Validity", "Consistency", "Completeness"],
             answer: "Validity",
             ref: "Module 3, Page 63"
         },
         {
-            q: "Which check asks: 'Can the requirements be checked?'",
+            q: "Which check asks: Can the requirements be checked?",
             options: ["Validity", "Verifiability", "Realism"],
             answer: "Verifiability",
             ref: "Module 3, Page 63"
         },
         {
-            q: "Natural Language requirements are written using numbered sentences and each sentence should express TWO requirements.",
+            q: "Non-Functional Requirements often apply to the system as ONE rather than DUAL features or services.",
             options: ["True", "False"],
             answer: "False",
-            ref: "Module 3, Page 34 (Should express ONE requirement)"
+            ref: "Module 3, Page 11 (Apply to WHOLE rather than INDIVIDUAL)"
         },
         {
-            q: "These define system properties and constraints (e.g. reliability, response time, I/O device capability).",
+            q: "Natural Language is requirements written using numbered sentences and each sentence should express TWO requirements.",
+            options: ["True", "False"],
+            answer: "False",
+            ref: "Module 3, Page 34 (One requirement per sentence)"
+        },
+        {
+            q: "These define system properties and constraints e.g. reliability, response time and storage requirements.",
             options: ["System Requirements", "Non-Functional Requirements", "Functional Requirements"],
             answer: "Non-Functional Requirements",
             ref: "Module 3, Page 16"
         },
         {
-            q: "Which type of interview is where various issues are explored with stakeholders?",
+            q: "Requirement is a range from a LOW-level abstract statement...",
+            options: ["True", "False"],
+            answer: "False",
+            ref: "Module 3, Page 6 (High-level abstract)"
+        },
+        {
+            q: "Interviews where various issues are explored with stakeholders.",
             options: ["Open interviews", "Closed interviews", "Effective interview"],
             answer: "Open interviews",
             ref: "Module 3, Page 58"
         },
         {
-            q: "Be open-minded, avoid pre-conceived ideas, and be willing to listen. This describes:",
+            q: "Be open-minded, avoid pre-conceived ideas about the requirements and are willing to listen to stakeholders.",
             options: ["Effective interview", "Open interviews", "Closed interviews"],
             answer: "Effective interview",
             ref: "Module 3, Page 58"
         },
         {
-            q: "In the spiral model, requirements are documented and input into the next round of the spiral during which phase?",
+            q: "Requirements are documented and input into the next round of the spiral during which phase?",
             options: ["Requirements Specification", "Requirements Elicitation", "Requirements Discovery"],
             answer: "Requirements Specification",
             ref: "Module 3, Page 53"
@@ -458,7 +540,7 @@
             ref: "Module 3, Page 11"
         },
         {
-            q: "A statement using some measure that can be objectively tested is a:",
+            q: "A statement using some measure that can be objectively tested.",
             options: ["Non-Functional Requirement", "Functional Requirement", "Verifiable non-functional requirement"],
             answer: "Verifiable non-functional requirement",
             ref: "Module 3, Page 21"
@@ -470,34 +552,46 @@
             ref: "Module 3, Page 8"
         },
         {
+            q: "Systems normally have a range of customers.",
+            options: ["True", "False"],
+            answer: "False",
+            ref: "Module 3, Page 55 (Range of STAKEHOLDERS)"
+        },
+        {
             q: "Requirements reviews is a NON-systematic manual analysis of the requirements.",
             options: ["True", "False"],
             answer: "False",
             ref: "Module 3, Page 63 (It IS systematic)"
         },
         {
-            q: "Which of the following describes the Scope of Ethnography?",
-            options: ["Requirements derived from how people actually work", "Study of historical practices", "Social factors only"],
-            answer: "Requirements derived from how people actually work",
+            q: "What is the Scope of Ethnography?",
+            options: ["Requirements derived from way people actually work", "Study of historical practices", "Social factors only"],
+            answer: "Requirements derived from way people actually work",
             ref: "Module 3, Page 62"
         },
         {
             q: "Requirements elicitation and ANALYTICS is sometimes called requirements elicitation.",
             options: ["True", "False"],
             answer: "False",
-            ref: "Module 3, Page 49 (It's ANALYSIS, not Analytics)"
+            ref: "Module 3, Page 49 (Analysis, not Analytics)"
         },
         {
-            q: "Natural Language requirements are written using numbered sentences and each sentence should express ONE requirement.",
+            q: "Natural Language is requirements written using numbered sentences and each sentence should express ONE requirement.",
             options: ["True", "False"],
             answer: "True",
             ref: "Module 3, Page 34"
         },
         {
-            q: "Requirements which arise from factors external to the system (e.g. legislative, interoperability).",
+            q: "Requirements which arise from factors which are external to the system and its development process.",
             options: ["Organisational requirements", "External requirements", "Product requirements"],
             answer: "External requirements",
             ref: "Module 3, Page 19"
+        },
+        {
+            q: "Requirements are expressed in the language of the application domain. This causes which problem?",
+            options: ["Understandability", "Implicitness", "Product requirements"],
+            answer: "Understandability",
+            ref: "Module 3, Page 26"
         },
         {
             q: "Formal or informal interviews with stakeholders are NOT part of most RE processes.",
@@ -506,22 +600,46 @@
             ref: "Module 3, Page 58 (They ARE part)"
         },
         {
-            q: "Developing tests for requirements to check testability is called:",
+            q: "Developing tests for requirements to check testability.",
             options: ["Test-case generation", "Prototyping", "Requirements review"],
             answer: "Test-case generation",
             ref: "Module 3, Page 63"
         },
         {
-            q: "The effect of a proposed change is assessed using traceability information and general knowledge of system requirements during:",
+            q: "The process of gathering information about the required and existing systems and distilling the user and system requirements from this information.",
+            options: ["Requirements Elicitation", "Requirements Specification", "Requirements discovery"],
+            answer: "Requirements discovery",
+            ref: "Module 3, Page 55"
+        },
+        {
+            q: "The effect of the proposed change is assessed using traceability information and general knowledge of the system requirements.",
             options: ["Change analysis and costing", "Change implementation", "Problem analysis and change specification"],
             answer: "Change analysis and costing",
             ref: "Module 3, Page 69"
         },
         {
+            q: "Functional Requirements is a statements of services the system should provide, how the system should react to particular inputs...",
+            options: ["True", "False"],
+            answer: "True",
+            ref: "Module 3, Page 11"
+        },
+        {
             q: "Structured specifications do NOT work well for embedded control systems.",
             options: ["True", "False"],
             answer: "False",
-            ref: "Module 3, Page 40 (They work well)"
+            ref: "Module 3, Page 40 (They DO work well)"
+        },
+        {
+            q: "Problems of requirements analysis: stakeholders DOESN'T know what they really want.",
+            options: ["True", "False"],
+            answer: "True",
+            ref: "Module 3, Page 50"
+        },
+        {
+            q: "System Requirement is NOT a structured document setting out detailed descriptions...",
+            options: ["True", "False"],
+            answer: "False",
+            ref: "Module 3, Page 8 (It IS)"
         },
         {
             q: "Functional Requirements may state what the system should NOT do.",
@@ -530,7 +648,7 @@
             ref: "Module 3, Page 11"
         },
         {
-            q: "Natural language specification: requirements are written as natural language sentences supplemented by diagrams and tables.",
+            q: "Natural language specification requirements are written as natural language sentences supplemented by diagrams and tables.",
             options: ["True", "False"],
             answer: "True",
             ref: "Module 3, Page 36"
@@ -542,16 +660,22 @@
             ref: "Module 3, Page 50"
         },
         {
-            q: "Which section describes the functional and nonfunctional requirements in more detail?",
+            q: "This should describe the functional and nonfunctional requirements in more detail.",
             options: ["User requirements definition", "System requirements specification", "Introduction"],
             answer: "System requirements specification",
             ref: "Module 3, Page 32"
         },
         {
-            q: "In practice, requirements and design are separable.",
+            q: "Requirements management is the process of managing changing VIEWS AND PLANS...",
             options: ["True", "False"],
             answer: "False",
-            ref: "Module 3, Page 35 (They are inseparable)"
+            ref: "Module 3, Page 65 (Managing changing REQUIREMENTS)"
+        },
+        {
+            q: "In practice, requirements and design are SEPARABLE.",
+            options: ["True", "False"],
+            answer: "False",
+            ref: "Module 3, Page 35 (INSEPARABLE)"
         },
         {
             q: "Ambiguous requirements may be interpreted in different ways by developers and users. This is called:",
@@ -560,10 +684,22 @@
             ref: "Module 3, Page 14"
         },
         {
-            q: "What is a characteristic of Scenarios?",
-            options: ["Prompt the interviewee...", "are real-life examples of how a system can be used", "Interaction is with system stakeholders..."],
-            answer: "are real-life examples of how a system can be used",
+            q: "What is Scenarios?",
+            options: ["Prompt interviewee...", "Are real-life examples of how a system can be used", "Interaction with stakeholders..."],
+            answer: "Are real-life examples of how a system can be used",
             ref: "Module 3, Page 61"
+        },
+        {
+            q: "External Requirements which NOT arise from factors which are external...",
+            options: ["True", "False"],
+            answer: "False",
+            ref: "Module 3, Page 19 (They DO arise)"
+        },
+        {
+            q: "Scene in the system are real-life examples of how a system can be used.",
+            options: ["True", "False"],
+            answer: "False",
+            ref: "Module 3, Page 61 (Typo 'Scene' vs Scenarios. Scenarios are correct.)"
         },
         {
             q: "System Requirements Specification should NOT describe the functional and nonfunctional requirements in more detail.",
@@ -578,39 +714,45 @@
             ref: "Module 3, Page 62"
         },
         {
-            q: "System Requirement is a structured document setting out detailed descriptions of the system's functions, services and operational constraints.",
+            q: "Requirements discovery the process of gathering information from customer and existing systems.",
+            options: ["True", "False"],
+            answer: "True",
+            ref: "Module 3, Page 55"
+        },
+        {
+            q: "System Requirement is structured document setting out detailed descriptions of the system's functions, services and operational constraints.",
             options: ["True", "False"],
             answer: "True",
             ref: "Module 3, Page 8"
         }
     ];
 
-    let questions = [...initialQuestions];
+    let questions = [];
     let currentIndex = 0;
 
-    // DOM Elements
-    const qNumberEl = document.getElementById('q-number');
-    const qTextEl = document.getElementById('q-text');
-    const optionsContainer = document.getElementById('options-container');
-    const feedbackEl = document.getElementById('feedback');
-    const progressFill = document.getElementById('progress-fill');
-    const statsEl = document.getElementById('stats');
-    const jumpSelect = document.getElementById('jump-select');
-    const btnNext = document.getElementById('btn-next');
-    const btnPrev = document.getElementById('btn-prev');
+    // Shuffle array function
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
 
     function init() {
+        questions = [...db]; // Start with default order
         populateJumpSelect();
         loadQuestion(0);
+        updateProgress();
     }
 
     function populateJumpSelect() {
-        jumpSelect.innerHTML = '';
+        const select = document.getElementById('jump-select');
+        select.innerHTML = '';
         questions.forEach((q, index) => {
             const option = document.createElement('option');
             option.value = index;
-            option.text = `Question ${index + 1}`;
-            jumpSelect.appendChild(option);
+            option.text = `Q${index + 1}`;
+            select.appendChild(option);
         });
     }
 
@@ -618,71 +760,79 @@
         currentIndex = index;
         const q = questions[index];
         
-        // Update UI
-        qNumberEl.textContent = `Question ${index + 1} of ${questions.length}`;
-        qTextEl.textContent = q.q;
-        optionsContainer.innerHTML = '';
-        feedbackEl.className = 'feedback';
-        feedbackEl.style.display = 'none';
+        document.getElementById('q-number').textContent = `QUESTION ${index + 1} OF ${questions.length}`;
+        document.getElementById('q-text').textContent = q.q;
         
-        // Update Navigation
-        jumpSelect.value = index;
-        btnPrev.disabled = index === 0;
-        btnNext.textContent = index === questions.length - 1 ? 'Finish' : 'Next';
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        const feedback = document.getElementById('feedback');
+        feedback.style.display = 'none';
+        feedback.className = 'feedback';
 
-        // Create Options
+        // Update Nav Buttons
+        document.getElementById('btn-prev').disabled = index === 0;
+        document.getElementById('btn-next').textContent = index === questions.length - 1 ? 'Finish' : 'Next →';
+        document.getElementById('jump-select').value = index;
+
+        // Render Options
         q.options.forEach(opt => {
             const btn = document.createElement('div');
             btn.className = 'option';
             btn.textContent = opt;
             btn.onclick = () => checkAnswer(btn, opt, q.answer, q.ref);
-            optionsContainer.appendChild(btn);
+            container.appendChild(btn);
         });
 
         updateProgress();
     }
 
-    function checkAnswer(btn, selected, correct, ref) {
-        // Clear previous styles
-        const allOpts = optionsContainer.children;
-        for (let i = 0; i < allOpts.length; i++) {
-            allOpts[i].classList.remove('correct', 'wrong');
-            allOpts[i].onclick = null; // Disable further clicks temporarily
-        }
+    function checkAnswer(element, selected, correct, ref) {
+        const parent = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback');
+        
+        // Disable clicks temporarily
+        Array.from(parent.children).forEach(child => {
+            child.onclick = null;
+            if (child.textContent === correct) {
+                child.classList.add('correct'); // Reveal correct answer
+            }
+        });
 
         if (selected === correct) {
-            btn.classList.add('correct');
-            feedbackEl.textContent = "Correct! ✅";
-            feedbackEl.className = 'feedback correct';
+            element.classList.add('correct');
+            feedback.textContent = `Correct! ✅`;
+            feedback.className = 'feedback correct';
         } else {
-            btn.classList.add('wrong');
-            feedbackEl.textContent = "Wrong! ❌ Try again.";
-            feedbackEl.className = 'feedback wrong';
-            
-            // Re-enable clicks to allow retrying
-            for (let i = 0; i < allOpts.length; i++) {
-                if (!allOpts[i].classList.contains('wrong')) {
-                     // restore click handler for unclicked/unverified options
-                     // We need to find the text of this element to restore the handler
-                     const optText = allOpts[i].textContent;
-                     allOpts[i].onclick = () => checkAnswer(allOpts[i], optText, correct, ref);
+            element.classList.add('wrong');
+            feedback.textContent = `Incorrect ❌. The correct answer is: ${correct}`;
+            feedback.className = 'feedback wrong';
+        }
+
+        if(ref) {
+            feedback.innerHTML += `<br><span style="font-size:12px; font-weight:normal; margin-top:5px; display:block;">Source: ${ref}</span>`;
+        }
+
+        feedback.style.display = 'block';
+
+        // Re-enable clicks for "retry" logic (optional) - here we just leave it revealed
+        // If you want to allow changing answers, comment out the "Disable clicks" block above.
+        // But the user requested "if wrong, allow to change".
+        // Let's re-enable clicks on non-correct items if it was wrong.
+        if (selected !== correct) {
+             Array.from(parent.children).forEach(child => {
+                if (!child.classList.contains('correct') && !child.classList.contains('wrong')) {
+                    child.onclick = () => checkAnswer(child, child.textContent, correct, ref);
                 }
-            }
+            });
         }
-        
-        // If the user got it right (or we want to show the answer anyway)
-        if (selected === correct) {
-             feedbackEl.innerHTML += `<br><small style="font-weight:normal; color:#155724">Ref: ${ref}</small>`;
-        }
-        
-        feedbackEl.style.display = 'block';
     }
 
     function nextQuestion() {
         if (currentIndex < questions.length - 1) {
             loadQuestion(currentIndex + 1);
         } else {
-            alert("You have reached the end of the reviewer!");
+            alert('Reviewer Completed! Good luck on your exam.');
         }
     }
 
@@ -693,28 +843,25 @@
     }
 
     function jumpToQuestion() {
-        const index = parseInt(jumpSelect.value);
-        loadQuestion(index);
+        const select = document.getElementById('jump-select');
+        loadQuestion(parseInt(select.value));
     }
 
     function shuffleQuestions() {
-        if (confirm("This will restart your progress. Shuffle now?")) {
-            for (let i = questions.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [questions[i], questions[j]] = [questions[j], questions[i]];
-            }
+        if(confirm("Restart and shuffle all questions?")) {
+            shuffleArray(questions);
             populateJumpSelect();
             loadQuestion(0);
         }
     }
 
     function updateProgress() {
-        const pct = ((currentIndex + 1) / questions.length) * 100;
-        progressFill.style.width = `${pct}%`;
-        statsEl.textContent = `${currentIndex + 1} / ${questions.length} Completed`;
+        const pct = ((currentIndex) / questions.length) * 100;
+        document.getElementById('progress-bar').style.width = `${pct}%`;
+        document.getElementById('stats').textContent = `${currentIndex + 1} / ${questions.length} Questions`;
     }
 
-    // Start
+    // Initialize
     init();
 
 </script>
