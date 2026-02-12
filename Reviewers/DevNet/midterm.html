@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DEVASC Final Reviewer</title>
+    <style>
+        :root {
+            --bg: #020617;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --accent: #38bdf8;
+            --accent-dark: #0284c7;
+            --correct: #10b981;
+            --wrong: #f43f5e;
+            --border: #334155;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .reviewer-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            margin-top: 10px;
+            transition: opacity 0.2s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            min-height: 80px;
+        }
+
+        .choices-grid { display: grid; gap: 10px; }
+
+        .choice-btn {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 12px;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .choice-btn.correct { background: var(--correct) !important; color: white; border-color: #059669; }
+        .choice-btn.wrong { background: var(--wrong) !important; color: white; border-color: #e11d48; }
+
+        .nav-controls { display: flex; gap: 10px; margin-top: 1.5rem; }
+
+        button.primary {
+            background: var(--accent);
+            color: #020617;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 800;
+            flex: 1;
+            transition: background 0.1s;
+        }
+
+        button.primary:active { background: var(--accent-dark); }
+
+        button.submit-btn {
+            background: #f59e0b;
+            color: #020617;
+            width: 100%;
+            margin-top: 1rem;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 800;
+        }
+
+        .tool-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 1.2rem;
+        }
+
+        button.tool {
+            background: #334155;
+            color: #cbd5e1;
+            border: none;
+            padding: 12px 5px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            background: #0f172a;
+            color: var(--accent);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--accent);
+            display: none;
+        }
+
+        .results-screen { text-align: center; }
+        .score-big { font-size: 3rem; font-weight: 900; color: var(--accent); margin: 1rem 0; }
+    </style>
+</head>
+<body>
+
+<div id="toast">Action Confirmed</div>
+
+<div class="reviewer-card" id="main-card">
+    </div>
+
+<script>
+const masterData = [
+    { q: "What is the primary purpose of a virtual machine (VM)?", c: ["Replace physical hardware", "Run multiple operating systems on one machine", "Increase internet speed", "Secure user passwords"], a: "Run multiple operating systems on one machine" },
+    { q: "In a virtualization setup, the physical computer is called the:", c: ["Guest", "Host", "Node", "Container"], a: "Host" },
+    { q: "Which operating system is used for all DEVASC coding labs?", c: ["Windows", "MACOS", "Linux", "Unix"], a: "Linux" },
+    { q: "Which Linux command is commonly used to list files in a directory?", c: ["list", "show", "ls", "dir"], a: "ls" },
+    { q: "Why is Python recommended for beginners?", c: ["It is hardware-dependent", "It has complex syntax", "It is easy to learn and use", "It only works on Linux"], a: "It is easy to learn and use" },
+    { q: "Which data type stores key-value pairs in Python?", c: ["List", "Tuple", "Dictionary", "String"], a: "Dictionary" },
+    { q: "DevNet primarily provides access to:", c: ["End-user applications", "Cisco APIs and development tools", "Hardware drivers", "Gaming environments"], a: "Cisco APIs and development tools" },
+    { q: "Which DevNet feature provides production-like testing environments?", c: ["Learning Labs", "Code Exchange", "Sandbox", "Ecosystem Exchange"], a: "Sandbox" },
+    { q: "Which software development life cycle (SDLC) phase focuses on identifying requirements?", c: ["Design", "Implementation", "Testing", "Requirements & Analysis"], a: "Requirements & Analysis" },
+    { q: "Agile development mainly emphasizes:", c: ["Heavy documentation", "Fixed requirements", "Customer collaboration and flexibility", "One-time delivery"], a: "Customer collaboration and flexibility" },
+    { q: "Which Agile artifact contains prioritized features?", c: ["Sprint", "Backlog", "User story", "Stand-up"], a: "Backlog" },
+    { q: "A user story typically follows which format?", c: ["If-then statement", "Task checklist", "As a user, I want..., so that...", "Feature specification"], a: "As a user, I want..., so that..." },
+    { q: "Which design pattern focuses on real-time updates to subscribers?", c: ["MVC", "Singleton", "Observer", "Factory"], a: "Observer" },
+    { q: "Which version control system type allows everyone to work simultaneously?", c: ["Local", "Centralized", "Distributed", "Manual"], a: "Distributed" },
+    { q: "Git stores data primarily as:", c: ["Text logs", "Deltas only", "Snapshots", "Binary copies"], a: "Snapshots" },
+    { q: "Which Git command initializes a repository?", c: ["git start", "git init", "git clone", "git push"], a: "git init" },
+    { q: "Which HTTP method retrieves data?", c: ["GET", "PUT", "POST", "DELETE"], a: "GET" },
+    { q: "Which HTTP status code means \"Success\"?", c: ["1xx", "2xx", "3xx", "4xx"], a: "2xx" },
+    { q: "REST APIs commonly use which protocol?", c: ["FTP", "SMTP", "HTTP/HTTPS", "SNMP"], a: "HTTP/HTTPS" },
+    { q: "Which REST component identifies the resource?", c: ["Header", "Body", "URI", "Cookie"], a: "URI" },
+    { q: "Which authentication mechanism encodes username and password in Base64?", c: ["OAuth", "API Key", "Basic Authentication", "Bearer Token"], a: "Basic Authentication" },
+    { q: "Which REST principle states that the server should not store client state?", c: ["Cacheable", "Layered", "Stateless", "Uniform Interface"], a: "Stateless" },
+    { q: "What does API stand for?", c: ["Application Programming Interface", "Automated Programming Interface", "Application Process Integration", "Advanced Protocol Interface"], a: "Application Programming Interface" },
+    { q: "Which API style returns data immediately?", c: ["Asynchronous", "Deferred", "Synchronous", "Layered"], a: "Synchronous" },
+    { q: "Which DevNet resource contains sample code from the community?", c: ["Sandbox", "Learning Labs", "Code Exchange", "Developer Support"], a: "Code Exchange" },
+    { q: "A student cannot run DEVASC labs due to hardware limitations. What is the best solution?", c: ["Install dual boot", "Use a VM", "Upgrade BIOS", "Disable firewall"], a: "Use a VM" },
+    { q: "Which Linux permission allows file modification?", c: ["Read", "Execute", "Write", "View"], a: "Write" },
+    { q: "A Python program repeatedly asks for user input until a condition is met. Which structure is best?", c: ["for loop", "while loop", "if statement", "function"], a: "while loop" },
+    { q: "A developer wants hands-on API testing without affecting production systems. Which DevNet tool should be used?", c: ["Code Exchange", "Sandbox", "Support Ticket", "Video Course"], a: "Sandbox" },
+    { q: "Which SDLC phase produces HLD and LLD documents?", c: ["Requirements", "Design", "Testing", "Maintenance"], a: "Design" },
+    { q: "Which Agile practice limits meetings to 15 minutes daily?", c: ["Sprint Review", "Retrospective", "Daily Stand-up", "Backlog Grooming"], a: "Daily Stand-up" },
+    { q: "A team wants to reduce wasted effort and unnecessary features. Which methodology fits best?", c: ["Waterfall", "Lean", "Spiral", "V-Model"], a: "Lean" },
+    { q: "Which Git stage contains files ready for commit?", c: ["Repository", "Working Directory", "Staging Area", "Remote"], a: "Staging Area" },
+    { q: "A developer wants to compare changes before committing. Which command is used?", c: ["git status", "git diff", "git log", "git pull"], a: "git diff" },
+    { q: "What is the main benefit of branching in Git?", c: ["Faster internet", "Code encryption", "Independent development", "Automatic testing"], a: "Independent development" },
+    { q: "A REST API client sends malformed data. Which status code is expected?", c: ["200", "202", "400", "500"], a: "400" },
+    { q: "Which HTTP method is used to partially update a resource?", c: ["PUT", "POST", "PATCH", "GET"], a: "PATCH" },
+    { q: "Which REST header specifies data format?", c: ["Authorization", "Accept", "Content-Type", "Cache-Control"], a: "Content-Type" },
+    { q: "An API responds slowly but allows the client to continue processing. What API style is used?", c: ["Synchronous", "Asynchronous", "RESTful", "Layered"], a: "Asynchronous" },
+    { q: "Which REST constraint improves scalability by using intermediaries?", c: ["Stateless", "Cache", "Layered System", "Uniform Interface"], a: "Layered System" },
+    { q: "A developer wants pagination in API responses. Which component is commonly used?", c: ["Headers only", "Query parameters", "Cookies", "Tokens"], a: "Query parameters" },
+    { q: "Which Git command uploads local changes to a remote repository?", c: ["git add", "git commit", "git push", "git clone"], a: "git push" },
+    { q: "A team needs accountability and rollback features. What should they use?", c: ["Manual backups", "Version Control", "File sharing", "Compression"], a: "Version Control" },
+    { q: "Which authentication method uses a token issued by an identity service?", c: ["Basic Auth", "API Key", "Bearer Token", "Session Cookie"], a: "Bearer Token" },
+    { q: "A REST API returns 401 Unauthorized. What is the likely issue?", c: ["Server error", "Invalid endpoint", "Missing credentials", "Rate limit exceeded"], a: "Missing credentials" },
+    { q: "Which design pattern separates data, UI, and logic?", c: ["Observer", "Factory", "MVC", "Singleton"], a: "MVC" },
+    { q: "Which DevNet support option allows direct interaction with experts?", c: ["Knowledge Base", "Ticket System", "Community Forum", "All of the above"], a: "Ticket System" },
+    { q: "A REST API must specify if responses can be reused. Which constraint applies?", c: ["Stateless", "Cacheable", "Layered", "Uniform"], a: "Cacheable" },
+    { q: "Which Git command checks repository status?", c: ["git diff", "git status", "git init", "git merge"], a: "git status" },
+    { q: "Why are REST APIs commonly preferred over SOAP today?", c: ["SOAP is faster", "REST is lighter and simpler", "SOAP uses JSON", "REST requires no authentication"], a: "REST is lighter and simpler" },
+    { q: "A startup releases features every two weeks. Methodology?", c: ["Waterfall", "Agile", "Lean", "V-Model"], a: "Agile" },
+    { q: "Preventing API credentials in public repositories?", c: ["Frequent commits", ".gitignore and environment variables", "Push to master", "Code comments"], a: ".gitignore and environment variables" },
+    { q: "A REST API returns 503 Service Unavailable. Cause?", c: ["Invalid token", "Syntax error", "Server overload", "Incorrect method"], a: "Server overload or temporary unavailability" },
+    { q: "Monitoring system notifies multiple dashboards?", c: ["MVC", "Singleton", "Observer", "Factory"], a: "Observer" },
+    { q: "Client gets 403 Forbidden after authentication?", c: ["Auth failed", "No resource", "Lacks authorization", "Server offline"], a: "The user lacks authorization for the action" },
+    { q: "Payment API processes while client continues?", c: ["Synchronous", "REST-only", "Asynchronous", "RPC"], a: "Asynchronous" },
+    { q: "New requirement introduced during sprint?", c: ["Reject it", "Restart SDLC", "Reprioritize backlog", "Ignore it"], a: "Reprioritize the backlog for future sprints" },
+    { q: "Two developers modify same line in branches?", c: ["Overwrite", "Lock repo", "Merge conflict", "Delete branch"], a: "Git detects a merge conflict" },
+    { q: "Constraint preventing server from storing session?", c: ["Cacheable", "Stateless", "Uniform", "Code-on-demand"], a: "Stateless" },
+    { q: "Improve efficiency for repeated requests?", c: ["Auth", "Caching", "Layered", "Pagination"], a: "Caching" },
+    { q: "Experiment with APIs without risk?", c: ["Code Exchange", "Learning Labs", "DevNet Sandbox", "Forums"], a: "DevNet Sandbox" },
+    { q: "Detect invalid user input early?", c: ["Refactoring", "Unit testing", "Version control", "Branching"], a: "Unit testing" },
+    { q: "Reusable automation scripts from community?", c: ["Ecosystem", "Automation Exchange", "Code Exchange", "Support"], a: "Automation Exchange" },
+    { q: "Problem with using POST instead of PUT for updates?", c: ["No data", "Violates idempotency", "No response", "Auth only"], a: "POST violates idempotency" },
+    { q: "Why delete branch after merge?", c: ["Security", "Reduces clutter", "Speed", "Prevents conflicts"], a: "It reduces repository clutter" },
+    { q: "Header to request compressed content?", c: ["Content-Type", "Accept-Encoding", "Cache-Control", "Auth"], a: "Accept-Encoding" },
+    { q: "Expose public read-only endpoints?", c: ["Disable auth", "Role-based authorization", "GET only", "Multiple servers"], a: "Use role-based authorization" },
+    { q: "Solution for API timeout returning thousands of records?", c: ["Memory", "Async", "Pagination", "No cache"], a: "Implement pagination" },
+    { q: "Challenge of integrating multiple 3rd-party APIs?", c: ["Languages", "Inconsistent formats", "Hardware", "VM failures"], a: "Inconsistent data formats and error handling" },
+    { q: "REST API stores session on server. Long-term issue?", c: ["Speed", "Reduced scalability", "Security", "Low memory"], a: "Reduced scalability" }
+];
+
+let currentIndex = 0;
+let workingSet = JSON.parse(JSON.stringify(masterData));
+let userAnswers = new Array(70).fill(null);
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 1500);
+}
+
+function render() {
+    const item = workingSet[currentIndex];
+    const card = document.getElementById('main-card');
+    card.innerHTML = `
+        <div class="header">
+            <span>Question ${currentIndex + 1} / 70</span>
+            <div>Jump: <input type="number" value="${currentIndex + 1}" onchange="jump(this.value)"></div>
+        </div>
+        <div class="question-text">${item.q}</div>
+        <div class="choices-grid" id="choices-box"></div>
+        <div class="nav-controls">
+            <button class="primary" onclick="prev()">BACK</button>
+            <button class="primary" onclick="next()">NEXT</button>
+        </div>
+        <button class="submit-btn" onclick="submitExam()">SUBMIT REVIEWER</button>
+        <div class="tool-bar">
+            <button class="tool" onclick="reset()">Reset</button>
+            <button class="tool" onclick="shufQ()">Shuffle Questions</button>
+            <button class="tool" onclick="shufC()">Shuffle Choices</button>
+        </div>
+    `;
+
+    const box = document.getElementById('choices-box');
+    item.c.forEach(text => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        if (userAnswers[currentIndex] === text) {
+             btn.classList.add(text === item.a ? 'correct' : 'wrong');
+        }
+        btn.innerHTML = text;
+        btn.onclick = () => {
+            userAnswers[currentIndex] = text;
+            render();
+        };
+        box.appendChild(btn);
+    });
+}
+
+function next() { if(currentIndex < 69) { currentIndex++; render(); } }
+function prev() { if(currentIndex > 0) { currentIndex--; render(); } }
+function jump(v) { if(v >= 1 && v <= 70) { currentIndex = v-1; render(); } }
+function reset() { workingSet = JSON.parse(JSON.stringify(masterData)); currentIndex=0; userAnswers.fill(null); showToast("Reset Complete"); render(); }
+function shufQ() { workingSet.sort(() => Math.random() - 0.5); currentIndex=0; showToast("Questions Shuffled"); render(); }
+function shufC() { workingSet.forEach(q => q.c.sort(() => Math.random() - 0.5)); showToast("Choices Shuffled"); render(); }
+
+function submitExam() {
+    let score = 0;
+    workingSet.forEach((q, i) => { if(userAnswers[i] === q.a) score++; });
+    const card = document.getElementById('main-card');
+    card.innerHTML = `
+        <div class="results-screen">
+            <h2>Exam Completed!</h2>
+            <div class="score-big">${score} / 70</div>
+            <p>Correct: ${score}</p>
+            <p>Incorrect: ${70 - score}</p>
+            <button class="primary" onclick="location.reload()">RESTART REVIEWER</button>
+        </div>
+    `;
+}
+
+render();
+</script>
+</body>
+</html>
