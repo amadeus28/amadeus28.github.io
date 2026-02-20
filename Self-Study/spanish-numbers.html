@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spanish Numbers 0-100 Memorizer</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #4e73df, #1cc88a);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        color: #333;
+    }
+
+    .card {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        width: 350px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+        margin-bottom: 10px;
+        font-size: 22px;
+    }
+
+    .number {
+        font-size: 48px;
+        margin: 20px 0;
+        font-weight: bold;
+    }
+
+    .answer {
+        font-size: 24px;
+        margin: 15px 0;
+        min-height: 30px;
+    }
+
+    button {
+        padding: 10px 15px;
+        margin: 5px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .primary {
+        background: #4e73df;
+        color: white;
+    }
+
+    .success {
+        background: #1cc88a;
+        color: white;
+    }
+
+    .danger {
+        background: #e74a3b;
+        color: white;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Spanish Numbers 0–100</h1>
+    <div class="number" id="number">0</div>
+    <div class="answer" id="answer"></div>
+
+    <button class="primary" onclick="showAnswer()">Show Answer</button>
+    <button class="success" onclick="nextNumber()">Next Random</button>
+</div>
+
+<script>
+
+const numbers = {
+    0:"cero",1:"uno",2:"dos",3:"tres",4:"cuatro",5:"cinco",6:"seis",7:"siete",8:"ocho",9:"nueve",
+    10:"diez",11:"once",12:"doce",13:"trece",14:"catorce",15:"quince",
+    16:"dieciséis",17:"diecisiete",18:"dieciocho",19:"diecinueve",
+    20:"veinte",21:"veintiuno",22:"veintidós",23:"veintitrés",24:"veinticuatro",25:"veinticinco",
+    26:"veintiséis",27:"veintisiete",28:"veintiocho",29:"veintinueve",
+    30:"treinta",40:"cuarenta",50:"cincuenta",60:"sesenta",
+    70:"setenta",80:"ochenta",90:"noventa",100:"cien"
+};
+
+function generateNumber(num) {
+    if (numbers[num]) return numbers[num];
+
+    if (num < 100) {
+        let tens = Math.floor(num / 10) * 10;
+        let ones = num % 10;
+        return numbers[tens] + " y " + numbers[ones];
+    }
+}
+
+let currentNumber = 0;
+
+function nextNumber() {
+    currentNumber = Math.floor(Math.random() * 101);
+    document.getElementById("number").innerText = currentNumber;
+    document.getElementById("answer").innerText = "";
+}
+
+function showAnswer() {
+    document.getElementById("answer").innerText = generateNumber(currentNumber);
+}
+
+// Start with random number
+nextNumber();
+
+</script>
+
+</body>
+</html>
