@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementation and Testing Reviewer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --correct-bg: #dcfce7;
+            --correct-border: #22c55e;
+            --correct-text: #166534;
+            --incorrect-bg: #fee2e2;
+            --incorrect-border: #ef4444;
+            --incorrect-text: #991b1b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .reviewer-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--text);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background-color: var(--bg);
+            border: 2px solid transparent;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+        }
+
+        .option:hover:not(.disabled) {
+            background-color: #e5e7eb;
+        }
+
+        .option.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+            font-weight: 600;
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-bg);
+            border-color: var(--incorrect-border);
+            color: var(--incorrect-text);
+            font-weight: 600;
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--bg);
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            font-size: 1rem;
+        }
+
+        .nav-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-switch input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reviewer-container">
+        <h1>Implementation and Testing Reviewer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="jumpInput">Jump to:</label>
+                <input type="number" id="jumpInput" min="1" max="87" placeholder="1-87">
+                <button onclick="jumpToQuestion()">Go</button>
+            </div>
+            <button onclick="shuffleQuestions()">Shuffle Questions</button>
+            <label class="toggle-switch">
+                <input type="checkbox" id="shuffleOptionsToggle" checked>
+                Shuffle Choices Automatically
+            </label>
+            <button onclick="resetQuiz()">Reset Reviewer</button>
+        </div>
+
+        <div class="question-header">
+            <div class="question-number" id="questionCounter">Question 1 of 87</div>
+            <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
+        </div>
+
+        <div class="question-text" id="questionText">Loading...</div>
+        
+        <div class="options-container" id="optionsContainer">
+            </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuestionsData = [
+            { q: "Weather stations are usually asked to report once per hour but this frequency may differ from one station to another and may be modified in the future.", options: ["True", "False"], correct: "True" },
+            { q: "Software design and implementation activities are invariably outerwear-leaved.", options: ["False", "True"], correct: "False" },
+            { q: "The weather substation sends a summary of the system data that has been not collected from the instruments in the collection period to the weather information system.", options: ["False", "True"], correct: "False" },
+            { q: "Object identification is an iterative process. You are unlikely to get it right first time.", options: ["False", "True"], correct: "True" },
+            { q: "This is the basic interface of the weather station to its environment.", options: ["Subsystem Station", "System Station", "Weather Station", "Forecast Station"], correct: "Weather Station" },
+            { q: "One of the observer patterns is used when multiple displays of state are needed.", options: ["Consequences", "Name", "Solution Description", "Problem Description"], correct: "Problem Description" },
+            { q: "It Provides a standard way of accessing the elements in a collection, irrespective of how that collection is implemented (Iterator pattern).", options: ["Object Problems", "System Problems", "Design Problems", "Class Problems"], correct: "Design Problems" },
+            { q: "Concerned with exercising and observing product behaviour (dynamic verification)", options: ["Software Inspections", "Software Testing", "User expectations"], correct: "Software Testing" },
+            { q: "It is where users or potential users of a system test the system in their own environment.", options: ["Release Testing", "User Testing", "Development testing"], correct: "User Testing" },
+            { q: "Each of these classes is an equivalence partition or domain where the program behaves in an equivalent way for each class member.", options: ["True", "False"], correct: "True" },
+            { q: "Test software with sequences which have two value.", options: ["False", "True"], correct: "False" },
+            { q: "The test expect the system to perform correctly using a given set of test cases that reflect the system's expected use.", options: ["Defect testing", "Custom testing", "Validating Testing"], correct: "Validating Testing" },
+            { q: "Test-driven development (TDD) is an un-approach to program development in which you inter-leave testing and code development.", options: ["True", "False"], correct: "False" },
+            { q: "Regression test suite is developed incrementally as a program is developed.", options: ["True", "False"], correct: "True" },
+            { q: "Getting a product to market early may be more important than finding defects in the program.", options: ["Marketing environment", "User expectations", "Software purpose"], correct: "Marketing environment" },
+            { q: "An interaction model is a dynamic model that shows how the system interacts with its environment as it is used.", options: ["False", "True"], correct: "True" },
+            { q: "Use a scenario based approach and identify objects based on what participates in what behaviour.", options: ["False", "True"], correct: "False" },
+            { q: "Implementation is not the process of realizing the design as a program.", options: ["False", "True"], correct: "False" },
+            { q: "At this level, you directly reuse objects from a library rather than writing the code yourself.", options: ["The component level", "The abstraction level", "The system level", "The object level"], correct: "The object level" },
+            { q: "At this level, you reuse entire application systems.", options: ["The abstraction level", "The object level", "The system level", "The component level"], correct: "The system level" },
+            { q: "They require a lot of effort for development and maintenance of these models and, for small systems, this may not be cost-effective.", options: ["True", "False"], correct: "True" },
+            { q: "It is where you compare the result of the call with the expected result.", options: ["Assertion Part", "Setup Part", "Call Part"], correct: "Assertion Part" },
+            { q: "Guideline-based testing, where you cannot use testing guidelines to choose test cases.", options: ["True", "False"], correct: "False" },
+            { q: "Force invalid outputs to be generated", options: ["True", "False"], correct: "True" },
+            { q: "TDD was not introduced as part of agile methods such as Extreme Programming.", options: ["False", "True"], correct: "False" },
+            { q: "System configure model is a not structural model that demonstrates the other subsystems in the environment of the system being developed.", options: ["True", "False"], correct: "False" },
+            { q: "The weather forecast system is not establishing a satellite communication link with the weather station and requests transmission of the data.", options: ["True", "False"], correct: "False" },
+            { q: "Object identification is an looping process. You are unlikely to get it right second time.", options: ["True", "False"], correct: "False" },
+            { q: "______ show the objects and object classes and relationships between these entities.", options: ["Sample Model", "Design Model", "Grand Model", "Class Model"], correct: "Design Model" },
+            { q: "It is show the sequence of object interactions that take place", options: ["System Model", "Dynamic Model", "Subsystem Model", "Sequence Model"], correct: "Sequence Model" },
+            { q: "System design and implementation is the stage in the software engineering process at which an executable software system is not developed.", options: ["True", "False"], correct: "False" },
+            { q: "What is Program Testing?", options: ["defect testing can be deliberately obscure and need not reflect how the system is normally used.", "the system to perform correctly using a given set of test cases that reflect the system's expected use.", "intended to show that a program does what it is intended to do and to discover program defects before it is put into use."], correct: "intended to show that a program does what it is intended to do and to discover program defects before it is put into use." },
+            { q: "Input data and output results often fall into similar classes where all members of a class are related.", options: ["True", "False"], correct: "False" },
+            { q: "Parameter interfaces Data passed from one method or procedure to another.", options: ["False", "True"], correct: "True" },
+            { q: "Every code segment that you write has at least two associated test so all code written has at least one test.", options: ["False", "True"], correct: "False" },
+            { q: "The weather information system establishes a satellite communication link with the weather station and requests transmission of the data.", options: ["False", "True"], correct: "True" },
+            { q: "Response is the maximised the data is not sent to the weather information system.", options: ["True", "False"], correct: "False" },
+            { q: "The weather station is composed of independent subsystems that communicate by broadcasting messages on a common infrastructure", options: ["True", "False"], correct: "True" },
+            { q: "It shows how the design is organized into logically related groups of objects.", options: ["Design Model", "Subsystem Model", "Dynamic Model", "System Model"], correct: "Subsystem Model" },
+            { q: "At this level, you don't reuse software directly but use knowledge of successful abstractions in the design of your software.", options: ["The object level", "The abstraction level", "The component level", "The system level"], correct: "The abstraction level" },
+            { q: "Structured object-oriented design processes involve developing a number of different system models.", options: ["False", "True"], correct: "True" },
+            { q: "It is where some or all of the components in a system are integrated and the system is tested as a whole.", options: ["Unit testing", "System Testing", "Component Testing"], correct: "System Testing" },
+            { q: "Force computation results to be too large or too small.", options: ["False", "True"], correct: "True" },
+            { q: "Force computation will not result to be too large or too small.", options: ["True", "False"], correct: "False" },
+            { q: "System testing during development involves integrating components to create a version of the system and then testing the integrated system.", options: ["True", "False"], correct: "True" },
+            { q: "User testing is essential, even when comprehensive system and not release testing have been carried out.", options: ["False", "True"], correct: "False" },
+            { q: "Concerned with analysis of the static system representation to discover problems (static verification)", options: ["Software Testing", "User expectations", "Software Inspections"], correct: "Software Inspections" },
+            { q: "A ______ is a way of reusing abstract knowledge about a problem and its solution.", options: ["Class Pattern", "System Pattern", "Design Pattern", "Object Pattern"], correct: "Design Pattern" },
+            { q: "Software design and implementation is the stage in the software engineering process at which an executable software system is developed.", options: ["True", "False"], correct: "True" },
+            { q: "It is where several individual units are integrated to create composite components.", options: ["System Testing", "Component Testing", "Unit testing"], correct: "Component Testing" },
+            { q: "This means that there should be at least one test for every requirement in the requirements document.", options: ["Test Software", "Program Testing", "Custom software"], correct: "Custom software" },
+            { q: "The sequence diagrams associated with the use case documents the components and interactions that are being tested.", options: ["True", "False"], correct: "True" },
+            { q: "Test-driven development (TDD) is an approach to program development in which you inter-leave testing and code development.", options: ["True", "False"], correct: "True" },
+            { q: "The weather station sends a summary of the weather data that has been collected from the instruments in the collection period to the weather information system", options: ["True", "False"], correct: "True" },
+            { q: "Once interactions between the system and it is local source have been not understood, you use this information for designing the system architecture.", options: ["False", "True"], correct: "False" },
+            { q: "Implementation is the process of realizing the design as a program", options: ["True", "False"], correct: "True" },
+            { q: "At this level the collections of objects and object classes that you reuse in application systems.", options: ["The object level", "The system level", "The component level", "The abstraction level"], correct: "The component level" },
+            { q: "Force invalid inputs to be generated", options: ["False", "True"], correct: "False" },
+            { q: "Software components are often composite components that are made up of one interacting objects.", options: ["True", "False"], correct: "False" },
+            { q: "Parameter interfaces Data passed from two method or procedure to another.", options: ["False", "True"], correct: "False" },
+            { q: "User testing is essential, even when comprehensive system and release testing have been carried out.", options: ["False", "True"], correct: "True" },
+            { q: "It concern with rooting out undesirable system behavior such as system crashes, unwanted interactions with other systems, incorrect computations and data corruption.", options: ["Custom software", "Defect testing", "Test software"], correct: "Defect testing" },
+            { q: "TDD was introduced as part of agile methods such as Extreme Programming.", options: ["True", "False"], correct: "True" },
+            { q: "The test cases in defect testing can be deliberately obscure and need not reflect how the system is normally used.", options: ["Validating Testing", "Defect Testing", "Custom Testing"], correct: "Defect Testing" },
+            { q: "Users may have low expectations of certain kinds of software.", options: ["Software purpose", "User expectations", "Marketing environment"], correct: "User expectations" },
+            { q: "System context model is a structural model that demonstrates the other systems in the environment of the system being developed.", options: ["False", "True"], correct: "True" },
+            { q: "Response is the summarized data is sent to the weather information system.", options: ["True", "False"], correct: "True" },
+            { q: "Software components are often composite components that are made up of several interacting objects.", options: ["True", "False"], correct: "True" },
+            { q: "System testing during development involves integrating components not to create a version of the system and then testing the integrated system.", options: ["False", "True"], correct: "False" },
+            { q: "The sequence diagrams associated with the use case documents the components and interactions that are not being tested.", options: ["False", "True"], correct: "False" },
+            { q: "Use a behavioural approach and identify objects based on what participates in what behaviour.", options: ["False", "True"], correct: "True" },
+            { q: "A ______ is a package of software controlled instruments which collects data, performs some data processing and transmits this data for further processing.", options: ["Object Station", "Weather Station", "Class Station", "Forecast Station"], correct: "Weather Station" },
+            { q: "Application domain objects that are '______' objects related to the instruments in the system.", options: ["Software", "System", "Object", "Hardware"], correct: "Hardware" },
+            { q: "It is where the system is tested during development to discover bugs and defects.", options: ["User Testing", "Development testing", "Release Testing"], correct: "Development testing" },
+            { q: "It is where individual program units or object classes are tested.", options: ["System Testing", "Unit testing", "Component Testing"], correct: "Unit testing" },
+            { q: "It is where you identify groups of inputs that have common characteristics and should be processed in the same way.", options: ["Unit testing", "System Testing", "Partition Testing"], correct: "Partition Testing" },
+            { q: "The level of confidence depends on how critical the software is to an organisation.", options: ["User expectations", "Software purpose", "Marketing environment"], correct: "Software purpose" },
+            { q: "______ is the most modern software is constructed by reusing existing components or systems.", options: ["Management Development", "Reuse", "Configuration Management", "Host-Target Development"], correct: "Reuse" },
+            { q: "Structured object programming design processes not involve developing a number of different system models.", options: ["True", "False"], correct: "False" },
+            { q: "_______ are used to show how objects respond to different service requests and the state transitions triggered by these requests.", options: ["System Diagram", "File Diagram", "Subsystem Diagram", "State Diagram"], correct: "State Diagram" },
+            { q: "_______ is the name given to the general process of managing a changing software system.", options: ["Host-Target Development", "Management Development", "Configuration Management", "Reuse"], correct: "Configuration Management" },
+            { q: "Every code segment that you write has at least one associated test so all code written has at least one test.", options: ["True", "False"], correct: "True" },
+            { q: "They require a lot of effort for testing and maintenance of these models and, for small systems, this may not be cost-effective.", options: ["False", "True"], correct: "False" },
+            { q: "_______ describe the dynamic interactions between objects.", options: ["System Model", "Dynamic Model", "Design Model", "Class Model"], correct: "Dynamic Model" },
+            { q: "Encapsulates the summarized data from the instruments.", options: ["Application Data", "Forecast Data", "Weather Data", "System Data"], correct: "Weather Data" },
+            { q: "Test software with sequences which have only a single value.", options: ["False", "True"], correct: "True" },
+            { q: "It is where a separate testing team test a complete version of the system before it is released to users.", options: ["User Testing", "Release Testing", "Development testing"], correct: "Release Testing" }
+        ];
+
+        let questions = JSON.parse(JSON.stringify(originalQuestionsData));
+        let currentIndex = 0;
+        let score = 0;
+        let answeredState = new Array(questions.length).fill(false);
+
+        // Utility to shuffle an array (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const currentQ = questions[currentIndex];
+            const isAnswered = answeredState[currentIndex];
+            
+            document.getElementById('questionCounter').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = currentQ.q;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            // Apply choice shuffling if enabled and not yet answered
+            let displayOptions = [...currentQ.options];
+            if (!isAnswered && document.getElementById('shuffleOptionsToggle').checked) {
+                shuffleArray(displayOptions);
+            } else if (isAnswered) {
+                // If already answered, keep the order we rendered it in originally
+                // This prevents jumping around when navigating back
+                displayOptions = currentQ.displayedOptions || [...currentQ.options];
+            }
+            
+            // Store the displayed order so it persists when navigating back
+            currentQ.displayedOptions = displayOptions;
+
+            displayOptions.forEach(optionText => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                optDiv.textContent = optionText;
+                
+                if (isAnswered) {
+                    optDiv.classList.add('disabled');
+                    if (optionText === currentQ.correct) {
+                        optDiv.classList.add('correct');
+                    } else if (optionText === currentQ.userAnswer && currentQ.userAnswer !== currentQ.correct) {
+                        optDiv.classList.add('incorrect');
+                    }
+                } else {
+                    optDiv.onclick = () => handleAnswer(optDiv, optionText);
+                }
+                
+                optionsContainer.appendChild(optDiv);
+            });
+        }
+
+        function handleAnswer(element, selectedAnswer) {
+            if (answeredState[currentIndex]) return;
+            
+            const currentQ = questions[currentIndex];
+            currentQ.userAnswer = selectedAnswer;
+            answeredState[currentIndex] = true;
+
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => opt.classList.add('disabled'));
+
+            if (selectedAnswer === currentQ.correct) {
+                element.classList.add('correct');
+                score++;
+                document.getElementById('scoreDisplay').textContent = score;
+            } else {
+                element.classList.add('incorrect');
+                // Highlight the correct one
+                allOptions.forEach(opt => {
+                    if (opt.textContent === currentQ.correct) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+        }
+
+        function navigate(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= questions.length) currentIndex = questions.length - 1;
+            loadQuestion();
+        }
+
+        function jumpToQuestion() {
+            const input = document.getElementById('jumpInput');
+            const val = parseInt(input.value);
+            if (!isNaN(val) && val >= 1 && val <= questions.length) {
+                currentIndex = val - 1;
+                loadQuestion();
+                input.value = '';
+            } else {
+                alert(`Please enter a valid number between 1 and ${questions.length}`);
+            }
+        }
+
+        function shuffleQuestions() {
+            if(confirm("This will restart the reviewer and wipe your current score. Continue?")) {
+                shuffleArray(questions);
+                resetStates();
+            }
+        }
+
+        function resetQuiz() {
+            if(confirm("This will reset the quiz back to the original order. Continue?")) {
+                questions = JSON.parse(JSON.stringify(originalQuestionsData));
+                resetStates();
+            }
+        }
+
+        function resetStates() {
+            currentIndex = 0;
+            score = 0;
+            answeredState = new Array(questions.length).fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        // Allow pressing Enter in the jump input
+        document.getElementById('jumpInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') jumpToQuestion();
+        });
+
+        // Initial Load
+        loadQuestion();
+    </script>
+</body>
+</html>
