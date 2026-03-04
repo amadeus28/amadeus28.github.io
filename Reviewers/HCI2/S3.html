@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCI Experimental Research Reviewer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --correct-bg: #dcfce7;
+            --correct-border: #22c55e;
+            --correct-text: #166534;
+            --incorrect-bg: #fee2e2;
+            --incorrect-border: #ef4444;
+            --incorrect-text: #991b1b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .reviewer-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--text);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background-color: var(--bg);
+            border: 2px solid transparent;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+        }
+
+        .option:hover:not(.disabled) {
+            background-color: #e5e7eb;
+        }
+
+        .option.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+            font-weight: 600;
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-bg);
+            border-color: var(--incorrect-border);
+            color: var(--incorrect-text);
+            font-weight: 600;
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--bg);
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            font-size: 1rem;
+        }
+
+        .nav-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-switch input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reviewer-container">
+        <h1>HCI Experimental Research Reviewer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="jumpInput">Jump to:</label>
+                <input type="number" id="jumpInput" min="1" max="68" placeholder="1-68">
+                <button onclick="jumpToQuestion()">Go</button>
+            </div>
+            <button onclick="shuffleQuestions()">Shuffle Questions</button>
+            <label class="toggle-switch">
+                <input type="checkbox" id="shuffleOptionsToggle" checked>
+                Shuffle Choices Automatically
+            </label>
+            <button onclick="resetQuiz()">Reset Reviewer</button>
+        </div>
+
+        <div class="question-header">
+            <div class="question-number" id="questionCounter">Question 1 of 68</div>
+            <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
+        </div>
+
+        <div class="question-text" id="questionText">Loading...</div>
+        
+        <div class="options-container" id="optionsContainer">
+            </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuestionsData = [
+            { q: "What is the primary goal of experimental research in HCI?", options: ["To identify causal relationships", "To conduct surveys", "To design user interfaces", "To collect user feedback"], correct: "To identify causal relationships" },
+            { q: "In HCI, experimental units are typically:", options: ["Software applications", "Human subjects", "Algorithms", "Hardware devices"], correct: "Human subjects" },
+            { q: "Randomization in experiments helps to:", options: ["Avoid hypothesis testing", "Reduce sample size", "Control hidden factors", "Increase bias"], correct: "Control hidden factors" },
+            { q: "A null hypothesis typically states that:", options: ["There is no significant difference", "The treatment is effective", "The experiment is invalid", "There is a significant difference"], correct: "There is no significant difference" },
+            { q: "Which of the following is a threat to internal validity?", options: ["Hypothesis testing", "Posttest analysis", "Control group demoralization", "Randomization"], correct: "Control group demoralization" },
+            { q: "Which design compares two groups, one treated and one untreated, after treatment?", options: ["Static-group comparison", "Posttest equivalent", "Pretest-posttest equivalent", "Time-series design"], correct: "Static-group comparison" },
+            { q: "Which design is considered the most accurate in experimental research?", options: ["Observational", "True experimental", "Pre-experimental", "Quasi-experimental"], correct: "True experimental" },
+            { q: "Fitts' Law in HCI relates to:", options: ["Error rate", "Pointer movement time", "Reading speed", "User satisfaction"], correct: "Pointer movement time" },
+            { q: "Loss of subjects during an experiment affects:", options: ["Internal validity", "Randomization", "Hypothesis formulation", "External validity"], correct: "Internal validity" },
+            { q: "Significance tests are used to:", options: ["Randomize subjects", "Select experimental units", "Assign treatments", "Compare observed data with hypotheses"], correct: "Compare observed data with hypotheses" },
+            { q: "A researcher wants to test a new keyboard layout. Participants are randomly assigned and only posttest data is collected What design is used?", options: ["Time-series", "Pretest-posttest equivalent", "Solomon group", "Posttest equivalent"], correct: "Posttest equivalent" },
+            { q: "In a study, participants improve performance simply because they know they are being observed What effect is this?", options: ["Maturation", "Hawthorne effect", "Treatment diffusion", "John Henry effect"], correct: "Hawthorne effect" },
+            { q: "A researcher notices that the control group starts using techniques from the treatment group. What threat is present?", options: ["Loss of subjects", "Subject characteristics", "Control group demoralization", "Treatment diffusion"], correct: "Treatment diffusion" },
+            { q: "A researcher uses a random digit table to assign participants to groups. What is the purpose of this?", options: ["Ensure fairness", "Improve performance", "Control hidden variables", "Increase bias"], correct: "Control hidden variables" },
+            { q: "A study measures typing speed using QWERTY and DVORAK keyboards. Participants have no prior experience. What is being controlled?", options: ["Subject characteristics", "Control group demoralization", "Treatment diffusion", "Assignment method"], correct: "Subject characteristics" },
+            { q: "A control group feels discouraged because they didn't receive the new teaching method. What threat is this?", options: ["John Henry effect", "Maturation", "Hawthorne effect", "Control group demoralization"], correct: "Control group demoralization" },
+            { q: "A researcher uses four groups to test the effect of pretesting and treatment. What design is this?", options: ["Static-group comparison", "Solomon four-group", "Posttest equivalent", "Time-series"], correct: "Solomon four-group" },
+            { q: "A study finds that students improved in math scores, but the improvement may be due to natural development over time. What threat is this?", options: ["Loss of subjects", "Maturation", "Hawthorne effect", "Treatment diffusion"], correct: "Maturation" },
+            { q: "A study on a new medication uses random assignment and measures outcomes only after treatment. What design is this?", options: ["One-shot case study", "Posttest equivalent", "Static-group comparison", "Time-series"], correct: "Posttest equivalent" },
+            { q: "Which test is used to analyze the association between categorical variables?", options: ["Chi-square test", "Regression", "T-test", "ANOVA"], correct: "Chi-square test" },
+            { q: "What does Pearson's r measure?", options: ["Mode", "Correlation", "Variance", "Frequency"], correct: "Correlation" },
+            { q: "What is the formula for calculating range?", options: ["Highest value - lowest value", "Highest value + lowest value", "Mean - median", "Mode x frequency"], correct: "Highest value - lowest value" },
+            { q: "What is the central value in a data set called?", options: ["Median", "Mean", "Mode", "Range"], correct: "Median" },
+            { q: "What type of data involves two variables?", options: ["Univariate", "Quantitative", "Bivariate", "Multivariate"], correct: "Bivariate" },
+            { q: "What type of data involves three or more variables?", options: ["Univariate", "Bivariate", "Multivariate", "Qualitative"], correct: "Multivariate" },
+            { q: "What is the first step in quantitative data analysis?", options: ["Cleaning up data", "Running SPSS", "Organizing", "Coding"], correct: "Cleaning up data" },
+            { q: "What does standard deviation measure?", options: ["Central tendency", "Frequency", "Spread of data", "Mode"], correct: "Spread of data" },
+            { q: "What is the purpose of coding data before analysis?", options: ["To visualize data", "To prepare data for statistical software", "To simplify data entry", "To remove errors"], correct: "To prepare data for statistical software" },
+            { q: "What does covariance measure?", options: ["Joint variability of two variables", "Frequency", "Central tendency", "Spread of one variable"], correct: "Joint variability of two variables" },
+            { q: "Which method is commonly used for randomization in modern HCI studies?", options: ["Tossing a coin", "Spinning a wheel", "Random digit table", "Drawing capsules"], correct: "Random digit table" },
+            { q: "The group that receives the treatment in an experiment is called:", options: ["Experimental group", "Subject group", "Control group", "Test group"], correct: "Experimental group" },
+            { q: "Which design includes only a posttest after treatment?", options: ["Static-group comparison", "One-group pretest-posttest", "One-shot case study", "Solomon four-group"], correct: "One-shot case study" },
+            { q: "Which design uses both pretest and posttest but without random assignment?", options: ["True experimental", "Pre-experimental", "Solomon group", "Quasi-experimental"], correct: "Quasi-experimental" },
+            { q: "Which design involves repeated testing over time?", options: ["Static-group comparison", "Time-series design", "One-shot case study", "Posttest equivalent"], correct: "Time-series design" },
+            { q: "A researcher wants to test if a new mobile app improves user productivity. They assign users randomly to either use the app or not. What type of design is this?", options: ["Pre-experimental", "Observational", "True experimental", "Quasi-experimental"], correct: "True experimental" },
+            { q: "A study compares reading speed on mobile vs desktop. The hypothesis states no difference. What type of hypothesis is this?", options: ["Directional hypothesis", "Null hypothesis", "Experimental hypothesis", "Alternative hypothesis"], correct: "Null hypothesis" },
+            { q: "In a school, one class receives a new math curriculum. Another class does not. The researcher compares posttest scores. What design is this?", options: ["Time-series", "Solomon group", "Posttest equivalent", "Static-group comparison"], correct: "Static-group comparison" },
+            { q: "A study tracks user engagement weekly for 3 months before and after a UI change. What design is this?", options: ["One-group pretest-posttest", "Nonequivalent before-after", "Solomon group", "Time-series"], correct: "Time-series" },
+            { q: "In a study, students in one school receive a new curriculum, while another school continues with the old one. No random assignment is done. What design is this?", options: ["Quasi-experimental", "Solomon group", "True experimental", "Pre-experimental"], correct: "Quasi-experimental" },
+            { q: "A teacher implements a new teaching strategy and measures student performance weekly for 2 months. What design is this?", options: ["One-shot case study", "Posttest equivalent", "Time-series", "Static-group comparison"], correct: "Time-series" },
+            { q: "In a study, the control group performs poorly because they feel left out of the treatment. What threat is this?", options: ["John Henry effect", "Subject characteristics", "Hawthorne effect", "Control group demoralization"], correct: "Control group demoralization" },
+            { q: "What type of data involves only one variable?", options: ["Univariate", "Qualitative", "Multivariate", "Bivariate"], correct: "Univariate" },
+            { q: "What is the range of values for Pearson's r?", options: ["1 to 100", "-1 to 1", "0 to 1", "-100 to 100"], correct: "-1 to 1" },
+            { q: "What is the square of the standard deviation called?", options: ["Covariance", "Mean", "Variance", "Range"], correct: "Variance" },
+            { q: "Which analysis method is used when comparing two unrelated groups?", options: ["Chi-square test", "Correlation test", "Independent-samples t-test", "Paired-samples t-test"], correct: "Independent-samples t-test" },
+            { q: "What is the most frequently occurring value in a data set?", options: ["Range", "Median", "Mean", "Mode"], correct: "Mode" },
+            { q: "What is the formula for degrees of freedom in a chi-square test?", options: ["(Rows + Columns)", "(Rows - 1) x (Columns - 1)", "(Rows - Columns)", "Rows x Columns"], correct: "(Rows - 1) x (Columns - 1)" },
+            { q: "In SPSS, how should data be arranged for a paired-samples t-test?", options: ["In the same column", "In separate columns for each group", "In parallel rows", "In a frequency table"], correct: "In separate columns for each group" },
+            { q: "The Hawthorne Effect refers to:", options: ["Subjects misunderstanding the experiment", "Subjects refusing treatment", "Subjects dropping out of the study", "Subjects responding differently because they are being studied"], correct: "Subjects responding differently because they are being studied" },
+            { q: "Which of the following is a type of true experimental design?", options: ["Solomon four-group", "Static-group comparison", "Nonequivalent before-after", "One-shot case study"], correct: "Solomon four-group" },
+            { q: "In a study, students are taught using a new method Their performance is measured only after the teaching. What design is used?", options: ["Solomon group", "Time-series", "One-shot case study", "Static-group comparison"], correct: "One-shot case study" },
+            { q: "A company tests two interface designs by randomly assigning users and measuring satisfaction before and after use. What design is this?", options: ["Static-group comparison", "Posttest equivalent", "Pretest-posttest equivalent", "Solomon group"], correct: "Pretest-posttest equivalent" },
+            { q: "A researcher wants to test the effect of a new app feature. They use four groups to test the effect of pretesting and treatment. What design is this?", options: ["Pretest-posttest equivalent", "Solomon four-group", "Static-group comparison", "One-group pretest-posttest"], correct: "Solomon four-group" },
+            { q: "Which of the following is NOT a component of an experiment?", options: ["Treatments", "Hypothesis", "Units", "Assignment method"], correct: "Hypothesis" },
+            { q: "Which design compares groups that are likely different before the study begins?", options: ["Nonequivalent before-after", "Posttest equivalent", "Pretest-posttest equivalent", "Solomon group"], correct: "Nonequivalent before-after" },
+            { q: "A researcher compares two groups that are known to differ before the experiment. What design is this?", options: ["Nonequivalent before-after", "True experimental", "Solomon group", "Posttest equivalent"], correct: "Nonequivalent before-after" },
+            { q: "A group of students drops out of a study before the posttest. What threat to validity is this?", options: ["Hawthorne effect", "Loss of subjects", "Treatment diffusion", "Maturation"], correct: "Loss of subjects" },
+            { q: "A researcher wants to test a new e-learning platform. They assign students randomly and use both pretest and posttest. What is the best design to use?", options: ["Pretest-posttest equivalent", "Static-group comparison", "Time-series", "One-shot case study"], correct: "Pretest-posttest equivalent" },
+            { q: "A researcher wants to test a new app feature. They randomly assign users and use both pretest and posttest. What design is this?", options: ["Pretest-posttest equivalent", "Solomon group", "Quasi-experimental", "Posttest equivalent"], correct: "Pretest-posttest equivalent" },
+            { q: "A researcher compares two groups after treatment but did not check if they were similar before the study. What is a potential issue here?", options: ["Lack of pretest", "Over-testing", "Randomization error", "Hawthorne effect"], correct: "Lack of pretest" },
+            { q: "Which threat involves the control group unintentionally receiving the treatment?", options: ["Hawthorne effect", "Maturation", "Treatment diffusion", "John Henry effect"], correct: "Treatment diffusion" },
+            { q: "A researcher tests a new training program on one group and compares pretest and posttest scores. What design is this?", options: ["Solomon group", "One-group pretest-posttest", "One-shot case study", "Static-group comparison"], correct: "One-group pretest-posttest" },
+            { q: "A study is conducted to test a new diet plan. Participants are not randomly assigned, but both groups are tested before and after. What design is this?", options: ["One-group pretest-posttest", "Solomon group", "Nonequivalent pretest-posttest", "Posttest equivalent"], correct: "Nonequivalent pretest-posttest" },
+            { q: "Children naturally improve in reading over time, regardless of treatment. What threat is this?", options: ["Hawthorne effect", "Loss of subjects", "Control group demoralization", "Maturation"], correct: "Maturation" },
+            { q: "A teacher compares two classes: one uses a new reading strategy, the other does not. No random assignment is done. What design is this?", options: ["Quasi-experimental", "True experimental", "Posttest equivalent", "Pre-experimental"], correct: "Quasi-experimental" },
+            { q: "What is the main purpose of statistical analysis in HCI?", options: ["To create user interfaces", "To find patterns and relationships in data", "To design hardware", "To write code"], correct: "To find patterns and relationships in data" },
+            { q: "What software is commonly used for statistical analysis in HCI research?", options: ["IBM SPSS", "Python", "MATLAB", "Excel"], correct: "IBM SPSS" },
+            { q: "What does a frequency distribution table show?", options: ["Correlation", "Variance", "Data and how often they occur", "Mean and median"], correct: "Data and how often they occur" }
+        ];
+
+        let questions = JSON.parse(JSON.stringify(originalQuestionsData));
+        let currentIndex = 0;
+        let score = 0;
+        let answeredState = new Array(questions.length).fill(false);
+
+        // Utility to shuffle an array (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const currentQ = questions[currentIndex];
+            const isAnswered = answeredState[currentIndex];
+            
+            document.getElementById('questionCounter').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = currentQ.q;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            // Apply choice shuffling if enabled and not yet answered
+            let displayOptions = [...currentQ.options];
+            if (!isAnswered && document.getElementById('shuffleOptionsToggle').checked) {
+                shuffleArray(displayOptions);
+            } else if (isAnswered) {
+                // If already answered, keep the order we rendered it in originally
+                displayOptions = currentQ.displayedOptions || [...currentQ.options];
+            }
+            
+            // Store the displayed order so it persists when navigating back
+            currentQ.displayedOptions = displayOptions;
+
+            displayOptions.forEach(optionText => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                optDiv.textContent = optionText;
+                
+                if (isAnswered) {
+                    optDiv.classList.add('disabled');
+                    if (optionText === currentQ.correct) {
+                        optDiv.classList.add('correct');
+                    } else if (optionText === currentQ.userAnswer && currentQ.userAnswer !== currentQ.correct) {
+                        optDiv.classList.add('incorrect');
+                    }
+                } else {
+                    optDiv.onclick = () => handleAnswer(optDiv, optionText);
+                }
+                
+                optionsContainer.appendChild(optDiv);
+            });
+        }
+
+        function handleAnswer(element, selectedAnswer) {
+            if (answeredState[currentIndex]) return;
+            
+            const currentQ = questions[currentIndex];
+            currentQ.userAnswer = selectedAnswer;
+            answeredState[currentIndex] = true;
+
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => opt.classList.add('disabled'));
+
+            if (selectedAnswer === currentQ.correct) {
+                element.classList.add('correct');
+                score++;
+                document.getElementById('scoreDisplay').textContent = score;
+            } else {
+                element.classList.add('incorrect');
+                // Highlight the correct one
+                allOptions.forEach(opt => {
+                    if (opt.textContent === currentQ.correct) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+        }
+
+        function navigate(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= questions.length) currentIndex = questions.length - 1;
+            loadQuestion();
+        }
+
+        function jumpToQuestion() {
+            const input = document.getElementById('jumpInput');
+            const val = parseInt(input.value);
+            if (!isNaN(val) && val >= 1 && val <= questions.length) {
+                currentIndex = val - 1;
+                loadQuestion();
+                input.value = '';
+            } else {
+                alert(`Please enter a valid number between 1 and ${questions.length}`);
+            }
+        }
+
+        function shuffleQuestions() {
+            if(confirm("This will restart the reviewer and wipe your current score. Continue?")) {
+                shuffleArray(questions);
+                resetStates();
+            }
+        }
+
+        function resetQuiz() {
+            if(confirm("This will reset the quiz back to the original order. Continue?")) {
+                questions = JSON.parse(JSON.stringify(originalQuestionsData));
+                resetStates();
+            }
+        }
+
+        function resetStates() {
+            currentIndex = 0;
+            score = 0;
+            answeredState = new Array(questions.length).fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        // Allow pressing Enter in the jump input
+        document.getElementById('jumpInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') jumpToQuestion();
+        });
+
+        // Initial Load
+        loadQuestion();
+    </script>
+</body>
+</html>
