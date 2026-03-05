@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seatwork Quiz Reviewer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --correct-bg: #dcfce7;
+            --correct-border: #22c55e;
+            --correct-text: #166534;
+            --incorrect-bg: #fee2e2;
+            --incorrect-border: #ef4444;
+            --incorrect-text: #991b1b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .reviewer-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--text);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background-color: var(--bg);
+            border: 2px solid transparent;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+        }
+
+        .option:hover:not(.disabled) {
+            background-color: #e5e7eb;
+        }
+
+        .option.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+            font-weight: 600;
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-bg);
+            border-color: var(--incorrect-border);
+            color: var(--incorrect-text);
+            font-weight: 600;
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--bg);
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            font-size: 1rem;
+        }
+
+        .nav-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-switch input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reviewer-container">
+        <h1>Seatwork Quiz Reviewer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="jumpInput">Jump to:</label>
+                <input type="number" id="jumpInput" min="1" max="99" placeholder="1-99">
+                <button onclick="jumpToQuestion()">Go</button>
+            </div>
+            <button onclick="shuffleQuestions()">Shuffle Questions</button>
+            <label class="toggle-switch">
+                <input type="checkbox" id="shuffleOptionsToggle" checked>
+                Shuffle Choices Automatically
+            </label>
+            <button onclick="resetQuiz()">Reset Reviewer</button>
+        </div>
+
+        <div class="question-header">
+            <div class="question-number" id="questionCounter">Question 1 of 99</div>
+            <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
+        </div>
+
+        <div class="question-text" id="questionText">Loading...</div>
+        
+        <div class="options-container" id="optionsContainer">
+            </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuestionsData = [
+            { q: "Which data modeling language is most associated with NETCONF?", options: ["YANG", "YAML", "JSON", "XML"], correct: "YANG" },
+            { q: "Which encoding format is mandatory in NETCONF messages?", options: ["JSON", "XML", "YAML", "CSV"], correct: "XML" },
+            { q: "Which NETCONF operation is used to change configuration data?", options: ["get-config", "get", "unlock", "edit-config"], correct: "edit-config" },
+            { q: "Which NETCONF operation can lock a configuration database?", options: ["get", "edit-config", "lock", "delete-config"], correct: "lock" },
+            { q: "RESTCONF resources are identified by?", options: ["URI", "Schema ID", "IP Address", "Port Number"], correct: "URI" },
+            { q: "Which HTTP method retrieves resource data in RESTCONF?", options: ["PUT", "GET", "DELETE", "POST"], correct: "GET" },
+            { q: "In YANG, a 'container' is used to?", options: ["Define user authentication", "Group related nodes", "Store executable code", "Transport data"], correct: "Group related nodes" },
+            { q: "In NETCONF, which datastore represents the running configuration?", options: ["candidate", "startup", "running", "edit"], correct: "running" },
+            { q: "In NETCONF, which datastore is used for staging configuration changes?", options: ["lock", "candidate", "running", "startup"], correct: "candidate" },
+            { q: "Which datastore persists across device reloads?", options: ["candidate", "running", "startup", "edit"], correct: "startup" },
+            { q: "In RESTCONF, what does '/restconf/operations/' access?", options: ["Notifications", "RPC operations", "Schemas", "Data resources"], correct: "RPC operations" },
+            { q: "Which HTTP response code indicates no content returned?", options: ["500", "200", "204", "201"], correct: "204" },
+            { q: "Which HTTP response code means 'Bad Request'?", options: ["403", "401", "500", "400"], correct: "400" },
+            { q: "Which HTTP response code means 'Forbidden'?", options: ["400", "401", "500", "403"], correct: "403" },
+            { q: "Which HTTP response code means 'Not Found'?", options: ["400", "404", "200", "201"], correct: "404" },
+            { q: "Which YANG type represents a string of text?", options: ["int", "decimal64", "bool", "string"], correct: "string" },
+            { q: "Which YANG type is used for true/false values?", options: ["decimal64", "int", "string", "boolean"], correct: "boolean" },
+            { q: "Which YANG type represents an integer?", options: ["boolean", "decimal64", "string", "int32"], correct: "int32" },
+            { q: "Which NETCONF operation confirms applying changes after testing?", options: ["delete-config", "validate", "confirmed-commit", "lock"], correct: "confirmed-commit" },
+            { q: "What software manages virtual machines?", options: ["Hypervisor", "Jenkins", "Kernel", "Docker"], correct: "Hypervisor" },
+            { q: "Which deployment model starts faster and shares the host operating system?", options: ["Containers", "Virtual Machines", "Bare Metal", "Edge Cloud"], correct: "Containers" },
+            { q: "What type of infrastructure is physically located inside the building?", options: ["Serverless", "Edge Cloud", "On-Premises", "Public Cloud"], correct: "On-Premises" },
+            { q: "Which command starts a Docker container in detached mode?", options: ["docker commit", "docker exec -it", "docker run -d", "docker pull"], correct: "docker run -d" },
+            { q: "What is the default public registry for Docker images?", options: ["GitHub", "AWS", "Jenkins Hub", "Docker Hub"], correct: "Docker Hub" },
+            { q: "Which parameter maps internal container ports to host ports automatically?", options: ["-name", "-it", "-P", "-v"], correct: "-P" },
+            { q: "What does Continuous Integration (CI) involve?", options: ["Deploying to production automatically", "Using only Docker", "Merging developer changes frequently into a main branch", "Encrypting source code"], correct: "Merging developer changes frequently into a main branch" },
+            { q: "What is Continuous Deployment?", options: ["Automatically deploying every version marked production-ready", "Always writing new features", "Using only staging environments", "Building Docker images locally"], correct: "Automatically deploying every version marked production-ready" },
+            { q: "Which deployment strategy uses two environments, one for current users and one for new code?", options: ["Bare metal", "Rolling upgrade", "Blue-Green deployment", "Canary pipeline"], correct: "Blue-Green deployment" },
+            { q: "What is the main purpose of Jenkins?", options: ["Running Docker Hub", "Encrypting data", "Automating build and deployment pipelines", "Replacing cloud infrastructure"], correct: "Automating build and deployment pipelines" },
+            { q: "In Jenkins, what is a \"job\"?", options: ["A VM image", "A Docker container", "A project that automates tasks like building code", "A password hash"], correct: "A project that automates tasks like building code" },
+            { q: "Which option in Jenkins triggers a second job after the first completes?", options: ["Canary deployment", "Dockerfile chaining", "Docker commit", "Build Trigger"], correct: "Build Trigger" },
+            { q: "Which device spreads requests across multiple servers?", options: ["Reverse proxy", "DNS server", "Firewall", "Load balancer"], correct: "Load balancer" },
+            { q: "Which load balancing method sends requests in order?", options: ["Least connections", "IP hash", "Persistent session", "Round robin"], correct: "Round robin" },
+            { q: "Which load balancing method sends requests to the least busy server?", options: ["Least connections", "Persistent session", "IP hash", "Round robin"], correct: "Least connections" },
+            { q: "Which proxy makes multiple servers appear as one?", options: ["Hypervisor", "Jump box", "Reverse proxy", "Firewall"], correct: "Reverse proxy" },
+            { q: "Which project provides education and tools for web security?", options: ["OWASP", "DNS", "Hypervisor", "Docker"], correct: "OWASP" },
+            { q: "What does XSS stand for?", options: ["Cross-Site Scripting", "Cross-Site Security", "Cross-System Security", "XML Secure Service"], correct: "Cross-Site Scripting" },
+            { q: "What is \"salting\" a password used for?", options: ["Encoding data for DNS", "Adding randomness to hashes to prevent rainbow table attacks", "Increasing container size", "Encrypting at rest"], correct: "Adding randomness to hashes to prevent rainbow table attacks" },
+            { q: "Which social engineering attack uses SMS messages?", options: ["Smishing", "Phishing", "Vishing", "Impersonation"], correct: "Smishing" },
+            { q: "RESTCONF is defined in which RFC?", options: ["RFC 6241", "RFC 8040", "RFC 6242", "RFC 4741"], correct: "RFC 8040" },
+            { q: "Which HTTP method modifies an existing RESTCONF resource?", options: ["GET", "HEAD", "POST", "PUT"], correct: "PUT" },
+            { q: "Which HTTP method deletes a RESTCONF resource?", options: ["PUT", "POST", "GET", "DELETE"], correct: "DELETE" },
+            { q: "A YANG 'leaf-list' represents?", options: ["Array of simple data elements", "NETCONF lock state", "Device schema", "Group of containers"], correct: "Array of simple data elements" },
+            { q: "Which YANG construct defines mandatory fields?", options: ["type", "must", "list", "namespace"], correct: "must" },
+            { q: "Which YANG statement defines a key for list uniqueness?", options: ["key", "leaf", "must", "type"], correct: "key" },
+            { q: "In YANG, namespaces are declared using?", options: ["namespace", "rpc", "schema", "prefix"], correct: "namespace" },
+            { q: "Which YANG keyword defines a new module?", options: ["module", "prefix", "import", "namespace"], correct: "module" },
+            { q: "Which YANG keyword is used to include another module?", options: ["prefix", "load", "import", "use"], correct: "import" },
+            { q: "Which YANG type is used for floating-point numbers?", options: ["int32", "decimal64", "boolean", "string"], correct: "decimal64" },
+            { q: "In serverless computing, when are costs typically incurred?", options: ["Only during deployment", "When building the application", "Only when functions are executed", "Always running"], correct: "Only when functions are executed" },
+            { q: "Which cloud model is managed completely by an organization itself?", options: ["Hybrid Cloud", "Edge Cloud", "Private Cloud", "Public Cloud"], correct: "Private Cloud" },
+            { q: "What problem can occur when multiple customers share public cloud resources?", options: ["Hash collision", "Noisy neighbor", "Rainbow attack", "Salt mismatch"], correct: "Noisy neighbor" },
+            { q: "Which structure is commonly used by large organizations for code quality?", options: ["Development, testing, staging, production tiers", "Single production environment", "Continuous Delivery only", "Serverless only"], correct: "Development, testing, staging, production tiers" },
+            { q: "Which command builds a Docker image from a Dockerfile?", options: ["docker pull", "docker build", "docker exec", "docker run"], correct: "docker build" },
+            { q: "What does the FROM command in a Dockerfile specify?", options: ["Base image to install", "Registry URL", "Port number", "Container name"], correct: "Base image to install" },
+            { q: "Which command in a Dockerfile specifies the container's working directory?", options: ["COPY", "EXPOSE", "WORKDIR", "CMD"], correct: "WORKDIR" },
+            { q: "Which deployment strategy tests new code on a small subset of users first?", options: ["Container orchestration", "Rolling upgrade", "Manual deployment", "Canary pipeline"], correct: "Canary pipeline" },
+            { q: "What is the main function of a firewall?", options: ["Encrypting user passwords", "Allowing or blocking network packets based on rules", "Storing Docker images", "Balancing server traffic"], correct: "Allowing or blocking network packets based on rules" },
+            { q: "Which service translates hostnames into IP addresses?", options: ["Firewall", "DNS", "Reverse proxy", "Jenkins"], correct: "DNS" },
+            { q: "Which network tool can also act like a firewall or load balancer by inspecting traffic?", options: ["DNS", "VM hypervisor", "Jenkins pipeline", "Reverse proxy"], correct: "Reverse proxy" },
+            { q: "What is a parameterized query used for?", options: ["Preventing SQL injection attacks", "Generating Dockerfiles", "Managing Jenkins jobs", "Encrypting cloud storage"], correct: "Preventing SQL injection attacks" },
+            { q: "What prevents CSRF attacks by validating a hidden token?", options: ["DNS server", "CSRFToken", "Hash salting", "Jump box"], correct: "CSRFToken" },
+            { q: "What does NETCONF stand for?", options: ["Network Connectivity Format", "Network Configuration Protocol", "Network Control Framework", "Network Central Function"], correct: "Network Configuration Protocol" },
+            { q: "What does YANG stand for?", options: ["Yet Another Network Group", "YAML And Network Grammar", "Yet Another Next Generation", "Your API Network Guide"], correct: "Yet Another Next Generation" },
+            { q: "Which transport protocol does NETCONF typically run over?", options: ["HTTPS", "HTTP", "SSH", "FTP"], correct: "SSH" },
+            { q: "Which NETCONF operation retrieves configuration and state data?", options: ["get", "edit-config", "lock", "copy-config"], correct: "get" },
+            { q: "In NETCONF, what does the element represent?", options: ["A remote procedure call message", "A REST API request", "A Python function", "A device schema"], correct: "A remote procedure call message" },
+            { q: "Which YANG statement defines a list of items?", options: ["list", "leaf", "container", "key"], correct: "list" },
+            { q: "Which YANG node holds a single data element?", options: ["container", "list", "key", "leaf"], correct: "leaf" },
+            { q: "In RESTCONF, what does the URI '/restconf/data/' access?", options: ["Notifications", "RPC operations", "Schema resources", "Data resources"], correct: "Data resources" },
+            { q: "Which HTTP response code indicates successful creation in RESTCONF?", options: ["201", "200", "400", "404"], correct: "201" },
+            { q: "Which NETCONF operation validates configuration data without applying it?", options: ["validate", "commit", "get-config", "edit-config"], correct: "validate" },
+            { q: "Which RESTCONF feature supports event notifications?", options: ["data", "event-stream", "schema", "operations"], correct: "event-stream" },
+            { q: "Which Python module parses XML to dictionary format?", options: ["ncclient", "requests", "yangson", "xmltodict"], correct: "xmltodict" },
+            { q: "Which deployment model gives direct access to specialized hardware?", options: ["Bare Metal", "Containers", "Serverless Computing", "Virtual Machines"], correct: "Bare Metal" },
+            { q: "What is a Docker image?", options: ["A read-only template containing app code and dependencies", "An IDE for developers", "A VM hypervisor", "A running container instance"], correct: "A read-only template containing app code and dependencies" },
+            { q: "Which Dockerfile command copies files into the image?", options: ["RUN", "CMD", "WORKDIR", "COPY"], correct: "COPY" },
+            { q: "Which application ensures login requests are handled by the same server?", options: ["Reverse proxy", "IP hash", "Persistent session load balancing", "DNS"], correct: "Persistent session load balancing" },
+            { q: "Which tool detects SQL injection flaws by analyzing source code?", options: ["Hypervisor", "DNS", "Docker Hub", "SAST tools"], correct: "SAST tools" },
+            { q: "Which of the following operations is NOT a NETCONF base operation?", options: ["get", "run-script", "delete-config", "edit-config"], correct: "run-script" },
+            { q: "Which RESTCONF data encoding format is human-friendly?", options: ["CSV", "Binary", "JSON", "XML"], correct: "JSON" },
+            { q: "Which Python library is often used for NETCONF communication?", options: ["xmltodict", "requests", "ncclient", "paramiko"], correct: "ncclient" },
+            { q: "Which NETCONF feature locks configuration to prevent conflicts?", options: ["edit-config", "get", "commit", "lock"], correct: "lock" },
+            { q: "Which protocol provides a REST-like interface to YANG-based data?", options: ["RESTCONF", "gRPC", "NETCONF", "SOAP"], correct: "RESTCONF" },
+            { q: "What command does Jenkins use in a build step to execute shell scripts?", options: ["Execute shell", "Build pipeline", "docker run", "Hypervisor start"], correct: "Execute shell" },
+            { q: "What is a \"jump box\"?", options: ["A Docker registry", "A password manager", "A secure machine through which logins must pass first", "A firewall tool"], correct: "A secure machine through which logins must pass first" },
+            { q: "What is the key role of a load balancer?", options: ["Provide multi-factor authentication", "Run CI/CD pipelines", "Encrypt files at rest", "Distribute traffic evenly to prevent overload"], correct: "Distribute traffic evenly to prevent overload" },
+            { q: "What does encrypting data at rest ensure?", options: ["Unauthorized access won't reveal readable data", "It is deleted automatically", "No one can transmit it", "It cannot be stored in the cloud"], correct: "Unauthorized access won't reveal readable data" },
+            { q: "Which password storage method cannot be reversed?", options: ["Plaintext", "Hashed password", "Encrypted text", "Docker commit"], correct: "Hashed password" },
+            { q: "Which authentication requires at least two types of evidence?", options: ["Password manager", "Hypervisor security", "MFA", "SFA"], correct: "MFA" },
+            { q: "Which NETCONF capability allows partial locking?", options: ["confirmed-commit", "partial-lock", "validate", "candidate"], correct: "partial-lock" },
+            { q: "Which Python library is used to interact with REST APIs?", options: ["requests", "ncclient", "sshlib", "yangson"], correct: "requests" },
+            { q: "Which HTTP response code means 'Unauthorized'?", options: ["404", "401", "403", "400"], correct: "401" },
+            { q: "Which type of cloud brings computing resources closer to IoT devices?", options: ["Hybrid Cloud", "Public Cloud", "Edge Cloud", "Private Cloud"], correct: "Edge Cloud" },
+            { q: "What does the EXPOSE command in a Dockerfile do?", options: ["Informs which port should be published", "Logs into container", "Runs the container", "Uploads image to registry"], correct: "Informs which port should be published" },
+            { q: "What is the main purpose of saving a Docker image to a registry?", options: ["To encrypt code", "To share images for deployment or reuse", "To delete containers", "To monitor logs"], correct: "To share images for deployment or reuse" },
+            { q: "Which cloud model combines private and public clouds?", options: ["On-Premises", "Edge Cloud", "Hybrid Cloud", "Bare Metal"], correct: "Hybrid Cloud" },
+            { q: "Which benefit is NOT associated with CI/CD?", options: ["Shorter Mean Time To Resolution (MTTR)", "Automated deployment", "Improved quality", "Manual testing only"], correct: "Manual testing only" },
+            { q: "Which deployment strategy gradually rolls out new code to avoid disruption?", options: ["Rolling upgrade", "Manual testing", "Blue-Green deployment", "Canary pipeline"], correct: "Rolling upgrade" }
+        ];
+
+        let questions = JSON.parse(JSON.stringify(originalQuestionsData));
+        let currentIndex = 0;
+        let score = 0;
+        let answeredState = new Array(questions.length).fill(false);
+
+        // Utility to shuffle an array (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const currentQ = questions[currentIndex];
+            const isAnswered = answeredState[currentIndex];
+            
+            document.getElementById('questionCounter').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = currentQ.q;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            // Apply choice shuffling if enabled and not yet answered
+            let displayOptions = [...currentQ.options];
+            if (!isAnswered && document.getElementById('shuffleOptionsToggle').checked) {
+                shuffleArray(displayOptions);
+            } else if (isAnswered) {
+                // If already answered, keep the order we rendered it in originally
+                displayOptions = currentQ.displayedOptions || [...currentQ.options];
+            }
+            
+            // Store the displayed order so it persists when navigating back
+            currentQ.displayedOptions = displayOptions;
+
+            displayOptions.forEach(optionText => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                optDiv.textContent = optionText;
+                
+                if (isAnswered) {
+                    optDiv.classList.add('disabled');
+                    if (optionText === currentQ.correct) {
+                        optDiv.classList.add('correct');
+                    } else if (optionText === currentQ.userAnswer && currentQ.userAnswer !== currentQ.correct) {
+                        optDiv.classList.add('incorrect');
+                    }
+                } else {
+                    optDiv.onclick = () => handleAnswer(optDiv, optionText);
+                }
+                
+                optionsContainer.appendChild(optDiv);
+            });
+        }
+
+        function handleAnswer(element, selectedAnswer) {
+            if (answeredState[currentIndex]) return;
+            
+            const currentQ = questions[currentIndex];
+            currentQ.userAnswer = selectedAnswer;
+            answeredState[currentIndex] = true;
+
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => opt.classList.add('disabled'));
+
+            if (selectedAnswer === currentQ.correct) {
+                element.classList.add('correct');
+                score++;
+                document.getElementById('scoreDisplay').textContent = score;
+            } else {
+                element.classList.add('incorrect');
+                // Highlight the correct one
+                allOptions.forEach(opt => {
+                    if (opt.textContent === currentQ.correct) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+        }
+
+        function navigate(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= questions.length) currentIndex = questions.length - 1;
+            loadQuestion();
+        }
+
+        function jumpToQuestion() {
+            const input = document.getElementById('jumpInput');
+            const val = parseInt(input.value);
+            if (!isNaN(val) && val >= 1 && val <= questions.length) {
+                currentIndex = val - 1;
+                loadQuestion();
+                input.value = '';
+            } else {
+                alert(`Please enter a valid number between 1 and ${questions.length}`);
+            }
+        }
+
+        function shuffleQuestions() {
+            if(confirm("This will restart the reviewer and wipe your current score. Continue?")) {
+                shuffleArray(questions);
+                resetStates();
+            }
+        }
+
+        function resetQuiz() {
+            if(confirm("This will reset the quiz back to the original order. Continue?")) {
+                questions = JSON.parse(JSON.stringify(originalQuestionsData));
+                resetStates();
+            }
+        }
+
+        function resetStates() {
+            currentIndex = 0;
+            score = 0;
+            answeredState = new Array(questions.length).fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        // Allow pressing Enter in the jump input
+        document.getElementById('jumpInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') jumpToQuestion();
+        });
+
+        // Initial Load
+        loadQuestion();
+    </script>
+</body>
+</html>
