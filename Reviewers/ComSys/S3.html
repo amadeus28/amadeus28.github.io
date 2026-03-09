@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assembly Language Reviewer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --correct-bg: #dcfce7;
+            --correct-border: #22c55e;
+            --correct-text: #166534;
+            --incorrect-bg: #fee2e2;
+            --incorrect-border: #ef4444;
+            --incorrect-text: #991b1b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .reviewer-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--text);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            white-space: pre-wrap;
+            background: #fdfdfd;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background-color: var(--bg);
+            border: 2px solid transparent;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .option:hover:not(.disabled) {
+            background-color: #e5e7eb;
+        }
+
+        .option.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+            font-weight: 600;
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-bg);
+            border-color: var(--incorrect-border);
+            color: var(--incorrect-text);
+            font-weight: 600;
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--bg);
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            font-size: 1rem;
+        }
+
+        .nav-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        code {
+            background: #eee;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reviewer-container">
+        <h1>Assembly Language Reviewer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="jumpInput">Jump to:</label>
+                <input type="number" id="jumpInput" min="1" max="15" placeholder="1-15">
+                <button onclick="jumpToQuestion()">Go</button>
+            </div>
+            <button onclick="shuffleQuestions()">Shuffle Questions</button>
+            <button onclick="resetQuiz()">Reset Reviewer</button>
+        </div>
+
+        <div class="question-header">
+            <div class="question-number" id="questionCounter">Question 1 of 15</div>
+            <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
+        </div>
+
+        <div class="question-text" id="questionText">Loading...</div>
+        
+        <div class="options-container" id="optionsContainer">
+            </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuestionsData = [
+            { 
+                q: "given: ALPHA=0030h; SS=8001h; DS=8002h\nDetermine the value of the destination operand of the following instruction sets. (Instructions are dependent):\n1. MOV AX, ALPHA\n2. MOV BX, 0020\n3. MOV SP, BX\n4. XCHG AX, BX\n5. POP AX\n6. MOV BX, SP\n7. XCHG AX, BX\n8. PUSH AX\n9. MOV SP, AX\n10. PUSH BX", 
+                options: ["Correct sequence calculation based on SS:SP logic", "Incorrect mapping"], 
+                correct: "Correct sequence calculation based on SS:SP logic" 
+            },
+            { 
+                q: "Determine content of the destination operand & status flags for:\n1. MOV AX, FACE\n2. MOV BX, CODE\n3. MOV CX, FADE\n4. MOV DX, DEAF\n5. ADD AX, BX\n6. ADC AX, CX\n7. DAA\n8. INC AX\n9. AAA\n10. SUB BX, CX\n11. SBB AX, DX\n12. DEC AX\n13. DAS\n14. NEG AX\n15. AAS", 
+                options: ["Sequence of status flags and hex results", "Wrong calculation"], 
+                correct: "Sequence of status flags and hex results" 
+            },
+            { 
+                q: "It is the register used to indicate the number of loops in assembly language.", 
+                options: ["BX", "DX", "CX", "AX"], 
+                correct: "CX" 
+            },
+            { 
+                q: "It is a control transfer instructions that jumps if the value of the CF is 1.", 
+                options: ["JAE", "JA", "JB", "JBE"], 
+                correct: "JB" 
+            },
+            { 
+                q: "It is a control transfer instructions that jumps if the value of the CF or ZF = 1.", 
+                options: ["JAE", "JA", "JBE", "JB"], 
+                correct: "JBE" 
+            },
+            { 
+                q: "It is a control transfer instructions that jumps if the value of the SF=OF.", 
+                options: ["JG", "JGE", "JLE", "JL"], 
+                correct: "JGE" 
+            },
+            { 
+                q: "It is a control transfer instructions that jumps if the value of the ZF = 1.", 
+                options: ["JNE", "JC", "JNC", "JE"], 
+                correct: "JE" 
+            },
+            { 
+                q: "It is a control transfer instructions that jumps if the value of the CF=1.", 
+                options: ["JNC", "JNE", "JC", "JE"], 
+                correct: "JC" 
+            },
+            { 
+                q: "It is an instruction in assembly language that allows the programmer to skip sections of a program and branch to any part of the memory for the next instruction.", 
+                options: ["cmp", "ret", "call", "jmp"], 
+                correct: "jmp" 
+            },
+            { 
+                q: "It is a control transfer instructions that jumps if the value of the ZF = 1 or SF not equal to OF.", 
+                options: ["JLE", "JG", "JGE", "JL"], 
+                correct: "JLE" 
+            },
+            { 
+                q: "It is a flag instruction that sets the content of the carry flag.", 
+                options: ["STC", "LAHF", "CLC", "SAHF"], 
+                correct: "STC" 
+            },
+            { 
+                q: "What is the content of the destination operand and status flags after:\nMOV AH, ABH\nSAHF", 
+                options: ["ah=ab; sf=1; zf=0; af=0; pf=1; cf=1; of=0", "ah=ab; sf=1; zf=0; af=0; pf=0; cf=0; of=0", "ah=ab; sf=1; zf=0; af=0; pf=0; cf=1; of=0", "ah=ab; sf=1; zf=0; af=0; pf=0; cf=1; of=1"], 
+                correct: "ah=ab; sf=1; zf=0; af=0; pf=1; cf=1; of=0" 
+            },
+            { 
+                q: "It is a flag instruction that clears the content of the carry flag.", 
+                options: ["SAHF", "CLC", "LAHF", "STC"], 
+                correct: "CLC" 
+            },
+            { 
+                q: "It is a flag instruction that pushes the status register onto the stack.", 
+                options: ["POPF", "JMP", "PUSHF", "CMC"], 
+                correct: "PUSHF" 
+            },
+            { 
+                q: "It is a control transfer instructions that jumps if the value of the ZF=0 or SF=OF.", 
+                options: ["JG", "JLE", "JGE", "JL"], 
+                correct: "JG" 
+            }
+        ];
+
+        let questions = JSON.parse(JSON.stringify(originalQuestionsData));
+        let currentIndex = 0;
+        let score = 0;
+        let answeredState = new Array(questions.length).fill(false);
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const currentQ = questions[currentIndex];
+            const isAnswered = answeredState[currentIndex];
+            
+            document.getElementById('questionCounter').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = currentQ.q;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            currentQ.options.forEach(optText => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = optText;
+                
+                if (isAnswered) {
+                    div.classList.add('disabled');
+                    if (optText === currentQ.correct) div.classList.add('correct');
+                    else if (optText === currentQ.userAnswer) div.classList.add('incorrect');
+                } else {
+                    div.onclick = () => {
+                        currentQ.userAnswer = optText;
+                        answeredState[currentIndex] = true;
+                        if (optText === currentQ.correct) score++;
+                        document.getElementById('scoreDisplay').textContent = score;
+                        loadQuestion();
+                    };
+                }
+                container.appendChild(div);
+            });
+        }
+
+        function navigate(dir) {
+            currentIndex += dir;
+            loadQuestion();
+        }
+
+        function jumpToQuestion() {
+            const val = parseInt(document.getElementById('jumpInput').value);
+            if (val >= 1 && val <= questions.length) {
+                currentIndex = val - 1;
+                loadQuestion();
+            }
+        }
+
+        function shuffleQuestions() {
+            shuffleArray(questions);
+            currentIndex = 0;
+            score = 0;
+            answeredState.fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        function resetQuiz() {
+            questions = JSON.parse(JSON.stringify(originalQuestionsData));
+            currentIndex = 0;
+            score = 0;
+            answeredState.fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
