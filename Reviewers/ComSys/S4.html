@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Integration & Architecture Reviewer</title>
+    <title>System Integration & Architecture Complete Reviewer</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -191,19 +191,19 @@
         <div class="controls">
             <div class="control-group">
                 <label for="jumpInput">Jump to:</label>
-                <input type="number" id="jumpInput" min="1" max="115" placeholder="1-115">
+                <input type="number" id="jumpInput" min="1" max="175" placeholder="1-175">
                 <button onclick="jumpToQuestion()">Go</button>
             </div>
             <button onclick="shuffleQuestions()">Shuffle Questions</button>
             <label class="toggle-switch">
                 <input type="checkbox" id="shuffleOptionsToggle" checked>
-                Shuffle Choices Automatically
+                Shuffle Choices
             </label>
             <button onclick="resetQuiz()">Reset Reviewer</button>
         </div>
 
         <div class="question-header">
-            <div class="question-number" id="questionCounter">Question 1 of 115</div>
+            <div class="question-number" id="questionCounter">Question 1 of 175</div>
             <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
         </div>
 
@@ -244,6 +244,7 @@
             { q: "Different types of adaptor are required depending on the type of composition.", options: ["True", "False"], correct: "True" },
             { q: "Different types of adaptor are not required depending on the type of composition.", options: ["True", "False"], correct: "False" },
             { q: "The emergent properties of component compositions be predicted", options: ["Emergent Property Prediction", "Component Certification", "Component trustworthiness"], correct: "Emergent Property Prediction" },
+            { q: "Components developed for a specific application usually have to be generalised to make them reusable.", options: ["False", "True"], correct: "True" },
             { q: "Concurrent processing to enhance performance.", options: ["Resource sharing", "Openness", "Concurrency"], correct: "Concurrency" },
             { q: "The overall system is not designed to take advantage of the computational power and storage of a large number of networked computers.", options: ["False", "True"], correct: "False" },
             { q: "Software is deployed on a server (or more commonly a number of servers) and is accessed through a web browser.", options: ["True", "False"], correct: "True" },
@@ -280,11 +281,12 @@
             { q: "Service-oriented architecture is not an approach to structuring a software system as a set of separate, stateless services.", options: ["False", "True"], correct: "False" },
             { q: "It should be possible to add more resources to a system to cope with increasing numbers of users.", options: ["Manageability", "Distribution", "Size"], correct: "Size" },
             { q: "Components for reuse may be specially constructed by generalising existing components.", options: ["False", "True"], correct: "True" },
+            { q: "Composition involves integrating components with each other and with the component infrastructure.", options: ["False", "True"], correct: "True" },
             { q: "What is Quality of Service?", options: ["should include mechanisms for discovering if a component of the system has failed.", "it is inevitable that failures will occur, so the system has to be designed to be resilient to these failures.", "offered by a distributed system reflects the system's ability to deliver its services dependably and with a response time and throughput that is acceptable to its users."], correct: "offered by a distributed system reflects the system's ability to deliver its services dependably and with a response time and throughput that is acceptable to its users." },
             { q: "There is no distinction in a distributed component architecture between clients and servers.", options: ["False", "True"], correct: "True" },
             { q: "The server no maintains the user's data and state during an interaction session.", options: ["False", "True"], correct: "False" },
             { q: "Access control, where service customers create individual accounts for their staff and define the resources and functions that are accessible to each of their users.", options: ["False", "True"], correct: "True" },
-            { q: "What is Component-based development?", options: ["components developed using different approaches to work together.", "provides a service without regard to where the component is executing or its programming language.", "is an approach to software development that relies on the reuse of entities called 'software components."], correct: "is an approach to software development that relies on the reuse of entities called 'software components." },
+            { q: "What is Component-based development?", options: ["components developed using different approaches to work together.", "provides a service without regard to where the component is executing or its programming language .", "is an approach to software development that relies on the reuse of entities called 'software components."], correct: "is an approach to software development that relies on the reuse of entities called 'software components." },
             { q: "In 1996, the 1st test flight of the Ariane 5 rocket ended in disaster when the launcher went out of control 47 seconds after take off.", options: ["True", "False"], correct: "False" },
             { q: "More complex than a thin client model especially for management.", options: ["False", "True"], correct: "True" },
             { q: "Can system failures be detected, contained and repaired", options: ["Failure management", "Scalability", "Security"], correct: "Failure management" },
@@ -327,7 +329,7 @@
             { q: "Computer attributes Constraints imposed on the software by the hardware platform.", options: ["True", "False"], correct: "True" },
             { q: "Project attributes Concerned with the particular characteristics of the hardware development project.", options: ["True", "False"], correct: "False" },
             { q: "Describes the approach, resources, and schedule used for system validation.", options: ["Validation plan", "Configuration management plan", "Quality plan"], correct: "Validation plan" },
-            { q: "This are normally used to illustrate the project schedule.", options: ["bar chart", "validation plan", "graphical Notation"], correct: "bar chart" },
+            { q: "This are normally used to illustrate the project schedule.", options: ["bar chart", "validation plan", "graphical Notation"], correct: "graphical Notation" },
             { q: "It support composite processes such as ordering.", options: ["Utility Services", "Business Services", "Coordination Services"], correct: "Coordination Services" },
             { q: "Starts with the service requirements and defines the operation names and parameters associated with the service.", options: ["Message design", "WSDL description", "Logical interface design"], correct: "Logical interface design" },
             { q: "External services may not have modified by the service provider thus invalidating tests which have been completed.", options: ["False", "True"], correct: "False" },
@@ -337,6 +339,7 @@
             { q: "It looks ahead for several months and decides on the features that should be included in a release of a system.", options: ["Validation Planning", "Release Planning", "Iteration Planning"], correct: "Release Planning" },
             { q: "It is where code is modified a size estimate equivalent to the number of lines of new source code is computed.", options: ["Green-box", "Black-box", "White-box"], correct: "White-box" },
             { q: "EAM is the adaptation adjustment multiplier computed from the costs of changing the reused code.", options: ["True", "False"], correct: "False" },
+            { q: "A company takes on a project in a new domain. The client has not defined the process to be used and has not allowed time for risk analysis. The company has a CMM level 2 rating.", options: ["True", "False"], correct: "False" },
             { q: "Product attributes Concerned with required characteristics of the software product being not developed.", options: ["False", "True"], correct: "False" },
             { q: "The overall system is designed to take advantage of the computational power and storage of a large number of networked computers.", options: ["False", "True"], correct: "True" },
             { q: "This is associated with a specific business function e.g., in a university, student registration.", options: ["Utility Services", "Coordination Services", "Business Services"], correct: "Business Services" },
@@ -360,6 +363,7 @@
             { q: "It may be difficult to invoke compensating actions in external services as these may rely on the failure of other services which cannot be simulated.", options: ["False", "True"], correct: "True" },
             { q: "Coordination Services that support composite processes such as ordering.", options: ["False", "True"], correct: "True" },
             { q: "The most commonly used representation for project schedules.", options: ["graphical Notation", "bar chart", "validation plan"], correct: "bar chart" },
+            { q: "A company takes on a project in a new domain. The client has not defined the process to be used and has not allowed time for risk analysis. The company has a CMM level 3 rating.", options: ["False", "True"], correct: "False" },
             { q: "Project attributes Concerned with the particular characteristics of the software development project.", options: ["False", "True"], correct: "True" },
             { q: "There are points in the schedule against which you can assess progress.", options: ["Milestones", "Deliverables", "Quality plan"], correct: "Milestones" },
             { q: "In inter-organisational systems, not separate workflows are created for each organisation and linked through message exchange.", options: ["True", "False"], correct: "False" },
@@ -377,7 +381,7 @@
             { q: "The major problem with component validation is that the component specification may not be sufficiently detailed to allow you to develop a complete set of component tests.", options: ["False", "True"], correct: "True" },
             { q: "It is where the presentation layer is implemented on the client and all other layers (data management, application processing and database) are implemented on a server.", options: ["Failure management", "Thin-client model", "Fat-client model"], correct: "Thin-client model" },
             { q: "Graphical workflow notations, such as BPMN, are more readable and WS-BPEL can be generated from them.", options: ["False", "True"], correct: "True" },
-            { q: "$PM=(ASLOC^{*}AT/100)/ATPROD.$", options: ["False", "True"], correct: "True" },
+            { q: "Testing is intended to find defects and demonstrate that a system meets its functional and functional requirements.", options: ["False", "True"], correct: "True" },
             { q: "ASLOC is the number of lines of generated code.", options: ["True", "False"], correct: "True" },
             { q: "In 1996, the 1st test flight of the Ariane 5 rocket ended in disaster when the launcher went out of control 37 seconds after take off.", options: ["True", "False"], correct: "True" },
             { q: "Access control, where service customers create individual accounts for their staff and define the resources and functions that are not accessible to each of their users.", options: ["True", "False"], correct: "False" },
@@ -398,7 +402,6 @@
         let score = 0;
         let answeredState = new Array(questions.length).fill(false);
 
-        // Utility to shuffle an array (Fisher-Yates)
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -418,16 +421,13 @@
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
 
-            // Apply choice shuffling if enabled and not yet answered
             let displayOptions = [...currentQ.options];
             if (!isAnswered && document.getElementById('shuffleOptionsToggle').checked) {
                 shuffleArray(displayOptions);
             } else if (isAnswered) {
-                // If already answered, keep the order we rendered it in originally
                 displayOptions = currentQ.displayedOptions || [...currentQ.options];
             }
             
-            // Store the displayed order so it persists when navigating back
             currentQ.displayedOptions = displayOptions;
 
             displayOptions.forEach(optionText => {
@@ -466,7 +466,6 @@
                 document.getElementById('scoreDisplay').textContent = score;
             } else {
                 element.classList.add('incorrect');
-                // Highlight the correct one
                 allOptions.forEach(opt => {
                     if (opt.textContent === currentQ.correct) {
                         opt.classList.add('correct');
@@ -516,12 +515,10 @@
             loadQuestion();
         }
 
-        // Allow pressing Enter in the jump input
         document.getElementById('jumpInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') jumpToQuestion();
         });
 
-        // Initial Load
         loadQuestion();
     </script>
 </body>
