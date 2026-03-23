@@ -3,437 +3,405 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HCI Ultimate Reviewer (98 Questions)</title>
+    <title>HCI Research Methods Reviewer</title>
     <style>
         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #0f172a;
-            --border: #e2e8f0;
-            --success: #22c55e;
-            --error: #ef4444;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --correct-bg: #dcfce7;
+            --correct-border: #22c55e;
+            --correct-text: #166534;
+            --incorrect-bg: #fee2e2;
+            --incorrect-border: #ef4444;
+            --incorrect-text: #991b1b;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
         }
 
-        .container {
-            background-color: var(--card);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        .reviewer-container {
+            background-color: var(--card-bg);
             width: 100%;
-            max-width: 700px;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            box-sizing: border-box;
         }
 
-        .header {
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--text);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .question-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border);
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        .status-badge {
-            background-color: #f1f5f9;
-            padding: 0.5rem 1rem;
-            border-radius: 99px;
-            font-size: 0.9rem;
+        .question-number {
             font-weight: 600;
-            color: #475569;
-        }
-
-        .score-badge {
-            background-color: #eff6ff;
             color: var(--primary);
-            padding: 0.5rem 1rem;
-            border-radius: 99px;
-            font-weight: 700;
+            font-size: 1.1rem;
         }
 
-        .toolbar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 2rem;
-        }
-
-        select {
-            flex: 1;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background-color: white;
-            cursor: pointer;
-        }
-
-        .btn-shuffle {
-            background-color: #7c3aed;
-            color: white;
-            border: none;
-            padding: 0 1.5rem;
-            border-radius: 8px;
+        .score-display {
             font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-shuffle:hover { background-color: #6d28d9; }
-
-        .question-area {
-            min-height: 150px;
+            color: var(--text-light);
         }
 
         .question-text {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
             line-height: 1.5;
+            margin-bottom: 25px;
+            white-space: pre-wrap;
         }
 
-        .options-grid {
+        .options-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            margin-bottom: 30px;
         }
 
-        .option-btn {
-            padding: 1rem;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            background: white;
-            text-align: left;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text);
-        }
-
-        .option-btn:hover:not(:disabled) {
-            border-color: var(--primary);
-            background-color: #f8fafc;
-        }
-
-        .option-btn:disabled { cursor: default; }
-
-        .correct {
-            background-color: #dcfce7 !important;
-            border-color: var(--success) !important;
-            color: #14532d;
-        }
-
-        .wrong {
-            background-color: #fee2e2 !important;
-            border-color: var(--error) !important;
-            color: #7f1d1d;
-            opacity: 0.8;
-        }
-
-        .feedback {
-            margin-top: 1.5rem;
-            padding: 1rem;
+        .option {
+            background-color: var(--bg);
+            border: 2px solid transparent;
+            padding: 15px 20px;
             border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            display: none;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.2s;
         }
 
-        .footer {
+        .option:hover:not(.disabled) {
+            background-color: #e5e7eb;
+        }
+
+        .option.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+            font-weight: 600;
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-bg);
+            border-color: var(--incorrect-border);
+            color: var(--incorrect-text);
+            font-weight: 600;
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .navigation {
             display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
+            justify-content: space-between;
+            border-top: 2px solid var(--bg);
+            padding-top: 20px;
         }
 
         .nav-btn {
-            flex: 1;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
+            padding: 10px 24px;
             font-size: 1rem;
-            background-color: var(--primary);
-            color: white;
         }
 
         .nav-btn:disabled {
-            background-color: #cbd5e1;
+            background-color: #9ca3af;
             cursor: not-allowed;
         }
 
-        .nav-btn.secondary {
-            background-color: white;
-            border: 2px solid #cbd5e1;
-            color: #64748b;
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-switch input {
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="container" id="container">
-    <div class="header">
-        <span class="status-badge" id="progress">Question 1/98</span>
-        <span class="score-badge" id="score">Score: 0</span>
+    <div class="reviewer-container">
+        <h1>HCI Research Methods Reviewer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="jumpInput">Jump to:</label>
+                <input type="number" id="jumpInput" min="1" max="49" placeholder="1-49">
+                <button onclick="jumpToQuestion()">Go</button>
+            </div>
+            <button onclick="shuffleQuestions()">Shuffle Questions</button>
+            <label class="toggle-switch">
+                <input type="checkbox" id="shuffleOptionsToggle" checked>
+                Shuffle Choices Automatically
+            </label>
+            <button onclick="resetQuiz()">Reset Reviewer</button>
+        </div>
+
+        <div class="question-header">
+            <div class="question-number" id="questionCounter">Question 1 of 49</div>
+            <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
+        </div>
+
+        <div class="question-text" id="questionText">Loading...</div>
+        
+        <div class="options-container" id="optionsContainer">
+            </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next</button>
+        </div>
     </div>
 
-    <div class="toolbar">
-        <select id="jumpSelect" onchange="jumpToQuestion()"></select>
-        <button class="btn-shuffle" onclick="shuffleQuestions()">Shuffle Questions</button>
-    </div>
+    <script>
+        const originalQuestionsData = [
+            { q: "Qualitative data is best used to answer which type of questions?", options: ["Why?", "What?", "Who?", "How many?"], correct: "Why?" },
+            { q: "Which sampling technique gives every subject an equal chance of being selected?", options: ["Convenience sampling", "Judgement sampling", "Probability sampling", "Snowball sampling"], correct: "Probability sampling" },
+            { q: "What does a 95% confidence level mean in sampling?", options: ["95% of the questions are answered", "You are 95% confident the results fall within a certain range", "95% of the sample is accurate", "95% of the population is surveyed"], correct: "You are 95% confident the results fall within a certain range" },
+            { q: "Which of the following is a type of quantitative data collection method?", options: ["Focus group", "Questionnaire", "Case study", "Observation"], correct: "Questionnaire" },
+            { q: "What is a drawback of web-based questionnaires?", options: ["They are always accurate", "They are expensive", "They require face-to-face interaction", "They exclude people without internet access"], correct: "They exclude people without internet access" },
+            { q: "Which observation type involves the researcher doing everything the participants do?", options: ["Balanced participation", "Total participation", "Active participation", "Passive participation"], correct: "Total participation" },
+            { q: "What type of case study explains practices using theories?", options: ["Illustrative", "Explanatory", "Experimental", "Descriptive"], correct: "Explanatory" },
+            { q: "Which interview type uses a fixed set of questions with little variation?", options: ["Structured", "Informal", "Unstructured", "Semi-structured"], correct: "Structured" },
+            { q: "What is a major drawback of surveys?", options: ["They require interviews", "They can lead to biased data", "They are expensive", "They provide deep insights"], correct: "They can lead to biased data" },
+            { q: "What is the main advantage of interviews in HCI research?", options: ["They are always unbiased", "They are fast", "They allow deep exploration", "They provide shallow data"], correct: "They allow deep exploration" },
+            { q: "Your participant cannot install your software but can share their screen. What challenge are you facing?", options: ["Data storage", "Recruitment", "Ethical concerns", "Software compatibility"], correct: "Software compatibility" },
+            { q: "You are analyzing forum posts to understand how users discuss mental health. What ethical issue must you consider?", options: ["Data transfer", "Software licensing", "Recruitment strategy", "Informed consent"], correct: "Informed consent" },
+            { q: "You are designing an online study and want to ensure participants understand the task. What should you include?", options: ["Incentive only", "CAPTCHA", "Introductory description", "Software installation guide"], correct: "Introductory description" },
+            { q: "You want to recruit hundreds of participants quickly and cheaply. What method should you consider?", options: ["In-person interviews", "Diary study", "Field study", "Crowdsourcing"], correct: "Crowdsourcing" },
+            { q: "You pair a small lab study with a crowdsourced study. What are you trying to achieve?", options: ["Balance feedback and scale", "Avoid ethical issues", "Reduce cost", "Eliminate bias"], correct: "Balance feedback and scale" },
+            { q: "You use microwork platforms to outsource small tasks. What technique are you using?", options: ["RFID", "Human-assisted computation", "Participatory design", "Ethnography"], correct: "Human-assisted computation" },
+            { q: "You embed sensors in clothing to monitor health. What type of computing is this?", options: ["Mobile computing", "Cloud computing", "Ubiquitous computing", "Desktop computing"], correct: "Ubiquitous computing" },
+            { q: "You use Arduino to build a temperature sensor. What kind of platform is Arduino?", options: ["Cloud-based", "Wearable", "Proprietary", "Low-cost development"], correct: "Low-cost development" },
+            { q: "You design a wearable device and want to understand user needs before building it. What should you conduct?", options: ["CAPTCHA", "Web survey", "Sensor calibration", "Needs assessment"], correct: "Needs assessment" },
+            { q: "What is the primary purpose of data collection in research?", options: ["To create advertisements", "To entertain participants", "To gather opinions", "To answer research questions and test hypotheses"], correct: "To answer research questions and test hypotheses" },
+            { q: "Which of the following is a benefit of data collection?", options: ["It reduces accuracy", "It avoids decision-making", "It wastes time", "It helps identify problems"], correct: "It helps identify problems" },
+            { q: "What kind of survey question asks for demographic information like gender?", options: ["Open-ended", "Unordered closed-ended", "Likert scale", "Ordered response"], correct: "Unordered closed-ended" },
+            { q: "What combination is recommended to avoid recall bias in interviews?", options: ["Case studies and focus groups", "Observation and interviews", "Questionnaires and experiments", "Interviews and surveys"], correct: "Observation and interviews" },
+            { q: "You are conducting a usability study remotely. Your participant shares their screen and begins working while you observe and ask questions. What type of study are you conducting?", options: ["Contextual inquiry", "Diary study", "A/B testing", "Ethnographic study"], correct: "Contextual inquiry" },
+            { q: "You want to study how users interact with a new mobile app. What is a potential challenge?", options: ["Incompatibility with online tools", "No ethical concerns", "Too much data", "Lack of participants"], correct: "Incompatibility with online tools" },
+            { q: "You are using Zoom to conduct a usability test. What feature is most critical for this study?", options: ["Screen sharing", "Breakout rooms", "Chat", "Polls"], correct: "Screen sharing" },
+            { q: "You use reCAPTCHA on your website to digitize old books. What are you applying?", options: ["Usability testing", "Web scraping", "API integration", "Human computation"], correct: "Human computation" },
+            { q: "You run a crowdsourced study but can't observe participants directly. What is a drawback?", options: ["High cost", "Low recruitment", "Lack of feedback", "Complex software"], correct: "Lack of feedback" },
+            { q: "You use a custom web app to log user interactions. What infrastructure are you using?", options: ["Homegrown software", "API", "RFID", "Arduino"], correct: "Homegrown software" },
+            { q: "You face issues with transferring sensor data to your server. What challenge is this?", options: ["Data transfer", "Consent", "Usability", "Recruitment"], correct: "Data transfer" },
+            { q: "You read Marc Weiser's article on 'The Computer for the 21st Century.' What concept are you exploring?", options: ["Online consent", "CAPTCHA", "Crowdsourcing", "Embodied virtuality"], correct: "Embodied virtuality" },
+            { q: "What is the term for the entire group researchers want to generalize their findings to?", options: ["Control group", "Target population", "Sample", "Accessible population"], correct: "Target population" },
+            { q: "Which type of question allows respondents to answer freely?", options: ["Closed-ended", "Multiple choice", "Open-ended", "Likert scale"], correct: "Open-ended" },
+            { q: "Which method is best for studying oral cultures?", options: ["Interviews or ethnography", "Surveys", "Web-based questionnaires", "Paper-pencil questionnaires"], correct: "Interviews or ethnography" },
+            { q: "You are studying how conference information spreads on Twitter. What type of research is this?", options: ["Usability testing", "Sensor-based study", "Social media analysis", "Ethnographic"], correct: "Social media analysis" },
+            { q: "You want to reduce bias in your study. What is a benefit of crowdsourcing?", options: ["Controlled environment", "Participants unaware of study context", "Limited data", "Direct observation"], correct: "Participants unaware of study context" },
+            { q: "You collect data from a smart thermostat while the user is away. What concept does this illustrate?", options: ["Internet of Things", "Human computation", "Online survey", "CAPTCHA"], correct: "Internet of Things" },
+            { q: "You analyze usage logs from smart glasses. What method are you applying?", options: ["Usage log analysis", "Participatory design", "A/B testing", "CAPTCHA"], correct: "Usage log analysis" },
+            { q: "What is a Likert scale used for?", options: ["Measuring temperature", "Observing behavior", "Calculating sample size", "Ranking preferences"], correct: "Ranking preferences" },
+            { q: "You want to compare two versions of your website to see which performs better. What method should you use?", options: ["A/B testing", "Think-aloud protocol", "Web log analysis", "Online survey"], correct: "A/B testing" },
+            { q: "You post a survey link on social media to recruit participants. What advantage are you leveraging?", options: ["Limited bias", "Large participant pool", "High data accuracy", "Controlled environment"], correct: "Large participant pool" },
+            { q: "You conduct interviews and field studies to understand how users interact with wearables. What research method are you using?", options: ["Experimental", "Qualitative", "Quantitative", "Crowdsourced"], correct: "Qualitative" },
+            { q: "Quantitative data is typically expressed in what form?", options: ["Numerical", "Text", "Images", "Audio"], correct: "Numerical" },
+            { q: "You want to study how people interpret radiology images using human computation. What is your goal?", options: ["Entertainment", "Data encryption", "Social support", "Training with problem solving"], correct: "Training with problem solving" },
+            { q: "You design a CAPTCHA that is hard for bots but easy for humans. What principle are you applying?", options: ["Online consent", "Human computation", "Usability", "Sensor tracking"], correct: "Human computation" },
+            { q: "You attend the UbiComp conference to present your sensor-based HCI research. What field are you contributing to?", options: ["Ubiquitous computing", "Web development", "Online surveys", "Human computation"], correct: "Ubiquitous computing" },
+            { q: "What is the role of the interviewer in a structured interview?", options: ["To insert opinions", "To guide the conversation freely", "To remain neutral and consistent", "To avoid asking questions"], correct: "To remain neutral and consistent" },
+            { q: "You want to understand how users search for health information online. What method should you use?", options: ["Sensor logs", "Web search analysis", "RFID tracking", "CAPTCHA"], correct: "Web search analysis" },
+            { q: "You study how users interact with sensors in public spaces. What type of computing is involved?", options: ["Desktop computing", "Cloud computing", "Ubiquitous computing", "Mobile computing"], correct: "Ubiquitous computing" }
+        ];
 
-    <div class="question-area">
-        <div class="question-text" id="question">Loading...</div>
-        <div class="options-grid" id="options"></div>
-    </div>
+        let questions = JSON.parse(JSON.stringify(originalQuestionsData));
+        let currentIndex = 0;
+        let score = 0;
+        let answeredState = new Array(questions.length).fill(false);
 
-    <div class="feedback" id="feedback"></div>
-
-    <div class="footer">
-        <button class="nav-btn secondary" id="prevBtn" onclick="move(-1)" disabled>Previous</button>
-        <button class="nav-btn" id="nextBtn" onclick="move(1)">Next</button>
-    </div>
-</div>
-
-<script>
-    /* Data Source: HCI-F1-2.pdf 
-       Total Items: 98
-       Note: Red answers from PDF have been corrected based on standard HCI principles.
-    */
-    const sourceData = [
-        { q: "What does HCI stand for?", options: ["Hybrid Computing Interface", "Human Cognitive Interface", "Human-Computer Interaction", "Human-Centered Innovation"], a: 2 },
-        { q: "Who is the author of The Design of Everyday Things?", options: ["Steve Krug", "Ben Shneiderman", "Jakob Nielsen", "Don Norman"], a: 3 },
-        { q: "What is the focus of industrial designers?", options: ["Emotional impact", "Interface layout", "Form and material"], a: 2 },
-        { q: "Which type of designer focuses on usability and understandability?", options: ["Experience designer", "Graphic designer", "Industrial designer", "Interaction designer"], a: 3 },
-        { q: "What are 'signifiers' used for?", options: ["To store user data", "To indicate where actions take place", "To decorate the interface", "To reduce memory load"], a: 1 },
-        { q: "What does Ben Shneiderman's rule 'Strive for Consistency' mean?", options: ["Change layout frequently", "Use consistent design", "Avoid user feedback", "Use random colors"], a: 1 },
-        { q: "Which rule helps expert users perform tasks faster?", options: ["Add constraints", "Offer shortcuts", "Reduce memory load", "Use signifiers"], a: 1 },
-        { q: "What does 'Design Dialog to Yield Closure' mean?", options: ["Avoid user interaction", "Use pop-ups", "Keep users guessing", "Provide clear task completion feedback"], a: 3 },
-        { q: "What is the purpose of error handling in UI design?", options: ["To help users understand and fix issues", "To log errors silently", "To hide system flaws", "To confuse users"], a: 0 },
-        { q: "What does 'Permit Easy Reversal of Actions' refer to?", options: ["Disabling undo", "Allowing users to go back or undo actions", "Locking user input", "Encrypting user data"], a: 1 },
-        { q: "A usability expert is reviewing an interface without knowing the tasks users will perform. What type of testing is this?", options: ["User-based testing", "Summative testing", "Validation testing", "Expert-based testing"], a: 3 },
-        { q: "A researcher collects data on how long users take to complete tasks. What metric is being measured?", options: ["Task performance", "Clickstream", "Time performance", "User satisfaction"], a: 2 },
-        { q: "A team uses software to scan their interface for font consistency and button sizes. What testing method is this?", options: ["Expert-based", "Automated usability testing", "Summative testing", "Formative testing"], a: 1 },
-        { q: "A company wants to test a new smartwatch interface. What should they focus on?", options: ["Network speed", "Physical interaction usability", "Screen resolution", "Battery life"], a: 1 },
-        { q: "A usability test is conducted using a high-fidelity prototype. What type of testing is this?", options: ["Summative", "Formative", "Expert-based", "Automated"], a: 0 },
-        { q: "A team wants to understand where users struggle in the interface. What method should they use?", options: ["Usability testing", "Experimental design", "Survey analysis", "Ethnographic observation"], a: 0 },
-        { q: "A usability test is conducted in a fixed lab. What is a potential benefit?", options: ["Remote access", "Controlled environment", "Real-time feedback", "Natural user behavior"], a: 1 },
-        { q: "A usability test is conducted with wireframes. What type of prototype is this?", options: ["Functional", "Low-fidelity", "Final version", "High-fidelity"], a: 1 },
-        { q: "A usability test is conducted with a moderator asking questions during the session. What type of testing is this?", options: ["Formative", "Validation", "Summative", "Automated"], a: 0 },
-        { q: "A usability test is conducted with users performing tasks in a workplace setting. What is this called?", options: ["Field usability testing", "In-lab testing", "Remote testing", "Expert-based testing"], a: 0 },
-        { q: "What principle emphasizes placing users at the center of the design process?", options: ["Visual Design", "Cognitive Design", "Human-Centered Design", "Interface Mapping"], a: 2 },
-        { q: "Which of the following is NOT part of Norman's HCD process?", options: ["Monetize", "Iterate", "Define", "Observe"], a: 0 },
-        { q: "What are 'affordances' in design?", options: ["Error messages", "Indicators of how a product should be used", "Visual aesthetics", "Cost-saving features"], a: 1 },
-        { q: "What does 'feedback' in interaction design refer to?", options: ["User complaints", "Error logs", "System responses to user actions", "Marketing surveys"], a: 2 },
-        { q: "Which of the following is a tangible user interface example?", options: ["Smartphone", "Laptop", "Reactable", "Smartwatch"], a: 2 },
-        { q: "A company is testing a new mobile app with users who accidentally trigger features while scrolling. What type of testing is most appropriate?", options: ["Usability testing on mobile devices", "Expert-based testing", "Automated testing", "Beta testing"], a: 0 },
-        { q: "A team wants to evaluate a paper prototype of a new dashboard. Which type of testing should they use?", options: ["Summative testing", "Validation testing", "Automated testing", "Formative testing"], a: 3 },
-        { q: "A team wants to test a new interface with users from different regions. What method is best?", options: ["In-lab testing", "Validation testing", "Expert review", "Remote usability testing"], a: 3 },
-        { q: "A company uses usability testing to evaluate a new feature before release. What is this called?", options: ["Summative testing", "Validation testing", "Formative testing", "Beta testing"], a: 3 },
-        { q: "A usability test is conducted with users performing tasks without guidance. What is this approach?", options: ["Task-driven usability testing", "Controlled testing", "Expert review", "Naturalistic observation"], a: 0 },
-        { q: "A team wants to know how many users can complete a task within 1 minute. What type of test is this?", options: ["Expert-based", "Formative", "Validation", "Summative"], a: 3 },
-        { q: "What does 'discoverability' refer to in interaction design?", options: ["How users feel about a product", "How fast a product loads", "How secure a system is", "How users find possible actions"], a: 3 },
-        { q: "What is a 'conceptual model'?", options: ["A visual layout", "A database schema", "A user's mental understanding of how a system works", "A wireframe"], a: 2 },
-        { q: "What should feedback be according to Shneiderman?", options: ["Immediate and informative", "Delayed and vague", "Hidden and encrypted", "Optional and minimal"], a: 0 },
-        { q: "What does 'Reduce Short-Term Memory Load' aim to do?", options: ["Increase cognitive effort", "Make users memorize steps", "Add more features", "Simplify recognition over recall"], a: 3 },
-        { q: "A company uses a validated survey to measure user satisfaction. What metric is this?", options: ["Task performance", "Interface efficiency", "User satisfaction", "Time performance"], a: 2 },
-        { q: "A company wants to test a new interface with real users before launch. What is this called?", options: ["Usability testing", "Beta testing", "Expert review", "Automated inspection"], a: 1 },
-        { q: "What is the role of 'constraints' in design?", options: ["To increase complexity", "To limit user access", "To reduce feedback", "To challenge the design"], a: 1 },
-        { q: "A participant completes all tasks correctly but takes longer than expected. What should be analyzed?", options: ["Task abandonment", "User satisfaction", "Interface layout", "Time performance"], a: 3 },
-        { q: "A usability test reveals users often miss a key button. What should be adjusted?", options: ["Button label", "Button color", "All of the above", "Button placement"], a: 2 },
-        { q: "A usability test is conducted in users' homes via video call. What kind of testing is this?", options: ["Automated inspection", "In-lab testing", "Remote usability testing", "Expert review"], a: 2 },
-        { q: "A user struggles with a feature and the moderator asks probing questions. What type of testing is this?", options: ["Validation", "Automated", "Formative", "Summative"], a: 2 },
-        { q: "A usability test is conducted over the web with screen recording. What is a major drawback?", options: ["High cost", "Slow data collection", "Limited participant pool", "Inability to observe nonverbal cues"], a: 3 },
-        { q: "During a usability test, a participant struggles with a task and the moderator intervenes. What protocol is this aligned with?", options: ["Open-ended observation", "Ethnographic immersion", "Strict intervention protocol", "Task abandonment"], a: 2 },
-        { q: "A company wants to compare their new interface against industry benchmarks before launch. What testing type applies?", options: ["Exploratory", "Validation", "Summative", "Formative"], a: 1 },
-        { q: "A moderator avoids helping users unless they are stuck. What principle is being followed?", options: ["Passive observation", "Full immersion", "Controlled intervention", "Open-ended feedback"], a: 2 },
-        { q: "A usability test is conducted using screen mock-ups. What type of prototype is this?", options: ["Low-fidelity", "Functional prototype", "Final version", "High-fidelity"], a: 3 },
-        { q: "A usability test is conducted with only 5 participants. Why is this acceptable?", options: ["Usability testing requires large samples", "It's a survey-based test", "Small samples are sufficient to find major flaws", "It's a pilot study"], a: 2 },
-        { q: "A user completes a task incorrectly but quickly. What metric is affected?", options: ["Task performance", "Time performance", "Interface clarity", "User satisfaction"], a: 0 },
-        { q: "What is the primary goal of usability testing?", options: ["To replace traditional research methods", "To improve interface quality by identifying flaws", "To create new interfaces", "To generalize findings to other systems"], a: 1 },
-        { q: "Usability testing is most closely related to which traditional research methods?", options: ["Experimental design and ethnography", "Meta-analysis and content analysis", "Case studies and surveys", "Historical analysis and interviews"], a: 0 },
-        { q: "Which device type often requires usability testing due to multitouch and small screen size?", options: ["Mobile devices", "Desktop computers", "Printers", "Smart TVs"], a: 0 },
-        { q: "What is the main purpose of expert-based usability testing?", options: ["To simulate user behavior", "To test code functionality", "To gather user satisfaction data", "To have interface experts inspect the design"], a: 3 },
-        { q: "What is a key characteristic of formative testing?", options: ["It requires benchmark comparisons", "It uses automated tools", "It evaluates final designs", "It is exploratory and informal"], a: 3 },
-        { q: "What is the purpose of validation testing?", options: ["To explore early design ideas", "To test paper prototypes", "To compare an interface to benchmarks", "To gather qualitative feedback"], a: 2 },
-        { q: "What is measured by time performance?", options: ["Number of clicks", "Time spent on incorrect tasks", "Number of errors", "Time to complete tasks successfully"], a: 3 },
-        { q: "What is a common tool for measuring user satisfaction?", options: ["Survey", "Stopwatch", "Heatmap", "Code analyzer"], a: 0 },
-        { q: "Which type of usability testing uses software to evaluate interfaces?", options: ["Expert-based", "Formative", "Summative", "Automated"], a: 3 },
-        { q: "What is the main difference between formative and summative testing?", options: ["Formative is for final designs", "Summative uses paper prototypes", "Formative explores early concepts; summative evaluates design choices", "Summative is more informal"], a: 2 },
-        { q: "A smart mirror displays weather and news updates. What type of interface is this?", options: ["Tangible UI", "GUI", "Voice UI", "Augmented Reality"], a: 3 },
-        { q: "A user feels overwhelmed by too many options on a screen. What principle is violated?", options: ["Closure", "Affordance", "Feedback", "Reduce Memory Load"], a: 3 },
-        { q: "A user interface allows users to undo, redo, and go back easily. Which principle is applied?", options: ["Feedback", "Closure", "Mapping", "Reversal of Actions"], a: 3 },
-        { q: "A user can complete a task using keyboard shortcuts. Which rule is followed?", options: ["Mapping", "Enable Shortcuts", "Reduce Memory Load", "Feedback"], a: 1 },
-        { q: "A user interface uses familiar icons and layout. What principle is applied?", options: ["Closure", "Feedback", "Recognition over Recall", "Affordance"], a: 2 },
-        { q: "A user receives a message: 'Upload complete.' What principle is this?", options: ["Mapping", "Closure", "Feedback", "Constraint"], a: 2 },
-        { q: "A user interface uses the same color for clickable and non-clickable items. What's wrong?", options: ["Feedback", "Signifier", "Affordance", "Mapping"], a: 1 },
-        { q: "A user interface shows a progress bar during file upload. What principle is applied?", options: ["Mapping", "Affordance", "Feedback", "Closure"], a: 2 },
-        { q: "A user interface uses consistent icons across screens. What rule is followed?", options: ["Consistency", "Mapping", "Affordance", "Feedback"], a: 0 },
-        { q: "A user interface uses a calendar picker for date input. What principle is applied?", options: ["Feedback", "Closure", "Constraint", "Mapping"], a: 2 },
-        { q: "What is the 'Wizard of Oz' technique?", options: ["A test where users interact with a human pretending to be the system", "A remote usability test", "A method for automating usability tests", "A type of expert review"], a: 0 },
-        { q: "Which of the following is a benefit of remote usability testing?", options: ["Better for qualitative data", "Greater participant access", "Easy to observe nonverbal cues", "Allows for probing questions"], a: 1 },
-        { q: "What is a task list used for in usability testing?", options: ["To measure screen resolution", "To evaluate code quality", "To guide users through goal-directed tasks", "To record user feedback"], a: 2 },
-        { q: "What does task performance measure?", options: ["Interface loading speed", "Time taken to complete tasks", "User satisfaction", "Number of tasks completed correctly"], a: 3 },
-        { q: "A microwave has a button labeled 'Start' but no indication of what it does. What is missing?", options: ["Signifier", "Mapping", "Feedback", "Constraint"], a: 0 },
-        { q: "A banking app uses different colors and layouts for each screen. What rule is being broken?", options: ["Enable Shortcuts", "Offer Error Handling", "Strive for Consistency", "Support Locus of Control"], a: 2 },
-        { q: "A user expects a slider to adjust volume but it changes brightness. What's wrong?", options: ["Mapping", "Feedback", "Affordance", "Signifier"], a: 0 },
-        { q: "A user sees a red border around a required field. What is this an example of?", options: ["Mapping", "Constraint", "Feedback", "Signifier"], a: 3 },
-        { q: "A user can preview changes before applying them. What principle is applied?", options: ["Closure", "Mapping", "Feedback", "Reversal of Actions"], a: 3 },
-        { q: "A user presses a button and nothing happens. What is missing?", options: ["Feedback", "Constraint", "Signifier", "Mapping"], a: 0 },
-        { q: "A user clicks 'Submit' and sees a confirmation message. What principle is applied?", options: ["Closure", "Mapping", "Feedback", "Affordance"], a: 0 },
-        { q: "A user interface shows a tooltip when hovering over a button. What is this?", options: ["Signifier", "Feedback", "Constraint", "Mapping"], a: 0 },
-        { q: "What is a key difference between classical research and usability testing?", options: ["Usability testing uses more participants", "Classical research focuses on fixing interface flaws", "Usability testing does not aim for generalization", "Classical research is informal"], a: 2 },
-        { q: "When is summative usability testing typically conducted?", options: ["Before any design work", "After interface release", "With high-fidelity prototypes", "During brainstorming"], a: 2 },
-        { q: "According to Rubin and Chisnell, what is the first step in usability testing?", options: ["Conduct test sessions", "Analyze data", "Develop the test plan", "Select users"], a: 2 },
-        { q: "A user interface prevents invalid inputs with dropdowns. What principle is used?", options: ["Mapping", "Feedback", "Constraint", "Affordance"], a: 2 },
-        { q: "Which of the following is NOT a type of usability testing mentioned?", options: ["Wizard of Oz", "Beta testing", "Paper prototype", "Code debugging"], a: 3 },
-        { q: "What is a key limitation of expert-based testing?", options: ["Experts cannot use prototypes", "Experts are biased", "Experts are unfamiliar with interface tasks", "Experts are too expensive"], a: 2 },
-        { q: "A user accidentally deletes a file and cannot undo the action. Which principle was violated?", options: ["Feedback", "Closure", "Consistency", "Reversal of Actions"], a: 3 },
-        { q: "A user receives a vague error message: 'Something went wrong.' What should be improved?", options: ["Affordance", "Mapping", "Error Handling", "Feedback"], a: 2 },
-        { q: "A user interface prevents submission until all fields are filled. What principle is used?", options: ["Closure", "Affordance", "Constraint", "Feedback"], a: 2 },
-        { q: "A user is forced to watch a tutorial before using the app. What principle is violated?", options: ["Mapping", "Affordance", "Internal Locus of Control", "Feedback"], a: 2 },
-        { q: "A user is confused by a button labeled 'Execute.' What's missing?", options: ["Signifier", "Mapping", "Constraint", "Feedback"], a: 0 },
-        { q: "What is a drawback of remote usability testing?", options: ["Inability to collect clickstream data", "Difficulty in providing real-time help", "High cost", "Limited participant pool"], a: 1 },
-        { q: "A user struggles to find the 'Save' button in a mobile app. What principle is lacking?", options: ["Affordance", "Discoverability", "Feedback", "Constraint"], a: 1 },
-        { q: "A user interface uses icons without labels. What might be missing?", options: ["Feedback", "Signifiers", "Closure", "Constraints"], a: 1 },
-        { q: "A user interface uses a trash icon for deleting files. What principle is this?", options: ["Mapping", "Signifier", "Feedback", "Affordance"], a: 3 },
-        { q: "A user can easily navigate a form with tab keys. Which rule is followed?", options: ["Mapping", "Closure", "Enable Shortcuts", "Feedback"], a: 2 },
-        { q: "A user interface allows users to skip tutorials. What principle is applied?", options: ["Closure", "Internal Locus of Control", "Feedback", "Mapping"], a: 1 }
-    ];
-
-    let questions = [...sourceData];
-    let currentIndex = 0;
-    let score = 0;
-    let answered = false;
-
-    // DOM Elements
-    const els = {
-        question: document.getElementById('question'),
-        options: document.getElementById('options'),
-        progress: document.getElementById('progress'),
-        score: document.getElementById('score'),
-        feedback: document.getElementById('feedback'),
-        next: document.getElementById('nextBtn'),
-        prev: document.getElementById('prevBtn'),
-        jump: document.getElementById('jumpSelect'),
-        container: document.getElementById('container')
-    };
-
-    function init() {
-        populateDropdown();
-        loadQuestion();
-    }
-
-    function populateDropdown() {
-        els.jump.innerHTML = '';
-        questions.forEach((_, i) => {
-            const opt = document.createElement('option');
-            opt.value = i;
-            opt.innerText = `Question ${i + 1}`;
-            els.jump.appendChild(opt);
-        });
-    }
-
-    function jumpToQuestion() {
-        currentIndex = parseInt(els.jump.value);
-        loadQuestion();
-    }
-
-    function shuffleQuestions() {
-        // Fisher-Yates Shuffle
-        for (let i = questions.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [questions[i], questions[j]] = [questions[j], questions[i]];
-        }
-        
-        currentIndex = 0;
-        score = 0;
-        els.score.innerText = `Score: 0`;
-        
-        populateDropdown();
-        loadQuestion();
-        
-        // Shake effect
-        els.container.style.opacity = '0.5';
-        setTimeout(() => els.container.style.opacity = '1', 200);
-    }
-
-    function loadQuestion() {
-        answered = false;
-        els.feedback.style.display = 'none';
-        els.next.disabled = true;
-
-        const q = questions[currentIndex];
-        
-        els.progress.innerText = `Question ${currentIndex + 1}/${questions.length}`;
-        els.question.innerText = q.q;
-        els.options.innerHTML = '';
-        els.jump.value = currentIndex;
-
-        q.options.forEach((opt, i) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = opt;
-            btn.onclick = () => check(i, btn);
-            els.options.appendChild(btn);
-        });
-
-        els.prev.disabled = currentIndex === 0;
-        els.next.innerText = currentIndex === questions.length - 1 ? "Finish" : "Next";
-    }
-
-    function check(idx, btn) {
-        if(answered) return;
-        answered = true;
-        const q = questions[currentIndex];
-        const all = els.options.children;
-
-        Array.from(all).forEach(b => b.disabled = true);
-
-        if (idx === q.a) {
-            btn.classList.add('correct');
-            score++;
-            els.feedback.innerText = "Correct!";
-            els.feedback.style.backgroundColor = '#dcfce7';
-            els.feedback.style.color = '#14532d';
-        } else {
-            btn.classList.add('wrong');
-            all[q.a].classList.add('correct');
-            els.feedback.innerText = "Incorrect";
-            els.feedback.style.backgroundColor = '#fee2e2';
-            els.feedback.style.color = '#7f1d1d';
+        // Utility to shuffle an array (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
         }
 
-        els.feedback.style.display = 'block';
-        els.score.innerText = `Score: ${score}`;
-        els.next.disabled = false;
-    }
+        function loadQuestion() {
+            const currentQ = questions[currentIndex];
+            const isAnswered = answeredState[currentIndex];
+            
+            document.getElementById('questionCounter').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = currentQ.q;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
 
-    function move(dir) {
-        if (dir === 1 && currentIndex < questions.length - 1) {
-            currentIndex++;
+            // Apply choice shuffling if enabled and not yet answered
+            let displayOptions = [...currentQ.options];
+            if (!isAnswered && document.getElementById('shuffleOptionsToggle').checked) {
+                shuffleArray(displayOptions);
+            } else if (isAnswered) {
+                // If already answered, keep the order we rendered it in originally
+                displayOptions = currentQ.displayedOptions || [...currentQ.options];
+            }
+            
+            // Store the displayed order so it persists when navigating back
+            currentQ.displayedOptions = displayOptions;
+
+            displayOptions.forEach(optionText => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                optDiv.textContent = optionText;
+                
+                if (isAnswered) {
+                    optDiv.classList.add('disabled');
+                    if (optionText === currentQ.correct) {
+                        optDiv.classList.add('correct');
+                    } else if (optionText === currentQ.userAnswer && currentQ.userAnswer !== currentQ.correct) {
+                        optDiv.classList.add('incorrect');
+                    }
+                } else {
+                    optDiv.onclick = () => handleAnswer(optDiv, optionText);
+                }
+                
+                optionsContainer.appendChild(optDiv);
+            });
+        }
+
+        function handleAnswer(element, selectedAnswer) {
+            if (answeredState[currentIndex]) return;
+            
+            const currentQ = questions[currentIndex];
+            currentQ.userAnswer = selectedAnswer;
+            answeredState[currentIndex] = true;
+
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => opt.classList.add('disabled'));
+
+            if (selectedAnswer === currentQ.correct) {
+                element.classList.add('correct');
+                score++;
+                document.getElementById('scoreDisplay').textContent = score;
+            } else {
+                element.classList.add('incorrect');
+                // Highlight the correct one
+                allOptions.forEach(opt => {
+                    if (opt.textContent === currentQ.correct) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+        }
+
+        function navigate(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= questions.length) currentIndex = questions.length - 1;
             loadQuestion();
-        } else if (dir === -1 && currentIndex > 0) {
-            currentIndex--;
-            loadQuestion();
-        } else if (dir === 1) {
-            alert(`Review Complete! Score: ${score}/${questions.length}`);
         }
-    }
 
-    init();
-</script>
+        function jumpToQuestion() {
+            const input = document.getElementById('jumpInput');
+            const val = parseInt(input.value);
+            if (!isNaN(val) && val >= 1 && val <= questions.length) {
+                currentIndex = val - 1;
+                loadQuestion();
+                input.value = '';
+            } else {
+                alert(`Please enter a valid number between 1 and ${questions.length}`);
+            }
+        }
 
+        function shuffleQuestions() {
+            if(confirm("This will restart the reviewer and wipe your current score. Continue?")) {
+                shuffleArray(questions);
+                resetStates();
+            }
+        }
+
+        function resetQuiz() {
+            if(confirm("This will reset the quiz back to the original order. Continue?")) {
+                questions = JSON.parse(JSON.stringify(originalQuestionsData));
+                resetStates();
+            }
+        }
+
+        function resetStates() {
+            currentIndex = 0;
+            score = 0;
+            answeredState = new Array(questions.length).fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        // Allow pressing Enter in the jump input
+        document.getElementById('jumpInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') jumpToQuestion();
+        });
+
+        // Initial Load
+        loadQuestion();
+    </script>
 </body>
 </html>
