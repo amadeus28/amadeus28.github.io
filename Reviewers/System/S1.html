@@ -3,760 +3,519 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FA3 System Integration Reviewer (Complete 86)</title>
+    <title>Software Engineering (FA1 & FA2) Reviewer</title>
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --correct-bg: #dcfce7;
+            --correct-border: #22c55e;
+            --correct-text: #166534;
+            --incorrect-bg: #fee2e2;
+            --incorrect-border: #ef4444;
+            --incorrect-text: #991b1b;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
         }
-        .container {
-            background-color: #ffffff;
+
+        .reviewer-container {
+            background-color: var(--card-bg);
             width: 100%;
-            max-width: 900px;
-            padding: 40px;
+            max-width: 800px;
             border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-            margin-top: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            box-sizing: border-box;
         }
+
         h1 {
             text-align: center;
-            color: #2c3e50;
-            margin-bottom: 25px;
-            font-size: 26px;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 15px;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--text);
         }
+
         .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .question-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 10px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
+
+        .question-number {
             font-weight: 600;
-            transition: all 0.2s;
-            font-size: 14px;
+            color: var(--primary);
+            font-size: 1.1rem;
         }
-        button:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+
+        .score-display {
+            font-weight: 600;
+            color: var(--text-light);
         }
-        .btn-nav {
-            background-color: #3498db;
-            color: white;
-        }
-        .btn-nav:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .btn-func {
-            background-color: #e67e22;
-            color: white;
-        }
-        select {
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ced4da;
-            font-family: inherit;
-            flex-grow: 1;
-            max-width: 250px;
-            cursor: pointer;
-        }
-        .question-box {
-            margin-bottom: 25px;
-            min-height: 200px;
-        }
-        .question-meta {
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #7f8c8d;
-            margin-bottom: 15px;
-            font-weight: 700;
-            display: flex;
-            justify-content: space-between;
-        }
+
         .question-text {
-            font-size: 20px;
-            font-weight: 500;
-            line-height: 1.6;
+            font-size: 1.2rem;
+            line-height: 1.5;
             margin-bottom: 25px;
-            color: #2c3e50;
+            white-space: pre-wrap;
         }
-        .options {
+
+        .options-container {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            margin-bottom: 30px;
         }
+
         .option {
-            padding: 18px 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 16px;
-            position: relative;
-            background: white;
-        }
-        .option:hover {
-            background-color: #f8f9fa;
-            border-color: #bdc3c7;
-        }
-        .option.correct {
-            background-color: #d4edda;
-            border-color: #28a745;
-            color: #155724;
-        }
-        .option.wrong {
-            background-color: #f8d7da;
-            border-color: #dc3545;
-            color: #721c24;
-        }
-        .option.correct::after {
-            content: "✓";
-            position: absolute;
-            right: 20px;
-            font-weight: bold;
-        }
-        .option.wrong::after {
-            content: "✕";
-            position: absolute;
-            right: 20px;
-            font-weight: bold;
-        }
-        .feedback {
-            margin-top: 25px;
-            padding: 20px;
+            background-color: var(--bg);
+            border: 2px solid transparent;
+            padding: 15px 20px;
             border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            display: none;
-            font-size: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.2s;
         }
-        .feedback.correct {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+
+        .option:hover:not(.disabled) {
+            background-color: #e5e7eb;
         }
-        .feedback.wrong {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+
+        .option.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+            font-weight: 600;
         }
-        .progress-container {
-            margin-top: 30px;
-            background: #ecf0f1;
-            border-radius: 4px;
-            height: 8px;
-            overflow: hidden;
+
+        .option.incorrect {
+            background-color: var(--incorrect-bg);
+            border-color: var(--incorrect-border);
+            color: var(--incorrect-text);
+            font-weight: 600;
         }
-        .progress-bar {
-            height: 100%;
-            background-color: #2ecc71;
-            width: 0%;
-            transition: width 0.3s ease;
+
+        .option.disabled {
+            cursor: default;
         }
-        .stats {
-            text-align: right;
-            margin-top: 10px;
-            font-size: 13px;
-            color: #95a5a6;
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--bg);
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            font-size: 1rem;
+        }
+
+        .nav-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-switch input {
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>FA3 System Integration Reviewer</h1>
-    
-    <div class="controls">
-        <button id="btn-prev" class="btn-nav" onclick="prevQuestion()">← Previous</button>
-        <select id="jump-select" onchange="jumpToQuestion()"></select>
-        <button id="btn-shuffle" class="btn-func" onclick="shuffleQuestions()">🔀 Randomize</button>
-        <button id="btn-next" class="btn-nav" onclick="nextQuestion()">Next →</button>
-    </div>
-
-    <div class="question-box">
-        <div class="question-meta">
-            <span id="q-number">Question 1</span>
+    <div class="reviewer-container">
+        <h1>Software Engineering (FA1 & FA2) Reviewer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="jumpInput">Jump to:</label>
+                <input type="number" id="jumpInput" min="1" max="170" placeholder="1-170">
+                <button onclick="jumpToQuestion()">Go</button>
+            </div>
+            <button onclick="shuffleQuestions()">Shuffle Questions</button>
+            <label class="toggle-switch">
+                <input type="checkbox" id="shuffleOptionsToggle" checked>
+                Shuffle Choices Automatically
+            </label>
+            <button onclick="resetQuiz()">Reset Reviewer</button>
         </div>
-        <div class="question-text" id="q-text">Loading...</div>
-        <div class="options" id="options-container"></div>
+
+        <div class="question-header">
+            <div class="question-number" id="questionCounter">Question 1 of 170</div>
+            <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
+        </div>
+
+        <div class="question-text" id="questionText">Loading...</div>
+        
+        <div class="options-container" id="optionsContainer">
+            </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next</button>
+        </div>
     </div>
 
-    <div id="feedback" class="feedback"></div>
+    <script>
+        const originalQuestionsData = [
+            { q: "What is Software?", options: ["Software that is not commissioned by a specific customer to meet their own needs.", "Software that is commissioned by a specific customer to meet their own needs.", "systems that are marketed and sold to any customer who wishes to buy them.", "The product that software professionals build and then support over the long term."], correct: "The product that software professionals build and then support over the long term." },
+            { q: "It focus on a limited marketplace to address mass consumer market. (word processing, graphics, database management)", options: ["Embedded software", "System software", "Application software", "Product-line software"], correct: "Product-line software" },
+            { q: "Software should not make wasteful use of system resources such as memory and processor cycles.", options: ["Maintainability", "No answer text provided.", "Efficiency", "Acceptability"], correct: "Efficiency" },
+            { q: "Acceptability software must be acceptable to the type of users for which it is designed.", options: ["True", "False"], correct: "True" },
+            { q: "Acceptability software must be acceptable to the type of users for which it is not- designed.", options: ["True", "False"], correct: "False" },
+            { q: "Tools provide automated or semi-automated support for the process and methods.", options: ["True", "False"], correct: "True" },
+            { q: "Technical reviews: assesses will not work products to uncover and remove errors before going to the next activity.", options: ["True", "False"], correct: "False" },
+            { q: "Requirements are hazy or nonexistent. stakeholders are unsure of what they want.", options: ["Problem", "Problem Context", "Initial Context", "Solution"], correct: "Initial Context" },
+            { q: "A generic standard that applies to any organization that wants to improve the overall quality of the products, systems, or services that it provides.", options: ["SPICE-The SPICE (ISO/ IEC15504)", "CMM-Based Appraisal for Internal Process Improvement (CBA IPI)", "No answer text provided.", "ISO 9001:2000 for Software"], correct: "ISO 9001:2000 for Software" },
+            { q: "A standard defines a set of requirements for software process assessment.", options: ["CMM-Based Appraisal for Internal Process Improvement (CBA IPI)", "ISO 9001:2000 for Software", "SPICE-The SPICE (ISO/ IEC15504)"], correct: "SPICE-The SPICE (ISO/ IEC15504)" },
+            { q: "What is Concurrent Model?", options: ["controllable as it demands considerable risk assessment expertise", "Good to develop large-scale system as software evolves as the process progresses and risk should be understood and properly reacted to", "applicable to all types of software development and provides an accurate picture of the current state of a project."], correct: "applicable to all types of software development and provides an accurate picture of the current state of a project." },
+            { q: "External specifications for each component to be constructed are developed and a component design is created.", options: ["Planning", "Low-Level Design", "High-Level Design", "Development"], correct: "High-Level Design" },
+            { q: "The component level design is refined and reviewed. Code is generated, reviewed, compiled, and tested", options: ["True", "False"], correct: "True" },
+            { q: "Software is embodied knowledge that is initially disappeared, tacit and complete.", options: ["False", "True"], correct: "False" },
+            { q: "Parallel process flow executes one or more activities in parallel with other activities.", options: ["False", "True"], correct: "True" },
+            { q: "A stand-alone programs for specific needs.", options: ["Application software", "Mobile Software", "System software", "Engineering/scientific software"], correct: "Application software" },
+            { q: "The establishment and use of sound engineering principles in order to obtain economically software that is reliable and works efficiently on real machines.", options: ["System Programming", "Software engineering", "System Engineering", "Software Programming"], correct: "Software engineering" },
+            { q: "Software Process is a collection of the unfamiliar activities, actions and tasks that are not performed when some work product is to be created.", options: ["False", "True"], correct: "False" },
+            { q: "Communication: communicate with customer to understand objectives and gather requirements.", options: ["True", "False"], correct: "True" },
+            { q: "Deployment: Delivered to the customer who evaluates the products and provides feedback based on the evaluation.", options: ["False", "True"], correct: "True" },
+            { q: "Deployment: Delivered to the customer who not evaluates the products and will not provide feedback based on the evaluation.", options: ["True", "False"], correct: "False" },
+            { q: "The costs of software on a PC are often greater than the hardware cost.", options: ["Software costs", "No answer text provided.", "System costs", "Software engineering"], correct: "Software costs" },
+            { q: "A description of the prototyping process would be presented here.", options: ["Problem", "Initial Context", "No answer text provided.", "Solution"], correct: "Solution" },
+            { q: "What is Generic Process Model?", options: ["process framework for software engineering defines five framework activities- communication, planning, modeling, construction, and deployment.", "No answer text provided.", "A framework for the activities, actions, and tasks that are required to build high-quality software.", "It is not set of umbrella activities- project tracking and control, risk management, quality assurance, configuration management, technical reviews, and others are applied throughout the process."], correct: "process framework for software engineering defines five framework activities- communication, planning, modeling, construction, and deployment." },
+            { q: "Measures and metrics should provide guidance for modifying the process to improve its effectiveness.", options: ["True", "False"], correct: "True" },
+            { q: "Software is embodied knowledge that is initially dispersed, tacit and incomplete.", options: ["False", "True"], correct: "True" },
+            { q: "A road map that helps you create a timely, high-quality results.", options: ["False", "True"], correct: "True" },
+            { q: "Stage patterns defines a problem associated with a framework activity for the process.", options: ["True", "False"], correct: "True" },
+            { q: "It resides within a product or system. (key pad control of a microwave oven, digital function of dashboard displays in a car)", options: ["System software", "Embedded software", "Application Software", "Engineering/scientific software"], correct: "Embedded software" },
+            { q: "Network centric software. As web 2.0 emerges, more sophisticated computing environments is supported integrated with remote database and business applications.", options: ["Product-line software", "Embedded software", "WebApps", "Application software"], correct: "WebApps" },
+            { q: "Communication: will not communicate with customer to understand objectives and gather requirements.", options: ["False", "True"], correct: "False" },
+            { q: "Why Software is Important?", options: ["More and more systems are software not controlled (transportation, medical, telecommunications, military, industrial, entertainment,)", "Software engineering is concerned without theories, methods and tools for professional software development.", "The economies of ALL developed nations are dependent on software.", "No answer text provided."], correct: "The economies of ALL developed nations are dependent on software." },
+            { q: "It concerned with cost-effective software development.", options: ["Software System", "Software engineering", "System Costs", "Software Costs"], correct: "Software engineering" },
+            { q: "Planning this activity carry the requirements and create both size and resource are not estimates. In addition, a defect estimate (the number of defects projected for the work) is made.", options: ["True", "False"], correct: "False" },
+            { q: "High-level design is an internal requirement specification for each component to be constructed are developed and a component design is not created.", options: ["True", "False"], correct: "False" },
+            { q: "Software development is essentially an iterative social learning process, and the outcome is \"software capital\".", options: ["False", "True"], correct: "False" },
+            { q: "SP defines the approach that is not taken as software is engineered system.", options: ["False", "True"], correct: "False" },
+            { q: "Stage patterns defines a problem associated without a framework activity for the process.", options: ["True", "False"], correct: "False" },
+            { q: "Define Open source?", options: ["pervasive, ubiquitous, distributed computing due to wireless networking.", ".\" free\" source code opens to the computing community (a blessing, but also a potential curse!)", "the Web as a computing engine."], correct: ".\" free\" source code opens to the computing community (a blessing, but also a potential curse!)" },
+            { q: "Method cannot provides technical how-to's for building software.", options: ["False", "True"], correct: "False" },
+            { q: "What is data structures?", options: ["No answer text provided.", "executed provide desired features, function, and performance", "enable the programs to adequately store and manipulate information", "describes the operation and use of the programs."], correct: "enable the programs to adequately store and manipulate information" },
+            { q: "It is a mode of communication between stakeholders and the software team has been established", options: ["problem", "Initial context", "Solution"], correct: "Initial context" },
+            { q: "Flow executes each of the five activities in sequence.", options: ["iterative process", "linear process", "No answer text provided.", "evolutionary process"], correct: "linear process" },
+            { q: "A number of software process re-assessment mechanisms that enable us to determine the immaturity of the software process.", options: ["True", "False"], correct: "False" },
+            { q: "SP defines the approach that is taken as software is engineered.", options: ["False", "True"], correct: "True" },
+            { q: "Defines the sequence of framework activities that occur with the process, even when the overall flow of activities is iterative in nature.", options: ["Stage Patterns", "Task patterns", "No answer text provided.", "Phase patterns"], correct: "Phase patterns" },
+            { q: "Systems that are marketed and sold to any customer who wishes to buy them.", options: ["Data consolidation", "Data structures", "Customized products", "Generic products"], correct: "Generic products" },
+            { q: "Maintainability Software should be not-written in such a way so that it can evolve to meet the unchanging needs of customers", options: ["False", "True"], correct: "False" },
+            { q: "Measures and centimeter should not provide guidance for modifying the process to improve its effectiveness.", options: ["False", "True"], correct: "False" },
+            { q: "Defines a problem associated with a framework activity for the process. It includes multiple task patterns as well.", options: ["Stage Patterns", "No answer text provided.", "Task patterns", "Phase patterns"], correct: "Stage Patterns" },
+            { q: "What is AI?", options: ["stand-alone programs for specific needs", "focus on a limited marketplace to address mass consumer market.", "software uses non-numerical algorithm to solve complex problem."], correct: "software uses non-numerical algorithm to solve complex problem." },
+            { q: "Process layer as the foundation defines a framework with activities for effective delivery of software engineering technology.", options: ["False", "True"], correct: "True" },
+            { q: "Planning: creates a \"Sketch\" defines the work by describing the tasks, risks and resources, work products and work schedule.", options: ["True", "False"], correct: "False" },
+            { q: "What is a Definition of Software Process?", options: ["a set of umbrella activities- project tracking and control, risk management...", "process framework for software engineering defines five framework activities...", "A framework for the activities, actions, and tasks that are required to build high-quality software."], correct: "A framework for the activities, actions, and tasks that are required to build high-quality software." },
+            { q: "Characterized by \"number crunching \"algorithms such as automotive stress analysis, molecular biology, orbital dynamics etc.", options: ["Application Software", "Mobile Software", "System Software", "Engineering / Scientific Software"], correct: "Engineering / Scientific Software" },
+            { q: "Planning this activity isolates requirements and develops both size and resource estimates. In addition, a defect estimate (the number of defects projected for the work) is made.", options: ["False", "True"], correct: "True" },
+            { q: "Flow executes the activities in a circular manner.", options: ["evolutionary process", "linear process", "No answer text provided."], correct: "evolutionary process" },
+            { q: "Iterative process flow repeats one or more of the activities before proceeding to the next.", options: ["True", "False"], correct: "True" },
+            { q: "Evolutionary process flow executes the activities in a non-circular manner.", options: ["True", "False"], correct: "False" },
+            { q: "What is Open world computing?", options: ["pervasive, ubiquitous, distributed computing due to wireless networking. How to allow mobile devices, personal computer, enterprise system to communicate across vast network.", "the Web as a computing engine. How to architect simple and sophisticated applications to target end-users worldwide.", ".\" free\" source code opens to the computing community (a blessing, but also a potential curse!)"], correct: "pervasive, ubiquitous, distributed computing due to wireless networking. How to allow mobile devices, personal computer, enterprise system to communicate across vast network." },
+            { q: "Software quality assurance: defines and conduct activities to ensure quality.", options: ["False", "True"], correct: "True" },
+            { q: "Technical reviews: assesses work products to uncover and remove errors before going to the next activity.", options: ["False", "True"], correct: "True" },
+            { q: "Tools cannot provide automated or semi- automated not support for the process and methods.", options: ["False", "True"], correct: "False" },
+            { q: "Planning: creates a \"map\" defines the work by describing the tasks, risks and resources, work products and work schedule.", options: ["True", "False"], correct: "True" },
+            { q: "Software project tracking and control: assess progress against the plan and take actions to maintain the schedule.", options: ["True", "False"], correct: "True" },
+            { q: "Measurement: define and collects process, project, and product measures to ensure stakeholder's needs are met.", options: ["True", "False"], correct: "True" },
+            { q: "A software prototype that identifies basic requirements. (modes of interaction, computational features, processing functions) is approved by stakeholders.", options: ["Problem Context", "Resulting context", "Solution Context", "Related Patterns"], correct: "Resulting context" },
+            { q: "Parallel process flow is not executes one or more activities in parallel without other activities.", options: ["True", "False"], correct: "False" },
+            { q: "This activity isolates requirements and develops both size and resource estimates.", options: ["High-Level Design", "Low-Level Design", "Development", "Planning"], correct: "Planning" },
+            { q: "Software development is essentially an iterative social learning process, and the outcome is \"software design\".", options: ["False", "True"], correct: "False" },
+            { q: "Formal verification methods are applied to uncover errors in the design.", options: ["False", "True"], correct: "True" },
+            { q: "Iterative process flow cannot repeat one or more of the activities after proceeding to the next.", options: ["True", "False"], correct: "False" },
+            { q: "Defines a problem associated with a software engineering action or work task and relevant to successful software engineering practice", options: ["Task patterns", "Process Patterns", "Stage Patterns", "Phase patterns"], correct: "Task patterns" },
+            { q: "Software Process a process is a collection of activities, actions and tasks that are performed when some work product is to be created.", options: ["True", "False"], correct: "True" },
+            { q: "A number of software process assessment mechanisms that enable us to determine the maturity of the software process.", options: ["False", "True"], correct: "True" },
+            { q: "Linear process flow executes each of the four activities in sequence", options: ["True", "False"], correct: "False" },
+            { q: "Risk management: assesses risks that may not affect the outcome and quality.", options: ["True", "False"], correct: "False" },
+            { q: "It provides a diagnostic technique for assessing the relative maturity of a software organization; uses the SEI CMM as the basis for the assessment", options: ["SPICE-The SPICE (ISO/ IEC15504)", "CMM-Based Appraisal for Internal Process Improvement (CBA IPI)", "ISO 9001:2000 for Software"], correct: "CMM-Based Appraisal for Internal Process Improvement (CBA IPI)" },
+            { q: "A road map that helps you create a timely, low-quality results.", options: ["True", "False"], correct: "False" },
+            { q: "Risk management: assesses risks that may affect the outcome and quality.", options: ["True", "False"], correct: "True" },
+            { q: "______ occurs both before and after coding as refactoring is encouraged", options: ["XP Design", "XP Testing", "XP Program", "XP Coding"], correct: "XP Design" },
+            { q: "Speculation project is initiated and adaptive cycle planning is conducted.", options: ["False", "True"], correct: "True" },
+            { q: "Testing and documentation are on-going as the product is not constructed.", options: ["True", "False"], correct: "False" },
+            { q: "Organizing a team so that it is in control of the work performed.", options: ["False", "True"], correct: "True" },
+            { q: "The development guidelines stress delivery over analysis and design although these activates are discouraged, and active and has no continuous communication between developers and customers", options: ["False", "True"], correct: "False" },
+            { q: "The modern business environment is fast-paced and ever-changing.", options: ["False", "True"], correct: "True" },
+            { q: "The modern business environment is slow-paced and ever-changing.", options: ["True", "False"], correct: "False" },
+            { q: "The most efficient and effective method of conveying information to and within a development team.", options: ["No answer text provided.", "Face-to-face", "Motivated Individual", "satisfy customer"], correct: "Face-to-face" },
+            { q: "This is the art of maximizing the amount of work not done - is essential.", options: ["Working software", "Self-organizing", "Simplicity", "Efficiency and Effectiveness"], correct: "Simplicity" },
+            { q: "Design of data is as important as design of processing functions.", options: ["False", "True"], correct: "True" },
+            { q: "Design of data is as important as design of processing non-functions.", options: ["False", "True"], correct: "False" },
+            { q: "User interface design should be not tuned to the needs of the end-user. However, in every case, it should distress ease of use.", options: ["False", "True"], correct: "False" },
+            { q: "Components should be loosely coupled to one another and to the external environment.", options: ["True", "False"], correct: "True" },
+            { q: "Design representations (models) should not be hardly understandable.", options: ["True", "False"], correct: "False" },
+            { q: "The construction activity encompasses a set of coding and testing tasks that lead to operational software that is ready for delivery to the customer or end-user.", options: ["False", "True"], correct: "True" },
+            { q: "Lots of things can go wrong as software is being developed.", options: ["Assess Risk", "Build an effective team", "Manage Change", "No answer text provided."], correct: "Assess Risk" },
+            { q: "Stated in a more technical manner, analysis and design should always emphasize separation of concerns (SoC).", options: ["No answer text provided.", "Strive for consistency", "Understand the use of abstraction", "Divide and conquer"], correct: "Divide and conquer" },
+            { q: "The best architectures, requirements, and designs emerge from ______ teams.", options: ["Simplicity", "working software", "self-organizing", "No answer text provided."], correct: "self-organizing" },
+            { q: "For difficult design problems, suggests the creation of ______ a design prototype for that portion is implemented and evaluated.", options: ["self-motivating", "spike solution", "self-organizing", "refactoring"], correct: "spike solution" },
+            { q: "Encourages ______ an iterative refinement of the internal program design.", options: ["No answer text provided.", "spike solution", "refactoring", "self-organizing"], correct: "refactoring" },
+            { q: "All unit tests are executed daily and ideally should be automated.", options: ["XP Testing", "XP Coding", "XP Design", "No answer text provided."], correct: "XP Testing" },
+            { q: "A software development method Originally proposed by Schwaber and Beedle (an activity occurs during a rugby match) in early 1992.", options: ["True", "False"], correct: "False" },
+            { q: "Testing and documentation are on-going as the product is constructed.", options: ["False", "True"], correct: "True" },
+            { q: "Deliver working software frequently, from a couple of weeks to a couple of months, with a preference to the shorter timescale.", options: ["True", "False"], correct: "True" },
+            { q: "Separation of concerns (Principle #1) establishes a philosophy for software.", options: ["Look for patterns.", "Build software that exhibits effective modularity", "Take notes and report", "Focus on the transfer of information"], correct: "Build software that exhibits effective modularity" },
+            { q: "Spend the time to understand the problem before you meet with others.", options: ["Listen", "Prepare for customer needs", "Prepare you communicate", "Someone should facilitate the activity"], correct: "Prepare you communicate" },
+            { q: "The functions that the software performs must be defined.", options: ["False", "True"], correct: "True" },
+            { q: "The functions that the software performs must be not defined.", options: ["True", "False"], correct: "False" },
+            { q: "Design should not be traceabled to the requirements model", options: ["False", "True"], correct: "False" },
+            { q: "Component-level design should be functionally independent.", options: ["False", "True"], correct: "True" },
+            { q: "Process is not a religious experience and dogma has no place in it.", options: ["Focus on quality at every step", "be ready to adapt", "No answer text provided.", "Be Agile"], correct: "be ready to adapt" },
+            { q: "Testing principles and concepts lead to the design of tests that systematically cover different classes of not free for errors and to do so with a minimum amount of time and effort.", options: ["True", "False"], correct: "False" },
+            { q: "What is \"Agility\"?", options: ["the cost of change increases nonlinearly as a project progresses.", "the art of maximizing the amount of work not done - is essential.", "The development guidelines stress delivery over analysis and design although these activates are not discouraged, and active and continuous communication between developers and customers."], correct: "The development guidelines stress delivery over analysis and design although these activates are not discouraged, and active and continuous communication between developers and customers." },
+            { q: "customer is an active member of XP team, changes to requirements are requested informally and frequently.", options: ["Requirements volatility", "Conflicting customer needs", "Lack of formal design", "Lack of program design"], correct: "Requirements volatility" },
+            { q: "\"demos\" are delivered to the customer with the time-box allocated. May not contain all functionalities.", options: ["False", "True"], correct: "True" },
+            { q: "\"demos\" are not delivered to the customer with the time-box allocated. May not contain all functionalities.", options: ["True", "False"], correct: "False" },
+            { q: "It is our highest priority through early and continuous delivery of valuable software.", options: ["deliver working software frequently", "satisfies the customer", "No answer text provided.", "Welcome changing"], correct: "satisfies the customer" },
+            { q: "Effective commitment in structure and attitudes among all team members, technological and business people, software engineers and managers.", options: ["False", "True"], correct: "False" },
+            { q: "Agile processes harness change for the customer's competitive advantage.", options: ["satisfies the employer", "satisfies the customer", "Welcome changing", "eliver working software frequently"], correct: "Welcome changing" },
+            { q: "Every communication meeting should have a leader (a facilitator) to keep the conversation moving in a productive direction.", options: ["Prepare for customer needs", "Listen", "Someone should facilitate the activity", "Prepare you communicate"], correct: "Someone should facilitate the activity" },
+            { q: "The more people involved in any communication, the more likely that discussion will bounce from one topic to the next.", options: ["Strive for collaboration", "Take notes and report", "Stay focused, modularize your discussion", "Take notes and document decisions"], correct: "Stay focused, modularize your discussion" },
+            { q: "Design models represent characteristics of the software that help practitioners to construct it effectively.", options: ["True", "False"], correct: "True" },
+            { q: "Design representations (models) should be easily understandable.", options: ["True", "False"], correct: "True" },
+            { q: "The exit condition for every process activity, action, and task should focus on the quality of the work product that has been produced.", options: ["be ready to adapt", "Focus on quality at every step", "No answer text provided.", "Be Agile"], correct: "Focus on quality at every step" },
+            { q: "The construction activity encompasses a set of coding and testing tasks that is not lead to operational software that is ready for delivery to the customer or end-user.", options: ["True", "False"], correct: "False" },
+            { q: "This is different customers' needs need to be assimilated. Different vision or beyond their authority.", options: ["Conflicting customer needs", "Lack of formal design", "Lack of program design", "Requirements volatility"], correct: "Conflicting customer needs" },
+            { q: "______ are used to multiply their talent and creative output beyond absolute number (1+1>2).", options: ["Collaboration", "Speculation", "Efficiency", "Learning"], correct: "Collaboration" },
+            { q: "The only really important work product is an operational \"software increment\" that is delivered.", options: ["False", "True"], correct: "True" },
+            { q: "It is from a couple of weeks to a couple of months, with a preference to the shorter timescale.", options: ["satisfies the customer", "Welcome changing", "satisfies the employer", "deliver working software frequently"], correct: "deliver working software frequently" },
+            { q: "Conventional wisdom is that the cost of change increases nonlinearly as a project progresses.", options: ["True", "False"], correct: "True" },
+            { q: "The most efficient and effective method of conveying information to and within a development team is face-to-face conversation", options: ["False", "True"], correct: "True" },
+            { q: "This is the primary measure of progress.", options: ["Simplicity", "Efficiency and Effectiveness", "Self-organizing", "working software"], correct: "working software" },
+            { q: "The information domain of a problem must be represented and understood.", options: ["True", "False"], correct: "True" },
+            { q: "The models that no information, non-function, and behavior must be partitioned in a manner that uncovers detail in a layered (or hierarchical) fashion.", options: ["True", "False"], correct: "False" },
+            { q: "The analysis task should move from essential information toward implementation detail.", options: ["True", "False"], correct: "True" },
+            { q: "The process model you choose is prescriptive or agile, the basic tenets of agile development should govern your approach.", options: ["Be Agile", "be ready to adapt", "No answer text provided.", "Focus on quality at every step"], correct: "Be Agile" },
+            { q: "The design should be developed iteratively. With each iteration, the designer should strive for greater simplicity.", options: ["False", "True"], correct: "True" },
+            { q: "Effective communication in structure and attitudes among all team members, technological and business people, software engineers and managers.", options: ["False", "True"], correct: "True" },
+            { q: "Our highest priority is to satisfy the customer through early and continuous delivery of non-valuable software.", options: ["True", "False"], correct: "False" },
+            { q: "Design models represent characteristics of the software that will not help practitioners to construct it effectively.", options: ["False", "True"], correct: "False" },
+            { q: "The analysis task should not move from essential information toward implementation detail", options: ["True", "False"], correct: "False" },
+            { q: "Component-level design should be non-functionally independent.", options: ["True", "False"], correct: "False" },
+            { q: "The design should be developed iteratively. With each iteration, the designer should not strive for greater simplicity.", options: ["True", "False"], correct: "False" },
+            { q: "Testing principles and concepts lead to the design of tests that systematically uncover different classes of errors and to do so with a minimum amount of time and effort.", options: ["True", "False"], correct: "True" },
+            { q: "Speculation project is not initiated and adaptive cycle planning is not conducted.", options: ["True", "False"], correct: "False" },
+            { q: "Delivers multiple 'software increments', deliver an operational prototype or portion of an OS to collect customer feedback for adaption.", options: ["True", "False"], correct: "True" },
+            { q: "Our highest priority is to satisfy the customer through early and continuous delivery of valuable software.", options: ["False", "True"], correct: "True" },
+            { q: "The most efficient and ineffective method of conveying information too and within a development team is face-to-ear conversation.", options: ["True", "False"], correct: "False" },
+            { q: "Design should be traceable to the requirements model.", options: ["False", "True"], correct: "True" },
+            { q: "Components should be loosely coupled to other components and to the internal environment.", options: ["False", "True"], correct: "False" },
+            { q: "Software engineering process and practice are important, but the bottom line is people.", options: ["Assess Risk", "No answer text provided.", "Manage Change", "Build an effective team"], correct: "Build an effective team" },
+            { q: "A software development method Originally proposed by Schwaber and Beedle (an activity occurs during a rugby match) in early 1990.", options: ["False", "True"], correct: "False" },
+            { q: "______ provides everyone with a road map for getting to a successful destination.", options: ["Software Application", "Software Practice", "Software Process", "Software Engineer"], correct: "Software Process" },
+            { q: "The information domain of a problem must be not represented and understood.", options: ["False", "True"], correct: "False" },
+            { q: "Define Conventional wisdom.", options: ["No answer text provided.", "the cost of change increases nonlinearly as a project progresses.", "the art of maximizing the amount of work not done - is essential."], correct: "the cost of change increases nonlinearly as a project progresses." },
+            { q: "Emphasize an incremental delivery strategy as opposed to intermediate products that did not get working software to the customer as rapidly as feasible.", options: ["False", "True"], correct: "False" },
+            { q: "Conventional wisdom is that the cost of change decrease linear as a project progresses.", options: ["True", "False"], correct: "False" },
+            { q: "Deliver working software frequently, from a couple of days to a couple of months, with no preference to the shorter timescale.", options: ["True", "False"], correct: "False" },
+            { q: "Give them the environment and support they need, and trust them to get the job done.", options: ["Motivated Individual", "Satisfy customer", "Face-to-face", "Satisfy employer"], correct: "Motivated Individual" },
+            { q: "The only really important work product is an operational \"software decrement\" that is not delivered.", options: ["True", "False"], correct: "False" },
+            { q: "Try to focus on the speaker's words, rather than formulating your response to those words.", options: ["Prepare you communicate", "Prepare for customer needs", "Someone should facilitate the activity", "Listen"], correct: "Listen" },
+            { q: "The models that depict information, function, and behavior must be partitioned in a manner that uncovers detail in a layered (or hierarchical) fashion.", options: ["True", "False"], correct: "True" },
+            { q: "The construction activity encompasses a set of coding and testing tasks that is not lead to operational software that is not ready for delivery to the customer or end-user.", options: ["False", "True"], correct: "False" },
+            { q: "Recommends the construction of a unit test for a story before coding commences.", options: ["XP Design", "XP Coding", "XP Program", "XP Testing"], correct: "XP Testing" },
+            { q: "The approach may be either formal or informal, but mechanisms must be established to manage the way changes are requested, assessed, approved and implemented.", options: ["Build an effective team", "No answer text provided.", "Manage Change", "Assess Risk"], correct: "Manage Change" },
+            { q: "Emphasize an incremental delivery strategy as opposed to intermediate products that gets working software to the customer as rapidly as feasible.", options: ["True", "False"], correct: "True" },
+            { q: "The process molds to the team, not the other way around.", options: ["self-organizing", "working software", "needs of people"], correct: "self-organizing" },
+            { q: "______ is a broad array of principles, concepts, methods and tools that you must consider as software is planned and developed.", options: ["Software Practice", "Software Process", "Software Application", "Software Engineer"], correct: "Software Process" },
+            { q: "A familiar context makes software easier to use.", options: ["Understand the customer", "Understand the use of abstraction", "Divide and conquer", "Strive for consistency"], correct: "Strive for consistency" },
+            { q: "User interface design should be tuned to the needs of the end-user. However, in every case, it should stress ease of use.", options: ["False", "True"], correct: "True" }
+        ];
 
-    <div class="progress-container">
-        <div class="progress-bar" id="progress-bar"></div>
-    </div>
-    <div class="stats" id="stats">0 / 86 Completed</div>
-</div>
+        let questions = JSON.parse(JSON.stringify(originalQuestionsData));
+        let currentIndex = 0;
+        let score = 0;
+        let answeredState = new Array(questions.length).fill(false);
 
-<script>
-    // COMPLETE DATABASE OF 86 QUESTIONS EXTRACTED FROM FA3-SYS-INTEG.PDF
-    // Answers verified against Module 3 & Module 4.
-    const db = [
-        {
-            q: "Functional Requirements is a statements of services the system should provide, what the system should not react to particular inputs and what the system should not behave in particular situations.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p11: "how the system should react... how the system should behave"
-        },
-        {
-            q: "Requirements engineering is the process of establishing the customer service but not requiring from the system and constraints.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p5: "...services that the customer requires... and the constraints"
-        },
-        {
-            q: "In practice, requirements and design are inseparable.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p35
-        },
-        {
-            q: "The requirements themselves are the descriptions of the system services and constraints that are non-generated during the requirements engineering process.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p5: "that are generated"
-        },
-        {
-            q: "Requirements which are a consequence of organisational policies and procedures e.g. process standards used, implementation requirements, etc.",
-            options: ["Product requirements", "Organisational requirements", "External requirements"],
-            answer: "Organisational requirements", // Module 3 p19
-        },
-        {
-            q: "Several different requirements may be expressed together.",
-            options: ["Requirements confusion", "Lack of clarity", "Requirements amalgamation"],
-            answer: "Requirements amalgamation", // Module 3 p38
-        },
-        {
-            q: "External Requirements which arise from factors which are external to the system and its development process e.g. interoperability requirements, legislative requirements, et.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p19
-        },
-        {
-            q: "Requirements Confusion Functional and non-functional requirements tend to be mixed-up.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p38
-        },
-        {
-            q: "This is inevitable as requirements may serve a dual function.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p6
-        },
-        {
-            q: "Tabular specification used to supplement unnatural language.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p45: "supplement natural language"
-        },
-        {
-            q: "Requirements discovery the process of gathering information about the required and existing systems and distilling the user and system requirements from this information.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p55
-        },
-        {
-            q: "Formal or informal interviews with stakeholders are part of most RE processes.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p58
-        },
-        {
-            q: "Scenarios are real-life examples of how a system can be used.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p61
-        },
-        {
-            q: "Requirements management is the process of managing changing requirements during the requirements engineering process and system development.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p65
-        },
-        {
-            q: "These interviews are based on pre-determined list of questions",
-            options: ["Open interviews", "Effective interview", "Closed interviews"],
-            answer: "Closed interviews", // Module 3 p58
-        },
-        {
-            q: "The requirements be implemented given available budget and technology.",
-            options: ["Completeness", "Validity", "Realism"],
-            answer: "Realism", // Module 3 p63
-        },
-        {
-            q: "The requirements document and, where necessary, the system design and implementation, are modified.",
-            options: ["Change implementation", "Change analysis and costing", "Problem analysis and change specification"],
-            answer: "Change implementation", // Module 3 p69
-        },
-        {
-            q: "Problems of requirements analysis stakeholders know what they really want.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p50: "Stakeholders don't know what they really want"
-        },
-        {
-            q: "Functional Requirements may state what the system should do in overall systematic view.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p12: "Functional user requirements may be high-level statements..."
-        },
-        {
-            q: "Requirements which specify that the delivered product must behave in a particular way e.g. execution speed, reliability, etc.",
-            options: ["External requirements", "Product requirements", "Organisational requirements"],
-            answer: "Product requirements", // Module 3 p19
-        },
-        {
-            q: "Precision is difficult without making the document difficult to read.",
-            options: ["Requirements amalgamation", "Lack of clarity", "Requirements confusion"],
-            answer: "Lack of clarity", // Module 3 p38
-        },
-        {
-            q: "Functional and non-functional requirements tend to be mixed-up.",
-            options: ["Requirements amalgamation", "Requirements confusion", "Lack of clarity"],
-            answer: "Requirements confusion", // Module 3 p38
-        },
-        {
-            q: "This might include graphical system models showing the relationships between the system components and the system and its environment.",
-            options: ["System Index", "System evolution", "System models"],
-            answer: "System models", // Module 3 p32
-        },
-        {
-            q: "System Requirements Specification should describe the functional and nonfunctional requirements in more detail.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p32
-        },
-        {
-            q: "Requirement is a range from a high-level abstract statement of a service or of a system constraint to a detailed mathematical functional specification.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p6
-        },
-        {
-            q: "Organisational and political factors may not influence the system requirements.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p50: "may influence"
-        },
-        {
-            q: "Systems normally have a range of stakeholders.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p55
-        },
-        {
-            q: "Requirements management planning establishes the level of requirements management detail that is not required.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p68: "detail that is required"
-        },
-        {
-            q: "Using an executable model of the system to check requirements.",
-            options: ["Requirements review", "Prototyping", "Test-case generation"],
-            answer: "Prototyping", // Module 3 p63
-        },
-        {
-            q: "During this stage, the problem or the change proposal is analyzed to check that it is valid.",
-            options: ["Problem analysis and change specification", "Change analysis and costing", "Change implementation"],
-            answer: "Problem analysis and change specification", // Module 3 p69
-        },
-        {
-            q: "Effective Interview Be open-minded, avoid pre-conceived ideas about the requirements and not willing to listen to stakeholders.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p58: "willing to listen"
-        },
-        {
-            q: "Different stakeholders may have conflicting requirements.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p50
-        },
-        {
-            q: "Requirements engineering is the process of establishing the services that the customer requires from a system and the constraints under which it operates and is developed.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p5
-        },
-        {
-            q: "What is Functional Requirements?",
-            options: ["Often apply to the system as a whole rather than individual features or services.", "Defines what should be implemented so may be part of a contract between client and contractor.", "Describe functionality or system services."],
-            answer: "Describe functionality or system services.", // Module 3 p12
-        },
-        {
-            q: "What is Software Requirements document?",
-            options: ["Is the official statement of what is required of the system developers", "Applies to the system as a whole rather than individual features or services.", "Defines what should be implemented so may be part of a contract between client and contractor."],
-            answer: "Is the official statement of what is required of the system developers", // Module 3 p27
-        },
-        {
-            q: "The requirements themselves are the descriptions of the system services and constraints that are generated during the requirements engineering process.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p5
-        },
-        {
-            q: "Organisational and political factors may influence the system requirements.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p50
-        },
-        {
-            q: "Groups related requirements and organises them into coherent clusters.",
-            options: ["Requirements discovery", "Prioritisation and negotiation", "Requirements classification and organisation"],
-            answer: "Requirements classification and organisation", // Module 3 p53
-        },
-        {
-            q: "Requirements elicitation and analysis sometimes called requirements elicitation or requirements discovery.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p49
-        },
-        {
-            q: "Non-Functional Requirements often apply to the system as a whole rather than individual features or services.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p11
-        },
-        {
-            q: "Structured specifications this works well for some types of requirements e.g. requirements for embedded control system but is sometimes too rigid for writing business system requirements.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p40
-        },
-        {
-            q: "Requirements reviews systematic manual analysis of the requirements.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p63
-        },
-        {
-            q: "Requirements management planning establishes the level of requirements management detail that is required.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p68
-        },
-        {
-            q: "The system provides the functions which best support the customer's needs.",
-            options: ["Validity", "Consistency", "Completeness"],
-            answer: "Validity", // Module 3 p63
-        },
-        {
-            q: "The requirements can be checked.",
-            options: ["Validity", "Verifiability", "Realism"],
-            answer: "Verifiability", // Module 3 p63
-        },
-        {
-            q: "Non-Functional Requirements often apply to the system as one rather than dual features or services.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p11: "system as a WHOLE"
-        },
-        {
-            q: "Natural Language is a requirements written using numbered sentences and each sentence should express two requirements.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p34: "express ONE requirement"
-        },
-        {
-            q: "These define system properties and constraints e.g. reliability, response time and storage requirements. Constraints are I/O device capability, system representations, etc.",
-            options: ["System Requirements", "Non-Functional Requirements", "Functional Requirements"],
-            answer: "Non-Functional Requirements", // Module 3 p16
-        },
-        {
-            q: "Requirement is a range from a low-level abstract statement of a service or of a system constraint to a detailed mathematical functional specification.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p6: "HIGH-level"
-        },
-        {
-            q: "These interviews where various issues are explored with stakeholders.",
-            options: ["Open interviews", "Closed interviews", "Effective interview"],
-            answer: "Open interviews", // Module 3 p58
-        },
-        {
-            q: "Be open-minded, avoid pre-conceived ideas about the requirements and are willing to listen to stakeholders.",
-            options: ["Effective interview", "Open interviews", "Closed interviews"],
-            answer: "Effective interview", // Module 3 p58
-        },
-        {
-            q: "Requirements are documented and input into the next round of the spiral.",
-            options: ["Requirements Specification", "Requirements Elicitation", "Requirements Discovery"],
-            answer: "Requirements Specification", // Module 3 p53
-        },
-        {
-            q: "Domain Requirements is constraints on the system from the domain of operation.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p11
-        },
-        {
-            q: "A statement using some measure that can be objectively tested.",
-            options: ["Non-Functional Requirement", "Functional Requirement", "Verifiable non-functional requirement"],
-            answer: "Verifiable non-functional requirement", // Module 3 p21
-        },
-        {
-            q: "User Requirement is a statements in natural language plus diagrams of the services the system provides and its operational constraints.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p8
-        },
-        {
-            q: "Systems normally have a range of customers.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p55: "range of STAKEHOLDERS"
-        },
-        {
-            q: "Requirements reviews is a non-systematic manual analysis of the requirements.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p63: "Systematic"
-        },
-        {
-            q: "What is Scope of Ethnography?",
-            options: ["Requirements that are derived from the way that people actually work rather than the way I which process definitions suggest that they ought to work.", "The problem with ethnography is that it studies existing practices which may have some historical basis which is no longer relevant.", "Social and organisational factors of importance may be observed"],
-            answer: "Requirements that are derived from the way that people actually work rather than the way I which process definitions suggest that they ought to work.", // Module 3 p62
-        },
-        {
-            q: "Requirements elicitation and analytics sometimes called requirements elicitation or requirements discovery.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p49: "analysis" not "analytics"
-        },
-        {
-            q: "Natural Language is a requirements written using numbered sentences and each sentence should express one requirements.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p34
-        },
-        {
-            q: "Requirements which arise from factors which are external to the system and its development process e.g. interoperability requirements, legislative requirements, etc",
-            options: ["Organisational requirements", "External requirements", "Product requirements"],
-            answer: "External requirements", // Module 3 p19
-        },
-        {
-            q: "Requirements are expressed in the language of the application domain",
-            options: ["Understandability", "Implicitness", "Product requirements"],
-            answer: "Understandability", // Module 3 p26
-        },
-        {
-            q: "Formal or informal interviews with stakeholders are not part of most RE processes.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p58: "ARE part"
-        },
-        {
-            q: "Developing tests for requirements to check testability.",
-            options: ["Test-case generation", "Prototyping", "Requirements review"],
-            answer: "Test-case generation", // Module 3 p63
-        },
-        {
-            q: "The process of gathering information about the required and existing systems and distilling the user and system requirements from this information.",
-            options: ["Requirements Elicitation", "Requirements Specification", "Requirements discovery"],
-            answer: "Requirements discovery", // Module 3 p55
-        },
-        {
-            q: "The effect of the proposed change is assessed using traceability information and general knowledge of the system requirements.",
-            options: ["Change analysis and costing", "Change implementation", "Problem analysis and change specification"],
-            answer: "Change analysis and costing", // Module 3 p69
-        },
-        {
-            q: "Functional Requirements is a statements of services the system should provide, how the system should react to particular inputs and how the system should behave in particular situations.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p11
-        },
-        {
-            q: "Structured specifications is not works well for some types of requirements e.g. requirements for embedded control system but is sometimes too rigid for writing business system requirements.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p40: "This works well..."
-        },
-        {
-            q: "Problems of requirements analysis stakeholders doesn't know what they really want.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p50
-        },
-        {
-            q: "System Requirement is a not structured document setting out detailed descriptions of the system's functions, services and operational constraints",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p8: "A structured document"
-        },
-        {
-            q: "Functional Requirements may state what the system should not do.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p11
-        },
-        {
-            q: "Natural language specification requirements are written as natural language sentences supplemented by diagrams and tables.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p36
-        },
-        {
-            q: "Different stakeholders and customers may have conflicting requirements",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p50
-        },
-        {
-            q: "This should describe the functional and nonfunctional requirements in more detail.",
-            options: ["User requirements definition", "System requirements specification", "Introduction"],
-            answer: "System requirements specification", // Module 3 p32
-        },
-        {
-            q: "Requirements management is the process of managing changing views and plans during the requirements engineering process and system development.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p65: "changing requirements"
-        },
-        {
-            q: "In practice, requirements and design are separable.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p35: "inseparable"
-        },
-        {
-            q: "Ambiguous requirements may be interpreted in different ways by developers and users.",
-            options: ["Requirements engineering", "Requirements imprecision", "System Requirement"],
-            answer: "Requirements imprecision", // Module 3 p14
-        },
-        {
-            q: "What is Scenarios?",
-            options: ["Prompt the interviewee to get discussions going using a springboard question, a requirements proposal, or by working together on a prototype system.", "are real-life examples of how a system can be used.", "Interaction is with system stakeholders from managers to external regulators."],
-            answer: "are real-life examples of how a system can be used.", // Module 3 p61
-        },
-        {
-            q: "External Requirements which not arise from factors which are external to the system and its development process e.g. interoperability requirements, legislative requirements, et.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p19: "which arise"
-        },
-        {
-            q: "Scene in the system are real-life examples of how a system can be used.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p61: "Scenarios" not "Scene"
-        },
-        {
-            q: "System Requirements Specification should not describe the functional and nonfunctional requirements in more detail.",
-            options: ["True", "False"],
-            answer: "False", // Module 3 p32: "should describe"
-        },
-        {
-            q: "What is Ethnography?",
-            options: ["Sequence diagrams may be used to add detail to use-cases by showing the sequence of event processing in the system.", "A social scientist spends a considerable time observing and analysing how people actually work.", "A set of use cases should describe all possible interactions with the system"],
-            answer: "A social scientist spends a considerable time observing and analysing how people actually work.", // Module 3 p62
-        },
-        {
-            q: "Requirements discovery the process of gathering information from customer and existing systems.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p55
-        },
-        {
-            q: "System Requirement is structured document setting out detailed descriptions of the system's functions, services and operational constraints.",
-            options: ["True", "False"],
-            answer: "True", // Module 3 p8
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
         }
-    ];
 
-    // State Variables
-    let questions = [];
-    let currentIndex = 0;
-
-    function init() {
-        questions = [...db]; // Start with default order
-        populateJumpSelect();
-        loadQuestion(0);
-        updateProgress();
-    }
-
-    function populateJumpSelect() {
-        const select = document.getElementById('jump-select');
-        select.innerHTML = '';
-        questions.forEach((q, index) => {
-            const option = document.createElement('option');
-            option.value = index;
-            option.text = `Question ${index + 1}`;
-            select.appendChild(option);
-        });
-    }
-
-    function loadQuestion(index) {
-        currentIndex = index;
-        const q = questions[index];
-        
-        document.getElementById('q-number').textContent = `Question ${index + 1} of ${questions.length}`;
-        document.getElementById('q-text').textContent = q.q;
-        
-        const container = document.getElementById('options-container');
-        container.innerHTML = '';
-        
-        const feedback = document.getElementById('feedback');
-        feedback.style.display = 'none';
-        feedback.className = 'feedback';
-
-        // Update Buttons
-        document.getElementById('btn-prev').disabled = index === 0;
-        document.getElementById('btn-next').textContent = index === questions.length - 1 ? 'Finish' : 'Next →';
-        document.getElementById('jump-select').value = index;
-
-        // Render Options
-        q.options.forEach(optText => {
-            const btn = document.createElement('div');
-            btn.className = 'option';
-            btn.textContent = optText;
-            btn.onclick = () => checkAnswer(btn, optText, q.answer);
-            container.appendChild(btn);
-        });
-
-        updateProgress();
-    }
-
-    function checkAnswer(element, selected, correct) {
-        const container = document.getElementById('options-container');
-        const feedback = document.getElementById('feedback');
-        
-        // Disable temporarily
-        const allOptions = Array.from(container.children);
-        allOptions.forEach(child => child.onclick = null);
-
-        if (selected === correct) {
-            element.classList.add('correct');
-            feedback.innerHTML = `<span>Correct!</span> ✅`;
-            feedback.className = 'feedback correct';
-        } else {
-            element.classList.add('wrong');
-            feedback.innerHTML = `<span>Incorrect</span> ❌<br><small>The correct answer is: ${correct}</small>`;
-            feedback.className = 'feedback wrong';
+        function loadQuestion() {
+            const currentQ = questions[currentIndex];
+            const isAnswered = answeredState[currentIndex];
             
-            // Allow retry by re-enabling click on other options
-            allOptions.forEach(child => {
-                if (!child.classList.contains('wrong')) {
-                    child.onclick = () => checkAnswer(child, child.textContent, correct);
+            document.getElementById('questionCounter').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = currentQ.q;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            let displayOptions = [...currentQ.options];
+            if (!isAnswered && document.getElementById('shuffleOptionsToggle').checked) {
+                shuffleArray(displayOptions);
+            } else if (isAnswered) {
+                displayOptions = currentQ.displayedOptions || [...currentQ.options];
+            }
+            
+            currentQ.displayedOptions = displayOptions;
+
+            displayOptions.forEach(optionText => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                optDiv.textContent = optionText;
+                
+                if (isAnswered) {
+                    optDiv.classList.add('disabled');
+                    if (optionText === currentQ.correct) {
+                        optDiv.classList.add('correct');
+                    } else if (optionText === currentQ.userAnswer && currentQ.userAnswer !== currentQ.correct) {
+                        optDiv.classList.add('incorrect');
+                    }
+                } else {
+                    optDiv.onclick = () => handleAnswer(optDiv, optionText);
                 }
+                
+                optionsContainer.appendChild(optDiv);
             });
         }
-        feedback.style.display = 'block';
-    }
 
-    function nextQuestion() {
-        if (currentIndex < questions.length - 1) {
-            loadQuestion(currentIndex + 1);
-        } else {
-            alert('Reviewer Completed! Good luck.');
-        }
-    }
+        function handleAnswer(element, selectedAnswer) {
+            if (answeredState[currentIndex]) return;
+            
+            const currentQ = questions[currentIndex];
+            currentQ.userAnswer = selectedAnswer;
+            answeredState[currentIndex] = true;
 
-    function prevQuestion() {
-        if (currentIndex > 0) {
-            loadQuestion(currentIndex - 1);
-        }
-    }
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => opt.classList.add('disabled'));
 
-    function jumpToQuestion() {
-        const select = document.getElementById('jump-select');
-        loadQuestion(parseInt(select.value));
-    }
-
-    function shuffleQuestions() {
-        if(confirm("This will restart your progress. Shuffle questions?")) {
-            for (let i = questions.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [questions[i], questions[j]] = [questions[j], questions[i]];
+            if (selectedAnswer === currentQ.correct) {
+                element.classList.add('correct');
+                score++;
+                document.getElementById('scoreDisplay').textContent = score;
+            } else {
+                element.classList.add('incorrect');
+                allOptions.forEach(opt => {
+                    if (opt.textContent === currentQ.correct) {
+                        opt.classList.add('correct');
+                    }
+                });
             }
-            populateJumpSelect();
-            loadQuestion(0);
         }
-    }
 
-    function updateProgress() {
-        const pct = ((currentIndex) / questions.length) * 100;
-        document.getElementById('progress-bar').style.width = `${pct}%`;
-        document.getElementById('stats').textContent = `${currentIndex + 1} / ${questions.length} Completed`;
-    }
+        function navigate(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= questions.length) currentIndex = questions.length - 1;
+            loadQuestion();
+        }
 
-    // Initialize the app
-    init();
+        function jumpToQuestion() {
+            const input = document.getElementById('jumpInput');
+            const val = parseInt(input.value);
+            if (!isNaN(val) && val >= 1 && val <= questions.length) {
+                currentIndex = val - 1;
+                loadQuestion();
+                input.value = '';
+            } else {
+                alert(`Please enter a valid number between 1 and ${questions.length}`);
+            }
+        }
 
-</script>
+        function shuffleQuestions() {
+            if(confirm("This will restart the reviewer and wipe your current score. Continue?")) {
+                shuffleArray(questions);
+                resetStates();
+            }
+        }
 
+        function resetQuiz() {
+            if(confirm("This will reset the quiz back to the original order. Continue?")) {
+                questions = JSON.parse(JSON.stringify(originalQuestionsData));
+                resetStates();
+            }
+        }
+
+        function resetStates() {
+            currentIndex = 0;
+            score = 0;
+            answeredState = new Array(questions.length).fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        document.getElementById('jumpInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') jumpToQuestion();
+        });
+
+        loadQuestion();
+    </script>
 </body>
 </html>
