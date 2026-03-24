@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HCI Research Methods Reviewer</title>
+    <title>HCI Concepts Complete Reviewer (F1-2)</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -187,12 +187,12 @@
 <body>
 
     <div class="reviewer-container">
-        <h1>HCI Research Methods Reviewer</h1>
+        <h1>HCI Concepts Complete Reviewer (F1-2)</h1>
         
         <div class="controls">
             <div class="control-group">
                 <label for="jumpInput">Jump to:</label>
-                <input type="number" id="jumpInput" min="1" max="49" placeholder="1-49">
+                <input type="number" id="jumpInput" min="1" max="96" placeholder="1-96">
                 <button onclick="jumpToQuestion()">Go</button>
             </div>
             <button onclick="shuffleQuestions()">Shuffle Questions</button>
@@ -204,7 +204,7 @@
         </div>
 
         <div class="question-header">
-            <div class="question-number" id="questionCounter">Question 1 of 49</div>
+            <div class="question-number" id="questionCounter">Question 1 of 96</div>
             <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
         </div>
 
@@ -221,55 +221,102 @@
 
     <script>
         const originalQuestionsData = [
-            { q: "Qualitative data is best used to answer which type of questions?", options: ["Why?", "What?", "Who?", "How many?"], correct: "Why?" },
-            { q: "Which sampling technique gives every subject an equal chance of being selected?", options: ["Convenience sampling", "Judgement sampling", "Probability sampling", "Snowball sampling"], correct: "Probability sampling" },
-            { q: "What does a 95% confidence level mean in sampling?", options: ["95% of the questions are answered", "You are 95% confident the results fall within a certain range", "95% of the sample is accurate", "95% of the population is surveyed"], correct: "You are 95% confident the results fall within a certain range" },
-            { q: "Which of the following is a type of quantitative data collection method?", options: ["Focus group", "Questionnaire", "Case study", "Observation"], correct: "Questionnaire" },
-            { q: "What is a drawback of web-based questionnaires?", options: ["They are always accurate", "They are expensive", "They require face-to-face interaction", "They exclude people without internet access"], correct: "They exclude people without internet access" },
-            { q: "Which observation type involves the researcher doing everything the participants do?", options: ["Balanced participation", "Total participation", "Active participation", "Passive participation"], correct: "Total participation" },
-            { q: "What type of case study explains practices using theories?", options: ["Illustrative", "Explanatory", "Experimental", "Descriptive"], correct: "Explanatory" },
-            { q: "Which interview type uses a fixed set of questions with little variation?", options: ["Structured", "Informal", "Unstructured", "Semi-structured"], correct: "Structured" },
-            { q: "What is a major drawback of surveys?", options: ["They require interviews", "They can lead to biased data", "They are expensive", "They provide deep insights"], correct: "They can lead to biased data" },
-            { q: "What is the main advantage of interviews in HCI research?", options: ["They are always unbiased", "They are fast", "They allow deep exploration", "They provide shallow data"], correct: "They allow deep exploration" },
-            { q: "Your participant cannot install your software but can share their screen. What challenge are you facing?", options: ["Data storage", "Recruitment", "Ethical concerns", "Software compatibility"], correct: "Software compatibility" },
-            { q: "You are analyzing forum posts to understand how users discuss mental health. What ethical issue must you consider?", options: ["Data transfer", "Software licensing", "Recruitment strategy", "Informed consent"], correct: "Informed consent" },
-            { q: "You are designing an online study and want to ensure participants understand the task. What should you include?", options: ["Incentive only", "CAPTCHA", "Introductory description", "Software installation guide"], correct: "Introductory description" },
-            { q: "You want to recruit hundreds of participants quickly and cheaply. What method should you consider?", options: ["In-person interviews", "Diary study", "Field study", "Crowdsourcing"], correct: "Crowdsourcing" },
-            { q: "You pair a small lab study with a crowdsourced study. What are you trying to achieve?", options: ["Balance feedback and scale", "Avoid ethical issues", "Reduce cost", "Eliminate bias"], correct: "Balance feedback and scale" },
-            { q: "You use microwork platforms to outsource small tasks. What technique are you using?", options: ["RFID", "Human-assisted computation", "Participatory design", "Ethnography"], correct: "Human-assisted computation" },
-            { q: "You embed sensors in clothing to monitor health. What type of computing is this?", options: ["Mobile computing", "Cloud computing", "Ubiquitous computing", "Desktop computing"], correct: "Ubiquitous computing" },
-            { q: "You use Arduino to build a temperature sensor. What kind of platform is Arduino?", options: ["Cloud-based", "Wearable", "Proprietary", "Low-cost development"], correct: "Low-cost development" },
-            { q: "You design a wearable device and want to understand user needs before building it. What should you conduct?", options: ["CAPTCHA", "Web survey", "Sensor calibration", "Needs assessment"], correct: "Needs assessment" },
-            { q: "What is the primary purpose of data collection in research?", options: ["To create advertisements", "To entertain participants", "To gather opinions", "To answer research questions and test hypotheses"], correct: "To answer research questions and test hypotheses" },
-            { q: "Which of the following is a benefit of data collection?", options: ["It reduces accuracy", "It avoids decision-making", "It wastes time", "It helps identify problems"], correct: "It helps identify problems" },
-            { q: "What kind of survey question asks for demographic information like gender?", options: ["Open-ended", "Unordered closed-ended", "Likert scale", "Ordered response"], correct: "Unordered closed-ended" },
-            { q: "What combination is recommended to avoid recall bias in interviews?", options: ["Case studies and focus groups", "Observation and interviews", "Questionnaires and experiments", "Interviews and surveys"], correct: "Observation and interviews" },
-            { q: "You are conducting a usability study remotely. Your participant shares their screen and begins working while you observe and ask questions. What type of study are you conducting?", options: ["Contextual inquiry", "Diary study", "A/B testing", "Ethnographic study"], correct: "Contextual inquiry" },
-            { q: "You want to study how users interact with a new mobile app. What is a potential challenge?", options: ["Incompatibility with online tools", "No ethical concerns", "Too much data", "Lack of participants"], correct: "Incompatibility with online tools" },
-            { q: "You are using Zoom to conduct a usability test. What feature is most critical for this study?", options: ["Screen sharing", "Breakout rooms", "Chat", "Polls"], correct: "Screen sharing" },
-            { q: "You use reCAPTCHA on your website to digitize old books. What are you applying?", options: ["Usability testing", "Web scraping", "API integration", "Human computation"], correct: "Human computation" },
-            { q: "You run a crowdsourced study but can't observe participants directly. What is a drawback?", options: ["High cost", "Low recruitment", "Lack of feedback", "Complex software"], correct: "Lack of feedback" },
-            { q: "You use a custom web app to log user interactions. What infrastructure are you using?", options: ["Homegrown software", "API", "RFID", "Arduino"], correct: "Homegrown software" },
-            { q: "You face issues with transferring sensor data to your server. What challenge is this?", options: ["Data transfer", "Consent", "Usability", "Recruitment"], correct: "Data transfer" },
-            { q: "You read Marc Weiser's article on 'The Computer for the 21st Century.' What concept are you exploring?", options: ["Online consent", "CAPTCHA", "Crowdsourcing", "Embodied virtuality"], correct: "Embodied virtuality" },
-            { q: "What is the term for the entire group researchers want to generalize their findings to?", options: ["Control group", "Target population", "Sample", "Accessible population"], correct: "Target population" },
-            { q: "Which type of question allows respondents to answer freely?", options: ["Closed-ended", "Multiple choice", "Open-ended", "Likert scale"], correct: "Open-ended" },
-            { q: "Which method is best for studying oral cultures?", options: ["Interviews or ethnography", "Surveys", "Web-based questionnaires", "Paper-pencil questionnaires"], correct: "Interviews or ethnography" },
-            { q: "You are studying how conference information spreads on Twitter. What type of research is this?", options: ["Usability testing", "Sensor-based study", "Social media analysis", "Ethnographic"], correct: "Social media analysis" },
-            { q: "You want to reduce bias in your study. What is a benefit of crowdsourcing?", options: ["Controlled environment", "Participants unaware of study context", "Limited data", "Direct observation"], correct: "Participants unaware of study context" },
-            { q: "You collect data from a smart thermostat while the user is away. What concept does this illustrate?", options: ["Internet of Things", "Human computation", "Online survey", "CAPTCHA"], correct: "Internet of Things" },
-            { q: "You analyze usage logs from smart glasses. What method are you applying?", options: ["Usage log analysis", "Participatory design", "A/B testing", "CAPTCHA"], correct: "Usage log analysis" },
-            { q: "What is a Likert scale used for?", options: ["Measuring temperature", "Observing behavior", "Calculating sample size", "Ranking preferences"], correct: "Ranking preferences" },
-            { q: "You want to compare two versions of your website to see which performs better. What method should you use?", options: ["A/B testing", "Think-aloud protocol", "Web log analysis", "Online survey"], correct: "A/B testing" },
-            { q: "You post a survey link on social media to recruit participants. What advantage are you leveraging?", options: ["Limited bias", "Large participant pool", "High data accuracy", "Controlled environment"], correct: "Large participant pool" },
-            { q: "You conduct interviews and field studies to understand how users interact with wearables. What research method are you using?", options: ["Experimental", "Qualitative", "Quantitative", "Crowdsourced"], correct: "Qualitative" },
-            { q: "Quantitative data is typically expressed in what form?", options: ["Numerical", "Text", "Images", "Audio"], correct: "Numerical" },
-            { q: "You want to study how people interpret radiology images using human computation. What is your goal?", options: ["Entertainment", "Data encryption", "Social support", "Training with problem solving"], correct: "Training with problem solving" },
-            { q: "You design a CAPTCHA that is hard for bots but easy for humans. What principle are you applying?", options: ["Online consent", "Human computation", "Usability", "Sensor tracking"], correct: "Human computation" },
-            { q: "You attend the UbiComp conference to present your sensor-based HCI research. What field are you contributing to?", options: ["Ubiquitous computing", "Web development", "Online surveys", "Human computation"], correct: "Ubiquitous computing" },
-            { q: "What is the role of the interviewer in a structured interview?", options: ["To insert opinions", "To guide the conversation freely", "To remain neutral and consistent", "To avoid asking questions"], correct: "To remain neutral and consistent" },
-            { q: "You want to understand how users search for health information online. What method should you use?", options: ["Sensor logs", "Web search analysis", "RFID tracking", "CAPTCHA"], correct: "Web search analysis" },
-            { q: "You study how users interact with sensors in public spaces. What type of computing is involved?", options: ["Desktop computing", "Cloud computing", "Ubiquitous computing", "Mobile computing"], correct: "Ubiquitous computing" }
+            { q: "What does HCI stand for?", options: ["Hybrid Computing Interface", "Human Cognitive Interface", "Human-Computer Interaction", "Human-Centered Innovation"], correct: "Human-Computer Interaction" },
+            { q: "Who is the author of The Design of Everyday Things?", options: ["Steve Krug", "Ben Shneiderman", "Jakob Nielsen", "Don Norman"], correct: "Don Norman" },
+            { q: "What is the focus of industrial designers?", options: ["Emotional impact", "Interface layout", "Form and material", "Usability"], correct: "Form and material" },
+            { q: "Which type of designer focuses on usability and understandability?", options: ["Experience designer", "Graphic designer", "Industrial designer", "Interaction designer"], correct: "Interaction designer" },
+            { q: "What are \"signifiers\" used for?", options: ["To store user data", "To indicate where actions take place", "To decorate the interface", "To reduce memory load"], correct: "To indicate where actions take place" },
+            { q: "What does Ben Shneiderman's rule \"Strive for Consistency\" mean?", options: ["Change layout frequently", "Use consistent design patterns", "Avoid user feedback", "Use random colors"], correct: "Use consistent design patterns" },
+            { q: "Which rule helps expert users perform tasks faster?", options: ["Add constraints", "Offer shortcuts", "Reduce memory load", "Use signifiers"], correct: "Offer shortcuts" },
+            { q: "What does \"Design Dialog to Yield Closure\" mean?", options: ["Avoid user interaction", "Use pop-ups", "Keep users guessing", "Provide clear task completion feedback"], correct: "Provide clear task completion feedback" },
+            { q: "What is the purpose of error handling in UI design?", options: ["To help users understand and fix issues", "To log errors silently", "To hide system flaws", "To confuse users"], correct: "To help users understand and fix issues" },
+            { q: "What does \"Permit Easy Reversal of Actions\" refer to?", options: ["Disabling undo", "Allowing users to go back or undo actions", "Locking user input", "Encrypting user data"], correct: "Allowing users to go back or undo actions" },
+            { q: "A usability expert is reviewing an interface without knowing the tasks users will perform. What type of testing is this?", options: ["User-based testing", "Summative testing", "Validation testing", "Expert-based testing"], correct: "Expert-based testing" },
+            { q: "A researcher collects data on how long users take to complete tasks. What metric is being measured?", options: ["Task performance", "Clickstream", "Time performance", "User satisfaction"], correct: "Time performance" },
+            { q: "A team uses software to scan their interface for font consistency and button sizes. What testing method is this?", options: ["Expert-based", "Automated usability testing", "Summative testing", "Formative testing"], correct: "Automated usability testing" },
+            { q: "A company wants to test a new smartwatch interface. What should they focus on?", options: ["Network speed", "Physical interaction usability", "Screen resolution", "Battery life"], correct: "Physical interaction usability" },
+            { q: "A usability test is conducted using a high-fidelity prototype. What type of testing is this?", options: ["Summative", "Formative", "Expert-based", "Automated"], correct: "Summative" },
+            { q: "A team wants to understand where users struggle in the interface. What method should they use?", options: ["Usability testing", "Experimental design", "Survey analysis", "Ethnographic observation"], correct: "Usability testing" },
+            { q: "A usability test is conducted in a fixed lab. What is a potential benefit?", options: ["Remote access", "Controlled environment", "Real-time feedback", "Natural user behavior"], correct: "Controlled environment" },
+            { q: "A usability test is conducted with wireframes. What type of prototype is this?", options: ["Functional", "Low-fidelity", "Final version", "High-fidelity"], correct: "Low-fidelity" },
+            { q: "A usability test is conducted with a moderator asking questions during the session. What type of testing is this?", options: ["Formative", "Validation", "Summative", "Automated"], correct: "Formative" },
+            { q: "A usability test is conducted with users performing tasks in a workplace setting. What is this called?", options: ["Field usability testing", "In-lab testing", "Remote testing", "Expert-based testing"], correct: "Field usability testing" },
+            { q: "What principle emphasizes placing users at the center of the design process?", options: ["Visual Design", "Cognitive Design", "Human-Centered Design", "Interface Mapping"], correct: "Human-Centered Design" },
+            { q: "Which of the following is NOT part of Norman's HCD process?", options: ["Monetize", "Iterate", "Define", "Observe"], correct: "Monetize" },
+            { q: "What are \"affordances\" in design?", options: ["Error messages", "Indicators of how a product should be used", "Visual aesthetics", "Cost-saving features"], correct: "Indicators of how a product should be used" },
+            { q: "What does \"feedback\" in interaction design refer to?", options: ["User complaints", "Error logs", "System responses to user actions", "Marketing surveys"], correct: "System responses to user actions" },
+            { q: "Which of the following is a tangible user interface example?", options: ["Smartphone", "Laptop", "Reactable", "Smartwatch"], correct: "Reactable" },
+            { q: "A company is testing a new mobile app with users who accidentally trigger features while scrolling. What type of testing is most appropriate?", options: ["Usability testing on mobile devices", "Expert-based testing", "Automated testing", "Beta testing"], correct: "Usability testing on mobile devices" },
+            { q: "A team wants to evaluate a paper prototype of a new dashboard. Which type of testing should they use?", options: ["Summative testing", "Validation testing", "Automated testing", "Formative testing"], correct: "Formative testing" },
+            { q: "A team wants to test a new interface with users from different regions. What method is best?", options: ["In-lab testing", "Validation testing", "Expert review", "Remote usability testing"], correct: "Remote usability testing" },
+            { q: "A company uses usability testing to evaluate a new feature before release. What is this called?", options: ["Summative testing", "Validation testing", "Formative testing", "Beta testing"], correct: "Summative testing" },
+            { q: "A usability test is conducted with users performing tasks without guidance. What is this approach?", options: ["Task-driven usability testing", "Controlled testing", "Expert review", "Naturalistic observation"], correct: "Task-driven usability testing" },
+            { q: "A team wants to know how many users can complete a task within 1 minute. What type of test is this?", options: ["Expert-based", "Formative", "Validation", "Summative"], correct: "Validation" },
+            { q: "What does \"discoverability\" refer to in interaction design?", options: ["How users feel about a product", "How fast a product loads", "How secure a system is", "How users find possible actions"], correct: "How users find possible actions" },
+            { q: "What is a \"conceptual model\"?", options: ["A visual layout", "A database schema", "A user's mental understanding of how a system works", "A wireframe"], correct: "A user's mental understanding of how a system works" },
+            { q: "What should feedback be according to Shneiderman?", options: ["Immediate and informative", "Delayed and vague", "Hidden and encrypted", "Optional and minimal"], correct: "Immediate and informative" },
+            { q: "What does \"Reduce Short-Term Memory Load\" aim to do?", options: ["Increase cognitive effort", "Make users memorize steps", "Add more features", "Simplify recognition over recall"], correct: "Simplify recognition over recall" },
+            { q: "A company uses a validated survey to measure user satisfaction. What metric is this?", options: ["Task performance", "Interface efficiency", "User satisfaction", "Time performance"], correct: "User satisfaction" },
+            { q: "A company wants to test a new interface with real users before launch. What is this called?", options: ["Usability testing", "Beta testing", "Automated inspection", "Expert review"], correct: "Usability testing" },
+            { q: "What is the role of \"constraints\" in design?", options: ["To increase complexity", "To limit user access", "To reduce feedback", "To challenge the design"], correct: "To limit user access" },
+            { q: "A participant completes all tasks correctly but takes longer than expected. What should be analyzed?", options: ["Task abandonment", "User satisfaction", "Interface layout", "Time performance"], correct: "Time performance" },
+            { q: "A usability test reveals users often miss a key button. What should be adjusted?", options: ["Button label", "Button color", "Button placement", "All of the above"], correct: "All of the above" },
+            { q: "A usability test is conducted in users' homes via video call. What kind of testing is this?", options: ["Automated inspection", "In-lab testing", "Remote usability testing", "Expert review"], correct: "Remote usability testing" },
+            { q: "A user struggles with a feature and the moderator asks probing questions. What type of testing is this?", options: ["Validation", "Automated", "Formative", "Summative"], correct: "Formative" },
+            { q: "A usability test is conducted over the web with screen recording. What is a major drawback?", options: ["High cost", "Slow data collection", "Limited participant pool", "Inability to observe nonverbal cues"], correct: "Inability to observe nonverbal cues" },
+            { q: "During a usability test, a participant struggles with a task and the moderator intervenes. What protocol is this aligned with?", options: ["Open-ended observation", "Ethnographic immersion", "Strict intervention protocol", "Task abandonment"], correct: "Strict intervention protocol" },
+            { q: "A company wants to compare their new interface against industry benchmarks before launch. What testing type applies?", options: ["Exploratory", "Validation", "Summative", "Formative"], correct: "Validation" },
+            { q: "A moderator avoids helping users unless they are stuck. What principle is being followed?", options: ["Passive observation", "Full immersion", "Controlled intervention", "Open-ended feedback"], correct: "Controlled intervention" },
+            { q: "A usability test is conducted using screen mock-ups. What type of prototype is this?", options: ["Low-fidelity", "Functional prototype", "Final version", "High-fidelity"], correct: "Low-fidelity" },
+            { q: "A usability test is conducted with only 5 participants. Why is this acceptable?", options: ["Usability testing requires large samples", "It's a survey-based test", "Small samples are sufficient to find major flaws", "It's a pilot study"], correct: "Small samples are sufficient to find major flaws" },
+            { q: "A user completes a task incorrectly but quickly. What metric is affected?", options: ["Task performance", "Time performance", "Interface clarity", "User satisfaction"], correct: "Task performance" },
+            { q: "What is the primary goal of usability testing?", options: ["To replace traditional research methods", "To improve interface quality by identifying flaws", "To create new interfaces", "To generalize findings to other systems"], correct: "To improve interface quality by identifying flaws" },
+            { q: "Usability testing is most closely related to which traditional research methods?", options: ["Experimental design and ethnography", "Meta-analysis and content analysis", "Case studies and surveys", "Historical analysis and interviews"], correct: "Experimental design and ethnography" },
+            { q: "Which device type often requires usability testing due to multitouch and small screen size?", options: ["Mobile devices", "Desktop computers", "Printers", "Smart TVs"], correct: "Mobile devices" },
+            { q: "What is the main purpose of expert-based usability testing?", options: ["To simulate user behavior", "To test code functionality", "To gather user satisfaction data", "To have interface experts inspect the design"], correct: "To have interface experts inspect the design" },
+            { q: "What is a key characteristic of formative testing?", options: ["It requires benchmark comparisons", "It uses automated tools", "It evaluates final designs", "It is exploratory and informal"], correct: "It is exploratory and informal" },
+            { q: "What is the purpose of validation testing?", options: ["To explore early design ideas", "To test paper prototypes", "To compare an interface to benchmarks", "To gather qualitative feedback"], correct: "To compare an interface to benchmarks" },
+            { q: "What is measured by time performance?", options: ["Number of clicks", "Time spent on incorrect tasks", "Number of errors", "Time to complete tasks successfully"], correct: "Time to complete tasks successfully" },
+            { q: "What is a common tool for measuring user satisfaction?", options: ["Survey", "Stopwatch", "Heatmap", "Code analyzer"], correct: "Survey" },
+            { q: "Which type of usability testing uses software to evaluate interfaces?", options: ["Expert-based", "Formative", "Summative", "Automated"], correct: "Automated" },
+            { q: "What is the main difference between formative and summative testing?", options: ["Formative is for final designs", "Summative uses paper prototypes", "Formative explores early concepts; summative evaluates design choices", "Summative is more informal"], correct: "Formative explores early concepts; summative evaluates design choices" },
+            { q: "A smart mirror displays weather and news updates. What type of interface is this?", options: ["Tangible UI", "GUI", "Voice UI", "Augmented Reality"], correct: "Augmented Reality" },
+            { q: "A user feels overwhelmed by too many options on a screen. What principle is violated?", options: ["Closure", "Affordance", "Feedback", "Reduce Memory Load"], correct: "Reduce Memory Load" },
+            { q: "A user interface allows users to undo, redo, and go back easily. Which principle is applied?", options: ["Feedback", "Closure", "Mapping", "Reversal of Actions"], correct: "Reversal of Actions" },
+            { q: "A user can complete a task using keyboard shortcuts. Which rule is followed?", options: ["Mapping", "Enable Shortcuts", "Reduce Memory Load", "Feedback"], correct: "Enable Shortcuts" },
+            { q: "A user interface uses familiar icons and layout. What principle is applied?", options: ["Closure", "Feedback", "Recognition over Recall", "Affordance"], correct: "Recognition over Recall" },
+            { q: "A user receives a message: \"Upload complete.\" What principle is this?", options: ["Mapping", "Closure", "Feedback", "Constraint"], correct: "Feedback" },
+            { q: "A user interface uses the same color for clickable and non-clickable items. What's wrong?", options: ["Feedback", "Signifier", "Affordance", "Mapping"], correct: "Signifier" },
+            { q: "A user interface shows a progress bar during file upload What principle is applied?", options: ["Mapping", "Affordance", "Feedback", "Closure"], correct: "Feedback" },
+            { q: "A user interface uses consistent icons across screens. What rule is followed?", options: ["Consistency", "Mapping", "Affordance", "Feedback"], correct: "Consistency" },
+            { q: "A user interface uses a calendar picker for date input. What principle is applied?", options: ["Feedback", "Closure", "Constraint", "Mapping"], correct: "Constraint" },
+            { q: "What is the \"Wizard of Oz\" technique?", options: ["A test where users interact with a human pretending to be the system", "A remote usability test", "A method for automating usability tests", "A type of expert review"], correct: "A test where users interact with a human pretending to be the system" },
+            { q: "Which of the following is a benefit of remote usability testing?", options: ["Better for qualitative data", "Greater participant access", "Easy to observe nonverbal cues", "Allows for probing questions"], correct: "Greater participant access" },
+            { q: "What is a task list used for in usability testing?", options: ["To measure screen resolution", "To evaluate code quality", "To guide users through goal-directed tasks", "To record user feedback"], correct: "To guide users through goal-directed tasks" },
+            { q: "What does task performance measure?", options: ["Interface loading speed", "Time taken to complete tasks", "User satisfaction", "Number of tasks completed correctly"], correct: "Number of tasks completed correctly" },
+            { q: "A microwave has a button labeled \"Start\" but no indication of what it does. What is missing?", options: ["Signifier", "Mapping", "Feedback", "Constraint"], correct: "Signifier" },
+            { q: "A banking app uses different colors and layouts for each screen. What rule is being broken?", options: ["Enable Shortcuts", "Offer Error Handling", "Strive for Consistency", "Support Locus of Control"], correct: "Strive for Consistency" },
+            { q: "A user expects a slider to adjust volume but it changes brightness. What's wrong?", options: ["Mapping", "Feedback", "Affordance", "Signifier"], correct: "Mapping" },
+            { q: "A user sees a red border around a required field. What is this an example of?", options: ["Mapping", "Constraint", "Feedback", "Signifier"], correct: "Feedback" },
+            { q: "A user can preview changes before applying them. What principle is applied?", options: ["Closure", "Mapping", "Feedback", "Reversal of Actions"], correct: "Reversal of Actions" },
+            { q: "A user presses a button and nothing happens. What is missing?", options: ["Feedback", "Constraint", "Signifier", "Mapping"], correct: "Feedback" },
+            { q: "A user clicks \"Submit\" and sees a confirmation message. What principle is applied?", options: ["Closure", "Mapping", "Feedback", "Affordance"], correct: "Closure" },
+            { q: "A user interface shows a tooltip when hovering over a button. What is this?", options: ["Signifier", "Feedback", "Constraint", "Mapping"], correct: "Signifier" },
+            { q: "What is a key difference between classical research and usability testing?", options: ["Usability testing uses more participants", "Classical research focuses on fixing interface flaws", "Usability testing does not aim for generalization", "Classical research is informal"], correct: "Usability testing does not aim for generalization" },
+            { q: "When is summative usability testing typically conducted?", options: ["Before any design work", "After interface release", "With high-fidelity prototypes", "During brainstorming"], correct: "With high-fidelity prototypes" },
+            { q: "According to Rubin and Chisnell, what is the first step in usability testing?", options: ["Conduct test sessions", "Analyze data", "Develop the test plan", "Select users"], correct: "Develop the test plan" },
+            { q: "A user interface prevents invalid inputs with dropdowns. What principle is used?", options: ["Mapping", "Feedback", "Constraint", "Affordance"], correct: "Constraint" },
+            { q: "Which of the following is NOT a type of usability testing mentioned?", options: ["Wizard of Oz", "Beta testing", "Paper prototype", "Code debugging"], correct: "Code debugging" },
+            { q: "What is a key limitation of expert-based testing?", options: ["Experts cannot use prototypes", "Experts are biased", "Experts are unfamiliar with interface tasks", "Experts are too expensive"], correct: "Experts are unfamiliar with interface tasks" },
+            { q: "A user accidentally deletes a file and cannot undo the action. Which principle was violated?", options: ["Feedback", "Closure", "Consistency", "Reversal of Actions"], correct: "Reversal of Actions" },
+            { q: "A user receives a vague error message: \"Something went wrong.\" What should be improved?", options: ["Affordance", "Mapping", "Error Handling", "Feedback"], correct: "Error Handling" },
+            { q: "A user interface prevents submission until all fields are filled What principle is used?", options: ["Closure", "Affordance", "Constraint", "Feedback"], correct: "Constraint" },
+            { q: "A user is forced to watch a tutorial before using the app. What principle is violated?", options: ["Mapping", "Affordance", "Internal Locus of Control", "Feedback"], correct: "Internal Locus of Control" },
+            { q: "A user is confused by a button labeled \"Execute.\" What's missing?", options: ["Signifier", "Mapping", "Constraint", "Feedback"], correct: "Signifier" },
+            { q: "What is a drawback of remote usability testing?", options: ["Inability to collect clickstream data", "Difficulty in providing real-time help", "High cost", "Limited participant pool"], correct: "Difficulty in providing real-time help" },
+            { q: "A user struggles to find the \"Save\" button in a mobile app. What principle is lacking?", options: ["Affordance", "Discoverability", "Feedback", "Constraint"], correct: "Discoverability" },
+            { q: "A user interface uses icons without labels. What might be missing?", options: ["Feedback", "Signifiers", "Closure", "Constraints"], correct: "Signifiers" },
+            { q: "A user interface uses a trash icon for deleting files. What principle is this?", options: ["Mapping", "Signifier", "Feedback", "Affordance"], correct: "Affordance" }
         ];
 
         let questions = JSON.parse(JSON.stringify(originalQuestionsData));
@@ -277,7 +324,6 @@
         let score = 0;
         let answeredState = new Array(questions.length).fill(false);
 
-        // Utility to shuffle an array (Fisher-Yates)
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -297,16 +343,13 @@
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
 
-            // Apply choice shuffling if enabled and not yet answered
             let displayOptions = [...currentQ.options];
             if (!isAnswered && document.getElementById('shuffleOptionsToggle').checked) {
                 shuffleArray(displayOptions);
             } else if (isAnswered) {
-                // If already answered, keep the order we rendered it in originally
                 displayOptions = currentQ.displayedOptions || [...currentQ.options];
             }
             
-            // Store the displayed order so it persists when navigating back
             currentQ.displayedOptions = displayOptions;
 
             displayOptions.forEach(optionText => {
@@ -345,7 +388,6 @@
                 document.getElementById('scoreDisplay').textContent = score;
             } else {
                 element.classList.add('incorrect');
-                // Highlight the correct one
                 allOptions.forEach(opt => {
                     if (opt.textContent === currentQ.correct) {
                         opt.classList.add('correct');
@@ -395,12 +437,10 @@
             loadQuestion();
         }
 
-        // Allow pressing Enter in the jump input
         document.getElementById('jumpInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') jumpToQuestion();
         });
 
-        // Initial Load
         loadQuestion();
     </script>
 </body>
