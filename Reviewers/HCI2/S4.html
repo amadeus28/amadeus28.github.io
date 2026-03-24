@@ -220,56 +220,252 @@
 
     <script>
         const originalQuestionsData = [
-            { q: "Qualitative data is best used to answer which type of questions?", options: ["Why?", "What?", "Who?", "How many?"], correct: "Why?" },
-            { q: "Which sampling technique gives every subject an equal chance of being selected?", options: ["Convenience sampling", "Judgement sampling", "Probability sampling", "Snowball sampling"], correct: "Probability sampling" },
-            { q: "What does a 95% confidence level mean in sampling?", options: ["95% of the questions are answered", "You are 95% confident the results fall within a certain range", "95% of the sample is accurate", "95% of the population is surveyed"], correct: "You are 95% confident the results fall within a certain range" },
-            { q: "Which of the following is a type of quantitative data collection method?", options: ["Focus group", "Questionnaire", "Case study", "Observation"], correct: "Questionnaire" },
-            { q: "What is a drawback of web-based questionnaires?", options: ["They are always accurate", "They are expensive", "They require face-to-face interaction", "They exclude people without internet access"], correct: "They exclude people without internet access" },
-            { q: "Which observation type involves the researcher doing everything the participants do?", options: ["Balanced participation", "Total participation", "Active participation", "Passive participation"], correct: "Total participation" },
-            { q: "What type of case study explains practices using theories?", options: ["Illustrative", "Explanatory", "Experimental", "Descriptive"], correct: "Explanatory" },
-            { q: "Which interview type uses a fixed set of questions with little variation?", options: ["Structured", "Informal", "Unstructured", "Semi-structured"], correct: "Structured" },
-            { q: "What is a major drawback of surveys?", options: ["They require interviews", "They can lead to biased data", "They are expensive", "They provide deep insights"], correct: "They can lead to biased data" },
-            { q: "What is the main advantage of interviews in HCI research?", options: ["They are always unbiased", "They are fast", "They allow deep exploration", "They provide shallow data"], correct: "They allow deep exploration" },
-            { q: "Your participant cannot install your software but can share their screen. What challenge are you facing?", options: ["Data storage", "Recruitment", "Ethical concerns", "Software compatibility"], correct: "Software compatibility" },
-            { q: "You are analyzing forum posts to understand how users discuss mental health. What ethical issue must you consider?", options: ["Data transfer", "Software licensing", "Recruitment strategy", "Informed consent"], correct: "Informed consent" },
-            { q: "You are designing an online study and want to ensure participants understand the task. What should you include?", options: ["Incentive only", "CAPTCHA", "Introductory description", "Software installation guide"], correct: "Introductory description" },
-            { q: "You want to recruit hundreds of participants quickly and cheaply. What method should you consider?", options: ["In-person interviews", "Diary study", "Field study", "Crowdsourcing"], correct: "Crowdsourcing" },
-            { q: "You pair a small lab study with a crowdsourced study. What are you trying to achieve?", options: ["Balance feedback and scale", "Avoid ethical issues", "Reduce cost", "Eliminate bias"], correct: "Balance feedback and scale" },
-            { q: "You use microwork platforms to outsource small tasks. What technique are you using?", options: ["RFID", "Human-assisted computation", "Participatory design", "Ethnography"], correct: "Human-assisted computation" },
-            { q: "You embed sensors in clothing to monitor health. What type of computing is this?", options: ["Mobile computing", "Cloud computing", "Ubiquitous computing", "Desktop computing"], correct: "Ubiquitous computing" },
-            { q: "You use Arduino to build a temperature sensor. What kind of platform is Arduino?", options: ["Cloud-based", "Wearable", "Proprietary", "Low-cost development"], correct: "Low-cost development" },
-            { q: "You design a wearable device and want to understand user needs before building it. What should you conduct?", options: ["CAPTCHA", "Web survey", "Sensor calibration", "Needs assessment"], correct: "Needs assessment" },
-            { q: "What is the primary purpose of data collection in research?", options: ["To create advertisements", "To entertain participants", "To gather opinions", "To answer research questions and test hypotheses"], correct: "To answer research questions and test hypotheses" },
-            { q: "Which of the following is a benefit of data collection?", options: ["It reduces accuracy", "It avoids decision-making", "It wastes time", "It helps identify problems"], correct: "It helps identify problems" },
-            { q: "What kind of survey question asks for demographic information like gender?", options: ["Open-ended", "Unordered closed-ended", "Likert scale", "Ordered response"], correct: "Unordered closed-ended" },
-            { q: "What combination is recommended to avoid recall bias in interviews?", options: ["Case studies and focus groups", "Observation and interviews", "Questionnaires and experiments", "Interviews and surveys"], correct: "Observation and interviews" },
-            { q: "You are conducting a usability study remotely. Your participant shares their screen and begins working while you observe and ask questions. What type of study are you conducting?", options: ["Contextual inquiry", "Diary study", "A/B testing", "Ethnographic study"], correct: "Contextual inquiry" },
-            { q: "You want to study how users interact with a new mobile app. What is a potential challenge?", options: ["Incompatibility with online tools", "No ethical concerns", "Too much data", "Lack of participants"], correct: "Incompatibility with online tools" },
-            { q: "You are using Zoom to conduct a usability test. What feature is most critical for this study?", options: ["Screen sharing", "Breakout rooms", "Chat", "Polls"], correct: "Screen sharing" },
-            { q: "You use reCAPTCHA on your website to digitize old books. What are you applying?", options: ["Usability testing", "Web scraping", "API integration", "Human computation"], correct: "Human computation" },
-            { q: "You run a crowdsourced study but can't observe participants directly. What is a drawback?", options: ["High cost", "Low recruitment", "Lack of feedback", "Complex software"], correct: "Lack of feedback" },
-            { q: "You use a custom web app to log user interactions. What infrastructure are you using?", options: ["Homegrown software", "API", "RFID", "Arduino"], correct: "Homegrown software" },
-            { q: "You face issues with transferring sensor data to your server. What challenge is this?", options: ["Data transfer", "Consent", "Usability", "Recruitment"], correct: "Data transfer" },
-            { q: "You read Marc Weiser's article on 'The Computer for the 21st Century.' What concept are you exploring?", options: ["Online consent", "CAPTCHA", "Crowdsourcing", "Embodied virtuality"], correct: "Embodied virtuality" },
-            { q: "What is the term for the entire group researchers want to generalize their findings to?", options: ["Control group", "Target population", "Sample", "Accessible population"], correct: "Target population" },
-            { q: "Which type of question allows respondents to answer freely?", options: ["Closed-ended", "Multiple choice", "Open-ended", "Likert scale"], correct: "Open-ended" },
-            { q: "Which method is best for studying oral cultures?", options: ["Interviews or ethnography", "Surveys", "Web-based questionnaires", "Paper-pencil questionnaires"], correct: "Interviews or ethnography" },
-            { q: "You are studying how conference information spreads on Twitter. What type of research is this?", options: ["Usability testing", "Sensor-based study", "Social media analysis", "Ethnographic"], correct: "Social media analysis" },
-            { q: "You want to reduce bias in your study. What is a benefit of crowdsourcing?", options: ["Controlled environment", "Participants unaware of study context", "Limited data", "Direct observation"], correct: "Participants unaware of study context" },
-            { q: "You collect data from a smart thermostat while the user is away. What concept does this illustrate?", options: ["Internet of Things", "Human computation", "Online survey", "CAPTCHA"], correct: "Internet of Things" },
-            { q: "You analyze usage logs from smart glasses. What method are you applying?", options: ["Usage log analysis", "Participatory design", "A/B testing", "CAPTCHA"], correct: "Usage log analysis" },
-            { q: "What is a Likert scale used for?", options: ["Measuring temperature", "Observing behavior", "Calculating sample size", "Ranking preferences"], correct: "Ranking preferences" },
-            { q: "You want to compare two versions of your website to see which performs better. What method should you use?", options: ["A/B testing", "Think-aloud protocol", "Web log analysis", "Online survey"], correct: "A/B testing" },
-            { q: "You post a survey link on social media to recruit participants. What advantage are you leveraging?", options: ["Limited bias", "Large participant pool", "High data accuracy", "Controlled environment"], correct: "Large participant pool" },
-            { q: "You conduct interviews and field studies to understand how users interact with wearables. What research method are you using?", options: ["Experimental", "Qualitative", "Quantitative", "Crowdsourced"], correct: "Qualitative" },
-            { q: "Quantitative data is typically expressed in what form?", options: ["Numerical", "Text", "Images", "Audio"], correct: "Numerical" },
-            { q: "You want to study how people interpret radiology images using human computation. What is your goal?", options: ["Entertainment", "Data encryption", "Social support", "Training with problem solving"], correct: "Training with problem solving" },
-            { q: "You design a CAPTCHA that is hard for bots but easy for humans. What principle are you applying?", options: ["Online consent", "Human computation", "Usability", "Sensor tracking"], correct: "Human computation" },
-            { q: "You attend the UbiComp conference to present your sensor-based HCI research. What field are you contributing to?", options: ["Ubiquitous computing", "Web development", "Online surveys", "Human computation"], correct: "Ubiquitous computing" },
-            { q: "What is the role of the interviewer in a structured interview?", options: ["To insert opinions", "To guide the conversation freely", "To remain neutral and consistent", "To avoid asking questions"], correct: "To remain neutral and consistent" },
-            { q: "You want to understand how users search for health information online. What method should you use?", options: ["Sensor logs", "Web search analysis", "RFID tracking", "CAPTCHA"], correct: "Web search analysis" },
-            { q: "You study how users interact with sensors in public spaces. What type of computing is involved?", options: ["Desktop computing", "Cloud computing", "Ubiquitous computing", "Mobile computing"], correct: "Ubiquitous computing" }
-        ];
+           {
+        "q": "Qualitative data is best used to answer which type of questions?",
+        "options": ["Why?", "What?", "Who?", "How many?"],
+        "correct": "Why?"
+    },
+    {
+        "q": "Which sampling technique gives every subject an equal chance of being selected?",
+        "options": ["Convenience sampling", "Judgement sampling", "Probability sampling", "Snowball sampling"],
+        "correct": "Probability sampling"
+    },
+    {
+        "q": "What does a 95% confidence level mean in sampling?",
+        "options": ["95% of the questions are answered", "You are 95% confident the results fall within a certain range", "95% of the sample is accurate", "95% of the population is surveyed"],
+        "correct": "You are 95% confident the results fall within a certain range"
+    },
+    {
+        "q": "Which of the following is a type of quantitative data collection method?",
+        "options": ["Focus group", "Questionnaire", "Case study", "Observation"],
+        "correct": "Questionnaire"
+    },
+    {
+        "q": "What is a drawback of web-based questionnaires?",
+        "options": ["They are always accurate", "They are expensive", "They require face-to-face interaction", "They exclude people without internet access"],
+        "correct": "They exclude people without internet access"
+    },
+    {
+        "q": "Which observation type involves the researcher doing everything the participants do?",
+        "options": ["Balanced participation", "Total participation", "Active participation", "Passive participation"],
+        "correct": "Total participation"
+    },
+    {
+        "q": "What type of case study explains practices using theories?",
+        "options": ["Illustrative", "Explanatory", "Experimental", "Descriptive"],
+        "correct": "Explanatory"
+    },
+    {
+        "q": "Which interview type uses a fixed set of questions with little variation?",
+        "options": ["Structured", "Informal", "Unstructured", "Semi-structured"],
+        "correct": "Structured"
+    },
+    {
+        "q": "What is a major drawback of surveys?",
+        "options": ["They require interviews", "They can lead to biased data", "They are expensive", "They provide deep insights"],
+        "correct": "They can lead to biased data"
+    },
+    {
+        "q": "What is the main advantage of interviews in HCI research?",
+        "options": ["They are always unbiased", "They are fast", "They allow deep exploration", "They provide shallow data"],
+        "correct": "They allow deep exploration"
+    },
+    {
+        "q": "Your participant cannot install your software but can share their screen. What challenge are you facing?",
+        "options": ["Data storage", "Recruitment", "Ethical concerns", "Software compatibility"],
+        "correct": "Software compatibility"
+    },
+    {
+        "q": "You are analyzing forum posts to understand how users discuss mental health. What ethical issue must you consider?",
+        "options": ["Data transfer", "Software licensing", "Recruitment strategy", "Informed consent"],
+        "correct": "Informed consent"
+    },
+    {
+        "q": "You are designing an online study and want to ensure participants understand the task. What should you include?",
+        "options": ["Incentive only", "CAPTCHA", "Introductory description", "Software installation guide"],
+        "correct": "Introductory description"
+    },
+    {
+        "q": "You want to recruit hundreds of participants quickly and cheaply. What method should you consider?",
+        "options": ["In-person interviews", "Diary study", "Field study", "Crowdsourcing"],
+        "correct": "Crowdsourcing"
+    },
+    {
+        "q": "You pair a small lab study with a crowdsourced study. What are you trying to achieve?",
+        "options": ["Balance feedback and scale", "Avoid ethical issues", "Reduce cost", "Eliminate bias"],
+        "correct": "Balance feedback and scale"
+    },
+    {
+        "q": "You use microwork platforms to outsource small tasks. What technique are you using?",
+        "options": ["RFID", "Human-assisted computation", "Participatory design", "Ethnography"],
+        "correct": "Human-assisted computation"
+    },
+    {
+        "q": "You embed sensors in clothing to monitor health. What type of computing is this?",
+        "options": ["Mobile computing", "Cloud computing", "Ubiquitous computing", "Desktop computing"],
+        "correct": "Ubiquitous computing"
+    },
+    {
+        "q": "You use Arduino to build a temperature sensor. What kind of platform is Arduino?",
+        "options": ["Cloud-based", "Wearable", "Proprietary", "Low-cost development"],
+        "correct": "Low-cost development"
+    },
+    {
+        "q": "You design a wearable device and want to understand user needs before building it. What should you conduct?",
+        "options": ["CAPTCHA", "Web survey", "Sensor calibration", "Needs assessment"],
+        "correct": "Needs assessment"
+    },
+    {
+        "q": "What is the primary purpose of data collection in research?",
+        "options": ["To create advertisements", "To entertain participants", "To gather opinions", "To answer research questions and test hypotheses"],
+        "correct": "To answer research questions and test hypotheses"
+    },
+    {
+        "q": "Which of the following is a benefit of data collection?",
+        "options": ["It reduces accuracy", "It avoids decision-making", "It wastes time", "It helps identify problems"],
+        "correct": "It helps identify problems"
+    },
+    {
+        "q": "What kind of survey question asks for demographic information like gender?",
+        "options": ["Open-ended", "Unordered closed-ended", "Likert scale", "Ordered response"],
+        "correct": "Unordered closed-ended"
+    },
+    {
+        "q": "What combination is recommended to avoid recall bias in interviews?",
+        "options": ["Case studies and focus groups", "Observation and interviews", "Questionnaires and experiments", "Interviews and surveys"],
+        "correct": "Observation and interviews"
+    },
+    {
+        "q": "You are conducting a usability study remotely. Your participant shares their screen and begins working while you observe and ask questions. What type of study are you conducting?",
+        "options": ["Contextual inquiry", "Diary study", "A/B testing", "Ethnographic study"],
+        "correct": "Contextual inquiry"
+    },
+    {
+        "q": "You want to study how users interact with a new mobile app. What is a potential challenge?",
+        "options": ["Incompatibility with online tools", "No ethical concerns", "Too much data", "Lack of participants"],
+        "correct": "Incompatibility with online tools"
+    },
+    {
+        "q": "You are using Zoom to conduct a usability test. What feature is most critical for this study?",
+        "options": ["Screen sharing", "Breakout rooms", "Chat", "Polls"],
+        "correct": "Screen sharing"
+    },
+    {
+        "q": "You use reCAPTCHA on your website to digitize old books. What are you applying?",
+        "options": ["Usability testing", "Web scraping", "API integration", "Human computation"],
+        "correct": "Human computation"
+    },
+    {
+        "q": "You run a crowdsourced study but can't observe participants directly. What is a drawback?",
+        "options": ["High cost", "Low recruitment", "Lack of feedback", "Complex software"],
+        "correct": "Lack of feedback"
+    },
+    {
+        "q": "You use a custom web app to log user interactions. What infrastructure are you using?",
+        "options": ["Homegrown software", "API", "RFID", "Arduino"],
+        "correct": "Homegrown software"
+    },
+    {
+        "q": "You face issues with transferring sensor data to your server. What challenge is this?",
+        "options": ["Data transfer", "Consent", "Usability", "Recruitment"],
+        "correct": "Data transfer"
+    },
+    {
+        "q": "You read Marc Weiser's article on \"The Computer for the 21st Century.\" What concept are you exploring?",
+        "options": ["Online consent", "CAPTCHA", "Crowdsourcing", "Embodied virtuality"],
+        "correct": "Embodied virtuality"
+    },
+    {
+        "q": "What is the term for the entire group researchers want to generalize their findings to?",
+        "options": ["Control group", "Target population", "Sample", "Accessible population"],
+        "correct": "Target population"
+    },
+    {
+        "q": "Which type of question allows respondents to answer freely?",
+        "options": ["Closed-ended", "Multiple choice", "Open-ended", "Likert scale"],
+        "correct": "Open-ended"
+    },
+    {
+        "q": "Which method is best for studying oral cultures?",
+        "options": ["Interviews or ethnography", "Surveys", "Web-based questionnaires", "Paper-pencil questionnaires"],
+        "correct": "Interviews or ethnography"
+    },
+    {
+        "q": "You are studying how conference information spreads on Twitter. What type of research is this?",
+        "options": ["Usability testing", "Sensor-based study", "Social media analysis", "Ethnographic"],
+        "correct": "Social media analysis"
+    },
+    {
+        "q": "You want to reduce bias in your study. What is a benefit of crowdsourcing?",
+        "options": ["Controlled environment", "Participants unaware of study context", "Limited data", "Direct observation"],
+        "correct": "Participants unaware of study context"
+    },
+    {
+        "q": "You collect data from a smart thermostat while the user is away. What concept does this illustrate?",
+        "options": ["Internet of Things", "Human computation", "Online survey", "CAPTCHA"],
+        "correct": "Internet of Things"
+    },
+    {
+        "q": "You analyze usage logs from smart glasses. What method are you applying?",
+        "options": ["Usage log analysis", "Participatory design", "A/B testing", "CAPTCHA"],
+        "correct": "Usage log analysis"
+    },
+    {
+        "q": "What is a Likert scale used for?",
+        "options": ["Measuring temperature", "Observing behavior", "Calculating sample size", "Ranking preferences"],
+        "correct": "Ranking preferences"
+    },
+    {
+        "q": "You want to compare two versions of your website to see which performs better. What method should you use?",
+        "options": ["A/B testing", "Think-aloud protocol", "Web log analysis", "Online survey"],
+        "correct": "A/B testing"
+    },
+    {
+        "q": "You post a survey link on social media to recruit participants. What advantage are you leveraging?",
+        "options": ["Limited bias", "Large participant pool", "High data accuracy", "Controlled environment"],
+        "correct": "Large participant pool"
+    },
+    {
+        "q": "You conduct interviews and field studies to understand how users interact with wearables. What research method are you using?",
+        "options": ["Experimental", "Qualitative", "Quantitative", "Crowdsourced"],
+        "correct": "Qualitative"
+    },
+    {
+        "q": "Quantitative data is typically expressed in what form?",
+        "options": ["Numerical", "Text", "Images", "Audio"],
+        "correct": "Numerical"
+    },
+    {
+        "q": "You want to study how people interpret radiology images using human computation. What is your goal?",
+        "options": ["Entertainment", "Data encryption", "Social support", "Training with problem solving"],
+        "correct": "Training with problem solving"
+    },
+    {
+        "q": "You design a CAPTCHA that is hard for bots but easy for humans. What principle are you applying?",
+        "options": ["Online consent", "Human computation", "Usability", "Sensor tracking"],
+        "correct": "Human computation"
+    },
+    {
+        "q": "You attend the UbiComp conference to present your sensor-based HCI research. What field are you contributing to?",
+        "options": ["Ubiquitous computing", "Web development", "Online surveys", "Human computation"],
+        "correct": "Ubiquitous computing"
+    },
+    {
+        "q": "What is the role of the interviewer in a structured interview?",
+        "options": ["To insert opinions", "To guide the conversation freely", "To remain neutral and consistent", "To avoid asking questions"],
+        "correct": "To remain neutral and consistent"
+    },
+    {
+        "q": "You want to understand how users search for health information online. What method should you use?",
+        "options": ["Sensor logs", "Web search analysis", "RFID tracking", "CAPTCHA"],
+        "correct": "Web search analysis"
+    },
+    {
+        "q": "You study how users interact with sensors in public spaces. What type of computing is involved?",
+        "options": ["Desktop computing", "Cloud computing", "Ubiquitous computing", "Mobile computing"],
+        "correct": "Ubiquitous computing"
+    }
+];
 
         let questions = JSON.parse(JSON.stringify(originalQuestionsData));
         let currentIndex = 0;
