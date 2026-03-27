@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seatwork Quiz Reviewer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --correct-bg: #dcfce7;
+            --correct-border: #22c55e;
+            --correct-text: #166534;
+            --incorrect-bg: #fee2e2;
+            --incorrect-border: #ef4444;
+            --incorrect-text: #991b1b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .reviewer-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--text);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background-color: var(--bg);
+            border: 2px solid transparent;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+        }
+
+        .option:hover:not(.disabled) {
+            background-color: #e5e7eb;
+        }
+
+        .option.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+            font-weight: 600;
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-bg);
+            border-color: var(--incorrect-border);
+            color: var(--incorrect-text);
+            font-weight: 600;
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--bg);
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            font-size: 1rem;
+        }
+
+        .nav-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-switch input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reviewer-container">
+        <h1>Seatwork Quiz Reviewer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="jumpInput">Jump to:</label>
+                <input type="number" id="jumpInput" min="1" max="99" placeholder="1-99">
+                <button onclick="jumpToQuestion()">Go</button>
+            </div>
+            <button onclick="shuffleQuestions()">Shuffle Questions</button>
+            <label class="toggle-switch">
+                <input type="checkbox" id="shuffleOptionsToggle" checked>
+                Shuffle Choices Automatically
+            </label>
+            <button onclick="resetQuiz()">Reset Reviewer</button>
+        </div>
+
+        <div class="question-header">
+            <div class="question-number" id="questionCounter">Question 1 of 99</div>
+            <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
+        </div>
+
+        <div class="question-text" id="questionText">Loading...</div>
+        
+        <div class="options-container" id="optionsContainer">
+            </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuestionsData = [
+            {
+                "q": "Which SDLC phase involves fixing bugs and improving software post-release?",
+                "options": ["Design", "Requirements", "Maintenance", "Testing"],
+                "correct": "Maintenance"
+            },
+            {
+                "q": "What is the primary advantage of Agile?",
+                "options": ["Heavy documentation", "Long release cycles", "Flexibility and adaptability", "Predictability"],
+                "correct": "Flexibility and adaptability"
+            },
+            {
+                "q": "Which Agile principle emphasizes customer involvement?",
+                "options": ["Customer collaboration", "Ignoring change", "Documentation", "Following a strict plan"],
+                "correct": "Customer collaboration"
+            },
+            {
+                "q": "DevOps encourages collaboration between:",
+                "options": ["Developers and operations", "Developers and clients", "Customers and testers", "Designers and analysts"],
+                "correct": "Developers and operations"
+            },
+            {
+                "q": "Continuous Integration (CI) focuses on:",
+                "options": ["Frequently merging code changes", "Replacing Agile", "Writing documentation", "Final deployment"],
+                "correct": "Frequently merging code changes"
+            },
+            {
+                "q": "Which testing ensures modules work together correctly?",
+                "options": ["Stress Testing", "Unit Testing", "Regression Testing", "Integration Testing"],
+                "correct": "Integration Testing"
+            },
+            {
+                "q": "Which testing ensures old features still work after changes?",
+                "options": ["Regression Testing", "System Testing", "Load Testing", "Smoke Testing"],
+                "correct": "Regression Testing"
+            },
+            {
+                "q": "Which Git command initializes a repository?",
+                "options": ["git push", "git status", "git init", "git clone"],
+                "correct": "git init"
+            },
+            {
+                "q": "Which Git command stages changes for commit?",
+                "options": ["git add", "git commit", "git branch", "git push"],
+                "correct": "git add"
+            },
+            {
+                "q": "Which Git command saves changes permanently to history?",
+                "options": ["git commit", "git add", "git branch", "git log"],
+                "correct": "git commit"
+            },
+            {
+                "q": "Which Git command switches branches?",
+                "options": ["git merge", "git push", "git checkout", "git branch"],
+                "correct": "git checkout"
+            },
+            {
+                "q": "Which principle says \"Don't Repeat Yourself\"?",
+                "options": ["Agile", "DRY", "SOLID", "KISS"],
+                "correct": "DRY"
+            },
+            {
+                "q": "Which keyword defines a function in Python?",
+                "options": ["return", "function", "def", "func"],
+                "correct": "def"
+            },
+            {
+                "q": "Which keyword is used for decision-making?",
+                "options": ["for", "while", "else", "if"],
+                "correct": "if"
+            },
+            {
+                "q": "Which loop runs while a condition is true?",
+                "options": ["for", "until", "while", "repeat"],
+                "correct": "while"
+            },
+            {
+                "q": "Which Python structure stores key-value pairs?",
+                "options": ["Tuple", "Dictionary", "List", "Array"],
+                "correct": "Dictionary"
+            },
+            {
+                "q": "Which function opens files in Python?",
+                "options": ["get()", "read()", "open()", "load()"],
+                "correct": "open()"
+            },
+            {
+                "q": "Which format is lightweight and commonly used in APIs?",
+                "options": ["HTML", "YAML", "JSON", "XML"],
+                "correct": "JSON"
+            },
+            {
+                "q": "JSON arrays are represented with:",
+                "options": ["-", "{}", "[]", "<>"],
+                "correct": "[]"
+            },
+            {
+                "q": "Which is the main advantage of YAML?",
+                "options": ["Human readability", "Machine efficiency", "Complexity", "Binary storage"],
+                "correct": "Human readability"
+            },
+            {
+                "q": "What is the primary purpose of an API?",
+                "options": ["To allow software to communicate with hardware", "To allow one piece of software to communicate with another", "To replace operating systems", "To configure network devices"],
+                "correct": "To allow one piece of software to communicate with another"
+            },
+            {
+                "q": "Which API design style waits for a response before continuing execution?",
+                "options": ["REST", "Asynchronous", "Synchronous", "RPC"],
+                "correct": "Synchronous"
+            },
+            {
+                "q": "Which API design style allows execution to continue while waiting for a response?",
+                "options": ["Asynchronous", "REST", "SOAP", "Synchronous"],
+                "correct": "Asynchronous"
+            },
+            {
+                "q": "Which HTTP method is used to retrieve data from a server?",
+                "options": ["PUT", "GET", "DELETE", "POST"],
+                "correct": "GET"
+            },
+            {
+                "q": "Which HTTP method is typically used to create a new resource?",
+                "options": ["DELETE", "PUT", "GET", "POST"],
+                "correct": "POST"
+            },
+            {
+                "q": "Which category of HTTP status codes indicates success?",
+                "options": ["1xx", "4xx", "2xx", "3xx"],
+                "correct": "2xx"
+            },
+            {
+                "q": "Which category of HTTP status codes indicates client error?",
+                "options": ["1xx", "2xx", "4xx", "3xx"],
+                "correct": "4xx"
+            },
+            {
+                "q": "Which HTTP status code means 'OK'?",
+                "options": ["201", "200", "404", "400"],
+                "correct": "200"
+            },
+            {
+                "q": "Which HTTP status code means 'Created'?",
+                "options": ["500", "201", "204", "200"],
+                "correct": "201"
+            },
+            {
+                "q": "Which HTTP status code means 'Bad Request'?",
+                "options": ["400", "403", "500", "401"],
+                "correct": "400"
+            },
+            {
+                "q": "Which HTTP status code means 'Unauthorized'?",
+                "options": ["401", "400", "403", "404"],
+                "correct": "401"
+            },
+            {
+                "q": "Which HTTP status code means 'Not Found'?",
+                "options": ["404", "400", "201", "200"],
+                "correct": "404"
+            },
+            {
+                "q": "Authentication proves:",
+                "options": ["Server availability", "Data encryption", "Permissions of the user", "Identity of the user"],
+                "correct": "Identity of the user"
+            },
+            {
+                "q": "Authorization defines:",
+                "options": ["Encryption standards", "Token format", "Permissions of the user", "Identity of the user"],
+                "correct": "Permissions of the user"
+            },
+            {
+                "q": "Which protocol is widely used for combining authentication and authorization?",
+                "options": ["Bearer Token", "OAuth", "API Key", "Basic Authentication"],
+                "correct": "OAuth"
+            },
+            {
+                "q": "Which version of OAuth is not backward compatible?",
+                "options": ["OAuth 1.0", "OAuth 2.0", "None", "OAuth 3.0"],
+                "correct": "OAuth 2.0"
+            },
+            {
+                "q": "An API Rate Limit is primarily used to:",
+                "options": ["Increase server load", "Encrypt traffic", "Prevent overload and DoS attacks", "Allow unlimited access"],
+                "correct": "Prevent overload and DoS attacks"
+            },
+            {
+                "q": "Which rate limit algorithm uses a queue and processes at a fixed rate?",
+                "options": ["Leaky Bucket", "Fixed Window Counter", "Token Bucket", "Sliding Window Counter"],
+                "correct": "Leaky Bucket"
+            },
+            {
+                "q": "Which rate limit algorithm uses tokens consumed per request?",
+                "options": ["Token Bucket", "Leaky Bucket", "Sliding Window Counter", "Fixed Window Counter"],
+                "correct": "Token Bucket"
+            },
+            {
+                "q": "Which rate limit algorithm checks requests within a moving time frame?",
+                "options": ["Token Bucket", "Sliding Window Counter", "Leaky Bucket", "Fixed Window Counter"],
+                "correct": "Sliding Window Counter"
+            },
+            {
+                "q": "Which phase of the SDLC involves coding and building the software?",
+                "options": ["Design", "Implementation", "Maintenance", "Requirements"],
+                "correct": "Implementation"
+            },
+            {
+                "q": "Which SDLC phase ensures the system aligns with business needs?",
+                "options": ["Testing", "Implementation", "Design", "Requirements Analysis"],
+                "correct": "Requirements Analysis"
+            },
+            {
+                "q": "Which Agile framework is based on sprints and stand-ups?",
+                "options": ["Scrum", "Lean", "XP", "Kanban"],
+                "correct": "Scrum"
+            },
+            {
+                "q": "Which design pattern ensures only one instance of a class exists?",
+                "options": ["Strategy", "Singleton", "Factory", "Observer"],
+                "correct": "Singleton"
+            },
+            {
+                "q": "Which design pattern creates objects without specifying the class?",
+                "options": ["Iterator", "Strategy", "Observer", "Factory"],
+                "correct": "Factory"
+            },
+            {
+                "q": "In MVC, which part handles business logic?",
+                "options": ["View", "Controller", "Model", "Database"],
+                "correct": "Model"
+            },
+            {
+                "q": "Which Git command shows repository history?",
+                "options": ["git status", "git commit", "git log", "git init"],
+                "correct": "git log"
+            },
+            {
+                "q": "Which principle encourages short, focused functions?",
+                "options": ["YAGNI", "KISS", "DRY", "Single Responsibility Principle"],
+                "correct": "Single Responsibility Principle"
+            },
+            {
+                "q": "Which loop iterates over sequences?",
+                "options": ["for", "while", "break", "if"],
+                "correct": "for"
+            },
+            {
+                "q": "Which format uses tags to store data?",
+                "options": ["YAML", "XML", "JSON", "CSV"],
+                "correct": "XML"
+            },
+            {
+                "q": "YAML lists are represented with:",
+                "options": ["{}", "<>", "Dash (-)", "[]"],
+                "correct": "Dash (-)"
+            },
+            {
+                "q": "SOAP uses which format for messaging?",
+                "options": ["CSV", "YAML", "JSON", "XML"],
+                "correct": "XML"
+            },
+            {
+                "q": "Which of the following is NOT one of the six REST principles?",
+                "options": ["Stateless", "Multi-threading", "Client-Server", "Cache"],
+                "correct": "Multi-threading"
+            },
+            {
+                "q": "Which HTTP method is used to remove a resource?",
+                "options": ["GET", "DELETE", "PUT", "POST"],
+                "correct": "DELETE"
+            },
+            {
+                "q": "In an HTTP header, information is formatted as:",
+                "options": ["Data|Type", "Value-Name", "Name:Value", "Key=Value"],
+                "correct": "Name:Value"
+            },
+            {
+                "q": "Which part of a URI represents the host and port?",
+                "options": ["Path", "Scheme", "Authority", "Query"],
+                "correct": "Authority"
+            },
+            {
+                "q": "Which part of a URI provides filtering or additional request details?",
+                "options": ["Authority", "Query", "Scheme", "Path"],
+                "correct": "Query"
+            },
+            {
+                "q": "Which HTTP status code means 'No Content'?",
+                "options": ["201", "204", "200", "404"],
+                "correct": "204"
+            },
+            {
+                "q": "Which HTTP status code means 'Too Many Requests'?",
+                "options": ["500", "503", "403", "429"],
+                "correct": "429"
+            },
+            {
+                "q": "Which authentication mechanism transmits Base64 encoded credentials?",
+                "options": ["Bearer Token", "Basic Authentication", "OAuth", "API Key"],
+                "correct": "Basic Authentication"
+            },
+            {
+                "q": "Which authentication mechanism uses a string generated by an authentication server?",
+                "options": ["API Key", "Bearer Token", "Session ID", "Basic Authentication"],
+                "correct": "Bearer Token"
+            },
+            {
+                "q": "Which authentication method uses unique alphanumeric keys assigned to users?",
+                "options": ["Basic Authentication", "Bearer Token", "API Key", "Certificate"],
+                "correct": "API Key"
+            },
+            {
+                "q": "Which rate limit algorithm resets requests per fixed time window?",
+                "options": ["Sliding Window Counter", "Token Bucket", "Leaky Bucket", "Fixed Window Counter"],
+                "correct": "Fixed Window Counter"
+            },
+            {
+                "q": "What does the HTTP header 'X-RateLimit-Remaining' represent?",
+                "options": ["Reset time", "Remaining requests allowed", "Max requests per time unit", "Total connections"],
+                "correct": "Remaining requests allowed"
+            },
+            {
+                "q": "Which requirement is necessary to consume a webhook?",
+                "options": ["Application must send a GET request", "Application must be running to receive HTTP POST", "Application must disable SSL", "Application must poll the server"],
+                "correct": "Application must be running to receive HTTP POST"
+            },
+            {
+                "q": "Which testing checks small pieces of code in isolation?",
+                "options": ["Integration Testing", "System Testing", "Load Testing", "Unit Testing"],
+                "correct": "Unit Testing"
+            },
+            {
+                "q": "Which testing checks system behavior under heavy load?",
+                "options": ["Regression Testing", "Acceptance Testing", "Unit Testing", "Stress Testing"],
+                "correct": "Stress Testing"
+            },
+            {
+                "q": "Which design pattern notifies objects when state changes?",
+                "options": ["Observer", "Factory", "Singleton", "Adapter"],
+                "correct": "Observer"
+            },
+            {
+                "q": "In MVC, which part interacts with the user?",
+                "options": ["Controller", "API", "View", "Model"],
+                "correct": "View"
+            },
+            {
+                "q": "Which Git command copies a remote repository?",
+                "options": ["git pull", "git clone", "git init", "git checkout"],
+                "correct": "git clone"
+            },
+            {
+                "q": "Which Git command uploads commits to a remote?",
+                "options": ["git push", "git init", "git add", "git commit"],
+                "correct": "git push"
+            },
+            {
+                "q": "Which Git command combines branch changes?",
+                "options": ["git checkout", "git init", "git merge", "git clone"],
+                "correct": "git merge"
+            },
+            {
+                "q": "Which Git command shows current file states?",
+                "options": ["git push", "git log", "git status", "git merge"],
+                "correct": "git status"
+            },
+            {
+                "q": "RPC stands for:",
+                "options": ["Random Protocol Communication", "Remote Processing Call", "Resource Protocol Control", "Remote Procedure Call"],
+                "correct": "Remote Procedure Call"
+            },
+            {
+                "q": "Which of these is NOT a characteristic of SOAP?",
+                "options": ["Independent", "Extensible", "Stateless", "Neutral"],
+                "correct": "Stateless"
+            },
+            {
+                "q": "Which REST component identifies which resource the client wants to manipulate?",
+                "options": ["Header", "Method", "Uniform Resource Identifier (URI)", "Body"],
+                "correct": "Uniform Resource Identifier (URI)"
+            },
+            {
+                "q": "Which part of a URI specifies the protocol (http/https)",
+                "options": ["Query", "Scheme", "Authority", "Path"],
+                "correct": "Scheme"
+            },
+            {
+                "q": "Which category of HTTP status codes indicates server error?",
+                "options": ["2xx", "1xx", "3xx", "5xx"],
+                "correct": "5xx"
+            },
+            {
+                "q": "Which HTTP status code means 'Forbidden'?",
+                "options": ["401", "500", "403", "400"],
+                "correct": "403"
+            },
+            {
+                "q": "A Webhook is also known as:",
+                "options": ["Forward API", "Reverse API", "RESTful API", "Proxy API"],
+                "correct": "Reverse API"
+            },
+            {
+                "q": "Which status code means 'Service Unavailable'?",
+                "options": ["502", "200", "503", "400"],
+                "correct": "503"
+            },
+            {
+                "q": "Which testing validates the full system functionality?",
+                "options": ["System Testing", "Smoke Testing", "Integration Testing", "Unit Testing"],
+                "correct": "System Testing"
+            },
+            {
+                "q": "Which practice improves readability?",
+                "options": ["Meaningful variable names", "Inline logic everywhere", "Long functions", "Random variable names"],
+                "correct": "Meaningful variable names"
+            },
+            {
+                "q": "Which statement exits a loop early?",
+                "options": ["stop", "continue", "break", "return"],
+                "correct": "break"
+            },
+            {
+                "q": "Which part of a URI represents the location of the resource?",
+                "options": ["Authority", "Scheme", "Path", "Query"],
+                "correct": "Path"
+            },
+            {
+                "q": "Which error category represents client-side mistakes?",
+                "options": ["4xx", "2xx", "5xx", "1xx"],
+                "correct": "4xx"
+            },
+            {
+                "q": "Which error category represents server-side mistakes?",
+                "options": ["4xx", "5xx", "2xx", "1xx"],
+                "correct": "5xx"
+            },
+            {
+                "q": "In MVC, which part processes input and updates the model?",
+                "options": ["Model", "Database", "Controller", "View"],
+                "correct": "Controller"
+            },
+            {
+                "q": "Which principle says \"Keep It Simple, Stupid\"?",
+                "options": ["SOLID", "DRY", "Agile", "KISS"],
+                "correct": "KISS"
+            },
+            {
+                "q": "Which of the following makes code harder to maintain?",
+                "options": ["Proper naming", "Modular functions", "Code duplication", "Clear comments"],
+                "correct": "Code duplication"
+            },
+            {
+                "q": "What does API stand for?",
+                "options": ["Automated Protocol Interface", "Application Processing Integration", "Application Programming Interface", "Advanced Program Interaction"],
+                "correct": "Application Programming Interface"
+            },
+            {
+                "q": "REST was authored by:",
+                "options": ["Tim Berners-Lee", "Linus Torvalds", "Roy Thomas Fielding", "Dennis Ritchie"],
+                "correct": "Roy Thomas Fielding"
+            },
+            {
+                "q": "Which status code means 'Internal Server Error'?",
+                "options": ["403", "404", "200", "500"],
+                "correct": "500"
+            },
+            {
+                "q": "Which Git command creates a new branch?",
+                "options": ["git clone", "git init", "git branch", "git log"],
+                "correct": "git branch"
+            },
+            {
+                "q": "Which SDLC model delivers software in sequential steps?",
+                "options": ["Kanban", "Agile", "Waterfall", "Scrum"],
+                "correct": "Waterfall"
+            },
+            {
+                "q": "Which format is indentation-sensitive?",
+                "options": ["CSV", "YAML", "JSON", "XML"],
+                "correct": "YAML"
+            },
+            {
+                "q": "Which HTTP method is used to update an existing resource?",
+                "options": ["GET", "POST", "PATCH", "PUT"],
+                "correct": "PUT"
+            },
+            {
+                "q": "Which Python structure is immutable?",
+                "options": ["Set", "Tuple", "List", "Dictionary"],
+                "correct": "Tuple"
+            },
+            {
+                "q": "Which of the following is NOT a benefit of using APIs?",
+                "options": ["Functionality extension", "Manual Data Entry", "Automation", "Data Integration"],
+                "correct": "Manual Data Entry"
+            },
+            {
+                "q": "Which SDLC model uses short, iterative development cycles?",
+                "options": ["Waterfall", "V-Model", "Agile", "Spiral"],
+                "correct": "Agile"
+            }
+        ];  
+
+        let questions = JSON.parse(JSON.stringify(originalQuestionsData));
+        let currentIndex = 0;
+        let score = 0;
+        let answeredState = new Array(questions.length).fill(false);
+
+        // Utility to shuffle an array (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const currentQ = questions[currentIndex];
+            const isAnswered = answeredState[currentIndex];
+            
+            document.getElementById('questionCounter').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = currentQ.q;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            // Apply choice shuffling if enabled and not yet answered
+            let displayOptions = [...currentQ.options];
+            if (!isAnswered && document.getElementById('shuffleOptionsToggle').checked) {
+                shuffleArray(displayOptions);
+            } else if (isAnswered) {
+                // If already answered, keep the order we rendered it in originally
+                displayOptions = currentQ.displayedOptions || [...currentQ.options];
+            }
+            
+            // Store the displayed order so it persists when navigating back
+            currentQ.displayedOptions = displayOptions;
+
+            displayOptions.forEach(optionText => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                optDiv.textContent = optionText;
+                
+                if (isAnswered) {
+                    optDiv.classList.add('disabled');
+                    if (optionText === currentQ.correct) {
+                        optDiv.classList.add('correct');
+                    } else if (optionText === currentQ.userAnswer && currentQ.userAnswer !== currentQ.correct) {
+                        optDiv.classList.add('incorrect');
+                    }
+                } else {
+                    optDiv.onclick = () => handleAnswer(optDiv, optionText);
+                }
+                
+                optionsContainer.appendChild(optDiv);
+            });
+        }
+
+        function handleAnswer(element, selectedAnswer) {
+            if (answeredState[currentIndex]) return;
+            
+            const currentQ = questions[currentIndex];
+            currentQ.userAnswer = selectedAnswer;
+            answeredState[currentIndex] = true;
+
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => opt.classList.add('disabled'));
+
+            if (selectedAnswer === currentQ.correct) {
+                element.classList.add('correct');
+                score++;
+                document.getElementById('scoreDisplay').textContent = score;
+            } else {
+                element.classList.add('incorrect');
+                // Highlight the correct one
+                allOptions.forEach(opt => {
+                    if (opt.textContent === currentQ.correct) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+        }
+
+        function navigate(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= questions.length) currentIndex = questions.length - 1;
+            loadQuestion();
+        }
+
+        function jumpToQuestion() {
+            const input = document.getElementById('jumpInput');
+            const val = parseInt(input.value);
+            if (!isNaN(val) && val >= 1 && val <= questions.length) {
+                currentIndex = val - 1;
+                loadQuestion();
+                input.value = '';
+            } else {
+                alert(`Please enter a valid number between 1 and ${questions.length}`);
+            }
+        }
+
+        function shuffleQuestions() {
+            if(confirm("This will restart the reviewer and wipe your current score. Continue?")) {
+                shuffleArray(questions);
+                resetStates();
+            }
+        }
+
+        function resetQuiz() {
+            if(confirm("This will reset the quiz back to the original order. Continue?")) {
+                questions = JSON.parse(JSON.stringify(originalQuestionsData));
+                resetStates();
+            }
+        }
+
+        function resetStates() {
+            currentIndex = 0;
+            score = 0;
+            answeredState = new Array(questions.length).fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        // Allow pressing Enter in the jump input
+        document.getElementById('jumpInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') jumpToQuestion();
+        });
+
+        // Initial Load
+        loadQuestion();
+    </script>
+</body>
+</html>
