@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevNet Associate (DEVASC) Reviewer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --correct-bg: #dcfce7;
+            --correct-border: #22c55e;
+            --correct-text: #166534;
+            --incorrect-bg: #fee2e2;
+            --incorrect-border: #ef4444;
+            --incorrect-text: #991b1b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .reviewer-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--text);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            white-space: pre-wrap;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background-color: var(--bg);
+            border: 2px solid transparent;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+        }
+
+        .option:hover:not(.disabled) {
+            background-color: #e5e7eb;
+        }
+
+        .option.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+            font-weight: 600;
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-bg);
+            border-color: var(--incorrect-border);
+            color: var(--incorrect-text);
+            font-weight: 600;
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--bg);
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            font-size: 1rem;
+        }
+
+        .nav-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-switch input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reviewer-container">
+        <h1>DevNet Associate (DEVASC) Reviewer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="jumpInput">Jump to:</label>
+                <input type="number" id="jumpInput" min="1" max="86" placeholder="1-86">
+                <button onclick="jumpToQuestion()">Go</button>
+            </div>
+            <button onclick="shuffleQuestions()">Shuffle Questions</button>
+            <label class="toggle-switch">
+                <input type="checkbox" id="shuffleOptionsToggle" checked>
+                Shuffle Choices Automatically
+            </label>
+            <button onclick="resetQuiz()">Reset Reviewer</button>
+        </div>
+
+        <div class="question-header">
+            <div class="question-number" id="questionCounter">Question 1 of 86</div>
+            <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
+        </div>
+
+        <div class="question-text" id="questionText">Loading...</div>
+        
+        <div class="options-container" id="optionsContainer">
+            </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuestionsData = [
+            { "q": "A pharmaceutical company wants secure cloud storage. Which cloud type is best?", "options": ["Community", "Public", "Hybrid", "Private"], "correct": "Private" },
+            { "q": "What does a read-only automation solution do?", "options": ["Configures devices automatically", "Retrieves and audits configurations", "Deploys updates", "Controls network traffic"], "correct": "Retrieves and audits configurations" },
+            { "q": "Which three describe TCP/UDP? (Choose three)", "options": ["UDP encapsulated in IP", "UDP uses ports for applications", "Source port identifies return traffic", "TCP used for low overhead"], "correct": ["UDP encapsulated in IP", "UDP uses ports for applications", "Source port identifies return traffic"] },
+            { "q": "What attack injects SQL commands?", "options": ["Buffer overflow", "SQL injection", "XSS", "XML injection"], "correct": "SQL injection" },
+            { "q": "Linux/Mac command for IP?", "options": ["ipconfig", "ip address", "ifconfig", "netstat"], "correct": "ifconfig" },
+            { "q": "Why use Layer 2 switch segmentation? (Choose two)", "options": ["Reduce collisions", "Improve bandwidth", "Isolate traffic", "Increase broadcasts"], "correct": ["Improve bandwidth", "Isolate traffic"] },
+            { "q": "CI tool for build/test?", "options": ["SQL", "REST", "Docker", "Jenkins"], "correct": "Jenkins" },
+            { "q": "Port 8008 corresponds to?", "options": ["SSH", "RESTCONF", "HTTP", "NETCONF"], "correct": "HTTP" },
+            { "q": "VLAN broadcast behavior?", "options": ["All VLANS", "Same VLAN only", "Same switch only", "Routed"], "correct": "Same VLAN only" },
+            { "q": "VM management software?", "options": ["OS", "Hypervisor", "Kernel", "CLI"], "correct": "Hypervisor" },
+            { "q": "MAC address structure?", "options": ["Network + host", "Vendor OUI + unique ID", "Serial + random", "IP + port"], "correct": "Vendor OUI + unique ID" },
+            { "q": "Cisco ACI SDK?", "options": ["Cobra", "UCS", "IMC", "CLI"], "correct": "Cobra" },
+            { "q": "DevNet sharing platform?", "options": ["Forums", "Sandbox", "Exchange", "Zone"], "correct": "Exchange" },
+            { "q": "RESTCONF formats? (Choose two)", "options": ["JSON", "XML", "YAML", "HTML"], "correct": ["JSON", "XML"] },
+            { "q": "DevNet code repository?", "options": ["Labs", "Sandbox", "Code Exchange", "Support"], "correct": "Code Exchange" },
+            { "q": "Dev + Ops role?", "options": ["Agile", "SRE", "DevOps", "Scrum"], "correct": "SRE" },
+            { "q": "Ansible inventory file?", "options": ["playbook", "hosts", "config", "vars"], "correct": "hosts" },
+            { "q": "DevNet testing environment?", "options": ["Labs", "Sandbox", "CLI", "Exchange"], "correct": "Sandbox" },
+            { "q": "Reverse proxy purpose?", "options": ["DNS mapping", "Mask backend servers", "Encrypt traffic", "Route traffic"], "correct": "Mask backend servers" },
+            { "q": "Agile characteristic?", "options": ["Sequential", "Iterative delivery", "Fixed plan", "Rigid"], "correct": "Iterative delivery" },
+            { "q": "Docker default tag?", "options": ["default", "latest", "tag", "none"], "correct": "latest" },
+            { "q": "pyATS job runner?", "options": ["Genie", "EasyPy", "AEtest", "API"], "correct": "EasyPy" },
+            { "q": "DevNet support? (Choose three)", "options": ["Forum", "Webex", "Cisco Learning Network", "FTP"], "correct": ["Forum", "Webex", "Cisco Learning Network"] },
+            { "q": "Hands-on DevNet resource?", "options": ["Zone", "Labs", "Sandbox", "Support"], "correct": "Labs" },
+            { "q": "Default Linux shell?", "options": ["tcsh", "bash", "zsh", "sh"], "correct": "bash" },
+            { "q": "Immutable infrastructure?", "options": ["Manual config allowed", "Code-only changes", "Containers only", "VM only"], "correct": "Code-only changes" },
+            { "q": "Main cause of outages?", "options": ["Cyberattack", "Human error", "Hardware failure", "Software bug"], "correct": "Human error" },
+            { "q": "YAML document separator?", "options": ["///", "---", "###", "***"], "correct": "---" },
+            { "q": "Function vs method?", "options": ["Same", "Methods belong to objects", "Functions use classes", "Methods standalone"], "correct": "Methods belong to objects" },
+            { "q": "Git init does?", "options": ["Clone repo", "Create repo", "Push code", "Pull code"], "correct": "Create repo" },
+            { "q": "Lean prioritizes?", "options": ["Speed", "Customer value", "Documentation", "Testing"], "correct": "Customer value" },
+            { "q": "YAML separator?", "options": [":", ";", "/", "_"], "correct": ":" },
+            { "q": "Compare files in Git?", "options": ["git diff", "git log", "git pull", "git add"], "correct": "git diff" },
+            { "q": "UCS purpose?", "options": ["Routing", "Server mgmt", "Switching", "Security"], "correct": "Server mgmt" },
+            { "q": "Webex API user lookup?", "options": ["Email", "Person ID", "Name", "Org"], "correct": "Person ID" },
+            { "q": "NETCONF Python library?", "options": ["ncclient", "pip", "json", "rest"], "correct": "ncclient" },
+            { "q": "Port 443?", "options": ["HTTP", "HTTPS", "FTP", "DNS"], "correct": "HTTPS" },
+            { "q": "Data plane function?", "options": ["Routing", "Forwarding packets", "Monitoring", "Config"], "correct": "Forwarding packets" },
+            { "q": "Dockerfile is used to?", "options": ["Run containers", "Build images", "Monitor containers", "Store data"], "correct": "Build images" },
+            { "q": "VM characteristics? (Choose three)", "options": ["Guest OS", "Hypervisor", "Self-contained", "Shares OS"], "correct": ["Guest OS", "Hypervisor", "Self-contained"] },
+            { "q": "Staging environment? (Choose two)", "options": ["Realistic", "Production use", "Testing", "User access"], "correct": ["Realistic", "Testing"] },
+            { "q": "Jenkins run pipeline?", "options": ["Build Now", "Configure", "Workspace", "Changes"], "correct": "Build Now" },
+            { "q": "Password salting?", "options": ["Encrypt", "Randomize hash", "Validate", "Store"], "correct": "Randomize hash" },
+            { "q": "Self-service IT?", "options": ["Manual setup", "Automated provisioning", "Hardware config", "Monitoring"], "correct": "Automated provisioning" },
+            { "q": "Orchestration means?", "options": ["Provision hardware", "Automate workflows", "Monitor systems", "Deploy code"], "correct": "Automate workflows" },
+            { "q": "Read-only automation?", "options": ["Configure", "Audit only", "Deploy", "Delete"], "correct": "Audit only" },
+            { "q": "SSL warning cause?", "options": ["Expired cert", "Self-signed cert", "No encryption", "Weak key"], "correct": "Self-signed cert" },
+            { "q": "API benefit?", "options": ["Faster CPU", "Automation", "Storage", "Hardware"], "correct": "Automation" },
+            { "q": "DNS port?", "options": ["80", "443", "53", "22"], "correct": "53" },
+            { "q": "Traceroute does?", "options": ["Ping", "Show path", "DNS lookup", "Route config"], "correct": "Show path" },
+            { "q": "HTTP update methods?", "options": ["POST", "GET", "PUT/PATCH", "DELETE"], "correct": "PUT/PATCH" },
+            { "q": "HTTP 4xx?", "options": ["Success", "Server error", "Client error", "Redirect"], "correct": "Client error" },
+            { "q": "Webhook requirement? (Choose two)", "options": ["Always running", "Registered URL", "SSH required", "DNS required"], "correct": ["Always running", "Registered URL"] },
+            { "q": "HTTP 202?", "options": ["Success", "Accepted processing", "Error", "Redirect"], "correct": "Accepted processing" },
+            { "q": "Stateless app? (Choose two)", "options": ["Scalable", "No memory", "External DB", "Fixed"], "correct": ["Scalable", "External DB"] },
+            { "q": "CI characteristic?", "options": ["Deploy to prod", "Merge frequently", "Manual test", "Slow dev"], "correct": "Merge frequently" },
+            { "q": "Waterfall?", "options": ["Iterative", "Sequential", "Agile", "Fast"], "correct": "Sequential" },
+            { "q": "Deployment phase?", "options": ["Code", "Install prod", "Test", "Design"], "correct": "Install prod" },
+            { "q": "Python private variable?", "options": ["_var", "__var", "var", "#var"], "correct": "_var" },
+            { "q": "Port 80?", "options": ["HTTP", "HTTPS", "SSH", "FTP"], "correct": "HTTP" },
+            { "q": "Webex xAPI protocols? (Choose three)", "options": ["HTTP", "Telnet", "RS-232", "FTP"], "correct": ["HTTP", "Telnet", "RS-232"] },
+            { "q": "Webex API message?", "options": ["GET", "POST", "PUT", "PATCH"], "correct": "POST" },
+            { "q": "Invalid subnet?", "options": ["/26 overlap", "/27 error", "Overlapping range", "Valid"], "correct": "Overlapping range" },
+            { "q": "Stateful firewall?", "options": ["Tracks sessions", "Only L3", "NAT", "DNS"], "correct": "Tracks sessions" },
+            { "q": "Lean characteristic?", "options": ["Sequential", "Optimize flow", "Waterfall", "Fixed"], "correct": "Optimize flow" },
+            { "q": "Valid URI?", "options": ["Proper encoding", "Invalid", "Missing key", "Wrong format"], "correct": "Proper encoding" },
+            { "q": "REST constraint?", "options": ["Stateful", "Stateless", "Local", "Static"], "correct": "Stateless" },
+            { "q": "DNS port?", "options": ["21", "53", "80", "22"], "correct": "53" },
+            { "q": "Dynamic NAT?", "options": ["Static mapping", "Dynamic mapping", "DNS", "DHCP"], "correct": "Dynamic mapping" },
+            { "q": "Port 830?", "options": ["HTTP", "NETCONF", "SSH", "FTP"], "correct": "NETCONF" },
+            { "q": "Webex macro language?", "options": ["Python", "Java", "JavaScript", "C++"], "correct": "JavaScript" },
+            { "q": "SDN platform (Nexus)?", "options": ["ACI", "IOS", "CLI", "UCS"], "correct": "ACI" },
+            { "q": "Python venv command?", "options": ["Install", "Create env", "Run", "Delete"], "correct": "Create env" },
+            { "q": "SSH is used by?", "options": ["Ansible", "Docker", "REST", "SNMP"], "correct": "Ansible" },
+            { "q": "NAT process?", "options": ["Translate IP", "Route", "Encrypt", "Filter"], "correct": "Translate IP" },
+            { "q": "Control plane?", "options": ["Forward", "Routing logic", "Monitor", "CLI"], "correct": "Routing logic" },
+            { "q": "TCP/IP layer for ports?", "options": ["Network", "Transport", "Physical", "Session"], "correct": "Transport" },
+            { "q": "Cisco ISE function?", "options": ["Routing", "Identity control", "Switching", "Storage"], "correct": "Identity control" },
+            { "q": "DHCP ACK?", "options": ["Offer", "Confirm lease", "Request", "Discover"], "correct": "Confirm lease" },
+            { "q": "MapQuest URI component?", "options": ["Path", "Query", "Scheme", "Authority"], "correct": "Query" },
+            { "q": "Management plane?", "options": ["Forward", "Monitor", "Route", "Encrypt"], "correct": "Monitor" },
+            { "q": "RESTCONF formats?", "options": ["JSON/XML", "CSV", "TXT", "HTML"], "correct": "JSON/XML" },
+            { "q": "Switching method?", "options": ["Store-forward", "Cut-through", "Both", "Routing"], "correct": "Both" },
+            { "q": "Social engineering example?", "options": ["Phishing", "Survey imitation", "Password attack", "Virus"], "correct": "Survey imitation" },
+            { "q": "SQL defense last resort?", "options": ["Escaping input", "Parameterized queries", "Firewall", "Validation"], "correct": "Escaping input" },
+            { "q": "Container orchestration?", "options": ["Docker", "Kubernetes", "Git", "API"], "correct": "Kubernetes" }
+        ];
+
+        let questions = JSON.parse(JSON.stringify(originalQuestionsData));
+        let currentIndex = 0;
+        let score = 0;
+        let answeredState = new Array(questions.length).fill(false);
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const currentQ = questions[currentIndex];
+            const isAnswered = answeredState[currentIndex];
+            
+            document.getElementById('questionCounter').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = currentQ.q;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            let displayOptions = [...currentQ.options];
+            if (!isAnswered && document.getElementById('shuffleOptionsToggle').checked) {
+                shuffleArray(displayOptions);
+            } else if (isAnswered) {
+                displayOptions = currentQ.displayedOptions || [...currentQ.options];
+            }
+            
+            currentQ.displayedOptions = displayOptions;
+
+            displayOptions.forEach(optionText => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                optDiv.textContent = optionText;
+                
+                if (isAnswered) {
+                    optDiv.classList.add('disabled');
+                    
+                    const isMulti = Array.isArray(currentQ.correct);
+                    if (isMulti) {
+                        if (currentQ.correct.includes(optionText)) optDiv.classList.add('correct');
+                        else if (currentQ.userAnswers && currentQ.userAnswers.includes(optionText)) optDiv.classList.add('incorrect');
+                    } else {
+                        if (optionText === currentQ.correct) optDiv.classList.add('correct');
+                        else if (optionText === currentQ.userAnswers?.[0]) optDiv.classList.add('incorrect');
+                    }
+                } else {
+                    optDiv.onclick = () => handleAnswer(optDiv, optionText);
+                }
+                
+                optionsContainer.appendChild(optDiv);
+            });
+        }
+
+        function handleAnswer(element, selectedAnswer) {
+            if (answeredState[currentIndex]) return;
+            
+            const currentQ = questions[currentIndex];
+            if (!currentQ.userAnswers) currentQ.userAnswers = [];
+            
+            const isMulti = Array.isArray(currentQ.correct);
+
+            // If it's a multiple choice (Choose two/three)
+            if (isMulti) {
+                if (currentQ.userAnswers.includes(selectedAnswer)) return; // already clicked
+                currentQ.userAnswers.push(selectedAnswer);
+                
+                if (currentQ.correct.includes(selectedAnswer)) {
+                    element.classList.add('correct');
+                    element.classList.add('disabled');
+                    
+                    // Check if all correct answers have been found
+                    const foundAll = currentQ.correct.every(ans => currentQ.userAnswers.includes(ans));
+                    if (foundAll) {
+                        answeredState[currentIndex] = true;
+                        score++;
+                        document.getElementById('scoreDisplay').textContent = score;
+                        document.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled'));
+                    }
+                } else {
+                    // Wrong selection - mark it wrong and reveal all correct
+                    element.classList.add('incorrect');
+                    answeredState[currentIndex] = true;
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.add('disabled');
+                        if (currentQ.correct.includes(opt.textContent)) {
+                            opt.classList.add('correct');
+                        }
+                    });
+                }
+            } else {
+                // Standard single choice
+                currentQ.userAnswers = [selectedAnswer];
+                answeredState[currentIndex] = true;
+                
+                document.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled'));
+
+                if (selectedAnswer === currentQ.correct) {
+                    element.classList.add('correct');
+                    score++;
+                    document.getElementById('scoreDisplay').textContent = score;
+                } else {
+                    element.classList.add('incorrect');
+                    document.querySelectorAll('.option').forEach(opt => {
+                        if (opt.textContent === currentQ.correct) {
+                            opt.classList.add('correct');
+                        }
+                    });
+                }
+            }
+        }
+
+        function navigate(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= questions.length) currentIndex = questions.length - 1;
+            loadQuestion();
+        }
+
+        function jumpToQuestion() {
+            const input = document.getElementById('jumpInput');
+            const val = parseInt(input.value);
+            if (!isNaN(val) && val >= 1 && val <= questions.length) {
+                currentIndex = val - 1;
+                loadQuestion();
+                input.value = '';
+            } else {
+                alert(`Please enter a valid number between 1 and ${questions.length}`);
+            }
+        }
+
+        function shuffleQuestions() {
+            if(confirm("This will restart the reviewer and wipe your current score. Continue?")) {
+                shuffleArray(questions);
+                resetStates();
+            }
+        }
+
+        function resetQuiz() {
+            if(confirm("This will reset the quiz back to the original order. Continue?")) {
+                questions = JSON.parse(JSON.stringify(originalQuestionsData));
+                resetStates();
+            }
+        }
+
+        function resetStates() {
+            currentIndex = 0;
+            score = 0;
+            answeredState = new Array(questions.length).fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        document.getElementById('jumpInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') jumpToQuestion();
+        });
+
+        loadQuestion();
+    </script>
+</body>
+</html>
