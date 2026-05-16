@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assembly Language Reviewer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --correct-bg: #dcfce7;
+            --correct-border: #22c55e;
+            --correct-text: #166534;
+            --incorrect-bg: #fee2e2;
+            --incorrect-border: #ef4444;
+            --incorrect-text: #991b1b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .reviewer-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: var(--text);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            white-space: pre-wrap;
+            background: #fdfdfd;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background-color: var(--bg);
+            border: 2px solid transparent;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .option:hover:not(.disabled) {
+            background-color: #e5e7eb;
+        }
+
+        .option.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+            font-weight: 600;
+        }
+
+        .option.incorrect {
+            background-color: var(--incorrect-bg);
+            border-color: var(--incorrect-border);
+            color: var(--incorrect-text);
+            font-weight: 600;
+        }
+
+        .option.disabled {
+            cursor: default;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--bg);
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            font-size: 1rem;
+        }
+
+        .nav-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        code {
+            background: #eee;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reviewer-container">
+        <h1>Assembly Language Reviewer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="jumpInput">Jump to:</label>
+                <input type="number" id="jumpInput" min="1" max="15" placeholder="1-15">
+                <button onclick="jumpToQuestion()">Go</button>
+            </div>
+            <button onclick="shuffleQuestions()">Shuffle Questions</button>
+            <button onclick="resetQuiz()">Reset Reviewer</button>
+        </div>
+
+        <div class="question-header">
+            <div class="question-number" id="questionCounter">Question 1 of 15</div>
+            <div class="score-display">Score: <span id="scoreDisplay">0</span></div>
+        </div>
+
+        <div class="question-text" id="questionText">Loading...</div>
+        
+        <div class="options-container" id="optionsContainer">
+            </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="navigate(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuestionsData = [
+            { q: "A client is essentially software or a machine that provides services to other software or machines.", options: ["True", "False"], correct: "False" },
+            { q: "A server can provide services to multiple clients at once and the client can use multiple servers.", options: ["True", "False"], correct: "True" },
+            { q: "Structural Policies are general statements of how an organization want to behave and procedures define exactly how to do a task or perform step by step", options: ["False", "True"], correct: "True" },
+            { q: "Vendors can provide a broad range of hardware, software and services", options: ["True", "False"], correct: "True" },
+            { q: "Ticketing or bug system is where users can request help on an issue and then you can track your troubleshooting work", options: ["True", "False"], correct: "True" },
+            { q: "As a SysAdmin, you don't have think before you type", options: ["False", "True"], correct: "False" },
+            { q: "As a SysAdmin, you don't think through what you're doing and don't rush.", options: ["True", "False"], correct: "False" },
+            { q: "With great power comes less accountability.", options: ["True", "False"], correct: "False" },
+            { q: "Which of the following is considered a physical infrastructure service? Check all that apply.", options: ["Desktop", "Rack server", "Operating systems", "Laptop"], correct: ["Desktop", "Rack server", "Laptop"] },
+            { q: "In smaller companies, teams assist admins might manage just one service", options: ["False", "True"], correct: "False" },
+            { q: "Platform as a Service includes an entire platform that allows you to build code, store information in a database, and serve your application from a single platform", options: ["False", "True"], correct: "True" },
+            { q: "Directory as a Service includes an entire platform that allows you to build code, store information in a database, and serve your application from a single platform", options: ["False", "True"], correct: "False" },
+            { q: "Simulation is the process of creating a software-based, representation of something, such as virtual applications, servers, storage and networks", options: ["True", "False"], correct: "False" },
+            { q: "When you virtualize a server, you're putting lots of virtual instances on one server. Each instance contains a service.", options: ["False", "True"], correct: "True" },
+            { q: "File Transfer Protocol is a legacy way to transfer files from one computer to another over the Internet", options: ["False", "True"], correct: "True" },
+            { q: "FTP doesn't handle data encryption", options: ["False", "True"], correct: "True" },
+            { q: "In SFTP, data is sent through SSH and is encrypted", options: ["False", "True"], correct: "True" },
+            { q: "In TFTP, data is sent through SSH and is encrypted", options: ["False", "True"], correct: "False" },
+            { q: "In ________, data is sent through SSH and is encrypted", options: ["SFTP", "TFTP", "NTP", "FTP"], correct: "SFTP" },
+            { q: "________ doesn't require user authentication", options: ["FTP", "SFTP", "TFTP", "NTP"], correct: "TFTP" },
+            { q: "NTP is used to host installation files", options: ["False", "True"], correct: "False" },
+            { q: "Preboot Execution allows you to boot into a software that's available over the network", options: ["True", "False"], correct: "True" },
+            { q: "DNS maps human understandable names to IP addresses", options: ["False", "True"], correct: "True" },
+            { q: "Which of the following can be a responsibility of a systems administrator?", options: ["Troubleshooting user issues", "Maintaining servers", "Setting up new user accounts and machines", "All of the above"], correct: "All of the above" },
+            { q: "A server can provide services to multiple clients at once and the server can use multiple servers.", options: ["False", "True"], correct: "True" },
+            { q: "________ which lay flat and are usually mounted in a 90\" wide server rack", options: ["Rack server", "Vertical server", "Tower server", "Blade server"], correct: "Rack server" },
+            { q: "Cloud computing is the delivery of different services through the Internet. These resources include tools and applications like data storage, servers, databases, networking, and software.", options: ["False", "True"], correct: "True" },
+            { q: "Procurement is the stage where hardware is purchased or re-used for any employee.", options: ["True", "False"], correct: "True" },
+            { q: "Procurement is where hardware becomes unusable or no longer needed and it needs to be properly removed from the fleet.", options: ["False", "True"], correct: "False" },
+            { q: "Ordering system is where users can request help on an issue and then you can track your troubleshooting work", options: ["False", "True"], correct: "False" },
+            { q: "________ is a virtual machine running the same configuration as a production environment", options: ["Live environment", "IT infrastructure", "Test environment", "Geographical environment"], correct: "Test environment" },
+            { q: "You may do Reproduction case in your production", options: ["True", "False"], correct: "False" },
+            { q: "In larger companies, teams assist admins might manage just one service", options: ["True", "False"], correct: "True" },
+            { q: "In a larger company, a single person could be responsible for all these services.", options: ["True", "False"], correct: "False" },
+            { q: "Directory as a Service centralizes your organizations users and computers in one location so that you can add, update, and remove users and computers", options: ["True", "False"], correct: "True" },
+            { q: "Directory as a Service centralizes your organizations users and computers in one location so that you can add, update, and remove users and computers", options: ["Infrastructure as a Service", "Networking as a Service", "Platform as a Service", "Software as a Service", "Directory as a Service"], correct: "Directory as a Service" },
+            { q: "Server operating systems are usually more secure and come with additional services already built in", options: ["False", "True"], correct: "True" },
+            { q: "________ is the process of creating a software-based, representation of something, such as virtual applications, servers, storage and networks", options: ["Simulation", "Realization", "Virtualization", "Imitation"], correct: "Virtualization" },
+            { q: "It's cheaper to run several services on one machine than it is to run many services on multiple machines", options: ["True", "False"], correct: "True" },
+            { q: "With virtualized service, you can't quickly stop your service or migrate them to another physical server", options: ["False", "True"], correct: "False" },
+            { q: "TFTP doesn't require user authentication", options: ["False", "True"], correct: "True" },
+            { q: "TFTP does require user authentication", options: ["True", "False"], correct: "False" },
+            { q: "________ is used to keep the clock synchronized on machines connected to a network", options: ["FTP", "TFTP", "SFTP", "NTP"], correct: "NTP" },
+            { q: "Internet is an internal network inside a company", options: ["True", "False"], correct: "False" },
+            { q: "________ works in the background to make sure the IT infrastructure of the company is always working and they prevent IT disasters from happening", options: ["Database Administrators", "Network Engineers", "System Administrators", "Network Administrators"], correct: "System Administrators" },
+            { q: "A ________ is essentially software or a machine that provides services to other software or machines.", options: ["server", "master", "unit", "client"], correct: "server" },
+            { q: "________ is a stripped-down server computer with a modular design optimized to minimize the use of physical space and energy", options: ["Tower server", "Blade server", "Vertical server", "Rack server"], correct: "Blade server" },
+            { q: "A drawback of Cloud Computing is Dependency", options: ["False", "True"], correct: "True" },
+            { q: "Retirement is the stage where software is updated and hardware issues are fixed if and when they occur", options: ["False", "True"], correct: "False" },
+            { q: "Use your administrator rights to access private information that you have no business accessing", options: ["True", "False"], correct: "False" },
+            { q: "With great power comes great responsibility.", options: ["False", "True"], correct: "True" },
+            { q: "Management infrastructure services are what allows an organization to function.", options: ["False", "True"], correct: "False" },
+            { q: "In a smaller company, a single person could be responsible for all these services.", options: ["False", "True"], correct: "True" },
+            { q: "Virtualization is the process of creating a software-based, representation of something, such as virtual applications, servers, storage and networks", options: ["False", "True"], correct: "True" },
+            { q: "When you imitate a server, you're putting lots of virtual instances on one server. Each instance contains a service.", options: ["False", "True"], correct: "False" },
+            { q: "TFTP is used to host installation files", options: ["False", "True"], correct: "True" },
+            { q: "________ is an internal network inside a company", options: ["Extranet", "Intranet", "Internet", "Outernet"], correct: "Intranet" },
+            { q: "IT infrastructure encompasses the software, the hardware, network, and services required for an organization to operate in an enterprise IT environment.", options: ["TRUE", "FALSE"], correct: "TRUE" },
+            { q: "________ encompasses the software, the hardware, network, and services required for an organization to operate in an enterprise IT environment", options: ["Database Infrastructure", "IT infrastructure", "Communications Infrastructure", "Power and Energy Infrastructure"], correct: "IT infrastructure" },
+            { q: "Tower servers are built in an upright cabinet that stands alone.", options: ["True", "False"], correct: "True" },
+            { q: "SysAdmins are responsible for managing users and hardware", options: ["True", "False"], correct: "True" },
+            { q: "SysAdmins constantly don't have to troubleshoot problems and find solutions for your IT needs", options: ["True", "False"], correct: "False" },
+            { q: "SysAdmins have to troubleshoot and prioritize issues at a larger scale", options: ["True", "False"], correct: "True" },
+            { q: "Correct customer service is showing empathy, using the right tone of voice and dealing well with difficult situations.", options: ["False", "True"], correct: "True" },
+            { q: "Reverting to the previous state is called a flashback", options: ["True", "False"], correct: "False" },
+            { q: "Communication Authentication Servers validate users' passwords", options: ["True", "False"], correct: "False" },
+            { q: "Which of these is considered a software service? Check all that apply.", options: ["Word processors", "Chat applications", "Email applications", "Wireless Internet"], correct: ["Word processors", "Chat applications", "Email applications"] },
+            { q: "________ gives a pre-configured virtual machines that you can use just as if you had a physical server", options: ["Directory as a Service", "Infrastructure as a Service", "Software as a Service", "Platform as a Service", "Networking as a Service"], correct: "Infrastructure as a Service" },
+            { q: "Software as a Service allows companies to offshore their networking services so that they don't have to deal with the expensive networking hardware", options: ["True", "False"], correct: "False" },
+            { q: "________ allows companies to offshore their networking services so that they don't have to deal with the expensive networking hardware", options: ["Infrastructure as a Service", "Directory as a Service", "Platform as a Service", "Software as a Service", "Networking as a Service"], correct: "Networking as a Service" },
+            { q: "Server operating systems are are optimized for server functionality.", options: ["False", "True"], correct: "True" },
+            { q: "A KVM switch is used to:", options: ["allow you to serve web content to many clients.", "mount multiple servers into one server rack.", "enable you to receive incoming SSH connections.", "switch between multiple computers using one monitor, keyboard, and mouse"], correct: "switch between multiple computers using one monitor, keyboard, and mouse" },
+            { q: "Client Server computing is the delivery of different services through the Internet. These resources include tools and applications like data storage, servers, databases, networking, and software.", options: ["True", "False"], correct: "False" },
+            { q: "Removing users from an IT infrastructure if users leave the company is not part of user provisioning", options: ["True", "False"], correct: "False" },
+            { q: "SysAdmins is not responsible in ensuring a user is able to log in and that the computer has the necessary software that a user needs to be productive", options: ["True", "False"], correct: "False" },
+            { q: "As a SysAdmin, you have to respect the privacy of others", options: ["False", "True"], correct: "True" },
+            { q: "Production Authentication Servers validate users' passwords", options: ["False", "True"], correct: "False" },
+            { q: "SysAdmins don't need to document what they do and have a way to revert to the previous state", options: ["True", "False"], correct: "False" },
+            { q: "NTP is a legacy way to transfer files from one computer to another over the Internet", options: ["False", "True"], correct: "False" },
+            { q: "Intranet is an internal network inside a company", options: ["True", "False"], correct: "True" },
+            { q: "DNS leases IP addresses to clients", options: ["False", "True"], correct: "False" },
+            { q: "Tower server is a stripped-down server computer with a modular design optimized to minimize the use of physical space and energy", options: ["True", "False"], correct: "False" },
+            { q: "Database Admins have to be able to create new users and give them access to their company's resources", options: ["True", "False"], correct: "False" },
+            { q: "________ is where hardware is set up so that the employee can do their job.", options: ["Maintenance", "Procurement", "Deployment", "Retirement"], correct: "Deployment" },
+            { q: "Reverting to the previous state is called a", options: ["backup", "rewind", "flashback", "rollback"], correct: "rollback" },
+            { q: "Production servers are the service that deliver the website content to the users", options: ["True", "False"], correct: "False" },
+            { q: "Software as a Service are services that you can purchase that allow you to edit word documents, process spreadsheets, make presentations and more, all from a web browser", options: ["False", "True"], correct: "True" },
+            { q: "________ are services that you can purchase that allow you to edit word documents, process spreadsheets, make presentations and more, all from a web browser", options: ["Software as a Service", "Platform as a Service", "Directory as a Service", "Infrastructure as a Service", "Networking as a Service"], correct: "Software as a Service" },
+            { q: "________ is a legacy way to transfer files from one computer to another over the Internet", options: ["DHCP", "FTP", "NTP", "DNS"], correct: "FTP" },
+            { q: "FTP is used to keep the clock synchronized on machines connected to a network", options: ["True", "False"], correct: "False" },
+            { q: "What are the benefits of local computing over cloud computing? Check all that apply", options: ["Updates can be handled at anytime", "There are potential long-term costs associated with local computing", "You have complete control of the IT infrastructure", "Services are handled by another organization, so that makes your organization dependent on a third party"], correct: ["Updates can be handled at anytime", "You have complete control of the IT infrastructure"] },
+            { q: "Reverting to the previous state is called a rollback", options: ["True", "False"], correct: "True" },
+            { q: "________ is creating a roadmap to retrace the steps that led the user to an unexpected outcome", options: ["Reproduction case", "Testing case", "Maintaining case", "Repeating case"], correct: "Reproduction case" },
+            { q: "________ can provide a broad range of hardware, software and services", options: ["Marketers", "Vendors", "Clients", "Manufactures"], correct: "Vendors" },
+            { q: "As a SysAdmin, you don't have to respect the privacy of others", options: ["True", "False"], correct: "False" },
+            { q: "Networking as a Service allows companies to offshore their networking services so that they don't have to deal with the expensive networking hardware", options: ["True", "False"], correct: "True" },
+            { q: "It's more expensive to run several services on one machine than it is to run many services on multiple machines", options: ["False", "True"], correct: "False" },
+            { q: "Postboot Execution allows you to boot into a software that's available over the network", options: ["False", "True"], correct: "False" },
+            { q: "DHCP leases IP addresses to clients", options: ["HTTP", "FTP", "DHCP", "DNS"], correct: "DHCP" },
+            { q: "Database Administrators work in the background to make sure a company's IT infrastructure is always working, constantly fighting to prevent IT disasters from happening", options: ["FALSE", "TRUE"], correct: "FALSE" },
+            { q: "Rack servers are built in an upright cabinet that stands alone.", options: ["True", "False"], correct: "False" },
+            { q: "Cost is not a drawback of Cloud Computing", options: ["True", "False"], correct: "False" },
+            { q: "Troubleshooting is the process of asking questions, isolating the problem and reading logs", options: ["True", "False"], correct: "True" },
+            { q: "Communication servers are the service that deliver the website content to the users", options: ["False", "True"], correct: "False" },
+            { q: "The more users your service reaches, the more you'll want to ensure that changes aren't disruptive", options: ["False", "True"], correct: "True" },
+            { q: "________ includes an entire platform that allows you to build code, store information in a database, and serve your application from a single platform", options: ["Infrastructure as a Service", "Software as a Service", "Directory as a Service", "Platform as a Service", "Networking as a Service"], correct: "Platform as a Service" },
+            { q: "Infrastructure as a Service centralizes your organizations users and computers in one location so that you can add, update, and remove users and computers", options: ["True", "False"], correct: "False" },
+            { q: "A client can provide services to multiple clients at once and it can use multiple servers.", options: ["False", "True"], correct: "False" },
+            { q: "Routine Maintenance constantly provide updates and maintenance so that they run the latest secure software.", options: ["True", "False"], correct: "True" },
+            { q: "Infrastructure as a Service gives a pre-configured virtual machines that you can use just as if you had a physical server", options: ["True", "False"], correct: "True" },
+            { q: "With ________, you can access your data, use applications, and more from anywhere in the world, as long as you have an Internet connection.", options: ["a PAN", "cloud computing", "a WAN", "a LAN"], correct: "cloud computing" },
+            { q: "The more you can do with your administrator rights, the more you can mess up", options: ["True", "False"], correct: "True" },
+            { q: "________ allows you to boot into a software that's available over the network", options: ["On-demand Execution", "Preboot Execution", "In-demand Execution", "Postboot Execution"], correct: "Preboot Execution" },
+            { q: "Communications infrastructure encompasses the software, the hardware, network, and services required for an organization to operate in an enterprise IT environment.", options: ["FALSE", "TRUE"], correct: "FALSE" },
+            { q: "Documenting what you did is not crucial when using administrator rights.", options: ["True", "False"], correct: "False" },
+            { q: "SysAdmins need to document what they do and have a way to revert to the previous state", options: ["True", "False"], correct: "True" },
+            { q: "Removing users from an IT infrastructure if users leave the company is part of user provisioning", options: ["True", "False"], correct: "False" },
+            { q: "SysAdmins constantly have to troubleshoot problems and find solutions for your IT needs", options: ["False", "True"], correct: "True" },
+            { q: "Canary Testing is a way to reduce risk and validate new software by releasing software to a small percentage of users", options: ["False", "True"], correct: "True" },
+            { q: "Vendors can't provide a broad range of hardware, software and services", options: ["True", "False"], correct: "False" },
+            { q: "What are the benefits of cloud computing over local computing? Check all that apply.", options: ["Services are accessible from anywhere in the world", "There are potential long-term costs associated with cloud computing", "Software updates are handled by the company providing the service", "There are smaller starting costs for cloud computing"], correct: ["Services are accessible from anywhere in the world", "Software updates are handled by the company providing the service", "There are smaller starting costs for cloud computing"] },
+            { q: "Industry Standard Servers are typically running 24/7", options: ["True", "False"], correct: "True" },
+            { q: "Maintenance is where hardware is set up so that the employee can do their job.", options: ["True", "False"], correct: "False" },
+            { q: "Maintenance is the stage where software is updated and hardware issues are fixed if and when they occur", options: ["Maintenance", "Deployment", "Procurement", "Retirement"], correct: "Maintenance" },
+            { q: "SysAdmins work with vendors or other businesses to buy hardware", options: ["True", "False"], correct: "True" },
+            { q: "Unit testing is creating a roadmap to retrace the steps that led the user to an unexpected outcome", options: ["False", "True"], correct: "False" },
+            { q: "Which of these is considered a network service? Check all that apply.", options: ["Ethernet cables", "DNS", "Blade server", "Wireless Internet"], correct: ["DNS", "Wireless Internet"] },
+            { q: "Deployment is the stage where hardware is purchased or re-used for any employee.", options: ["True", "False"], correct: "False" },
+            { q: "________ lists company's policies, routine procedures, and more", options: ["Conjectures", "Assumptions", "Documentation", "Presumptions"], correct: "Documentation" },
+            { q: "SysAdmins are not responsible for user machines", options: ["False", "True"], correct: "False" },
+            { q: "________ is a way to reduce risk and validate new software by releasing software to a small percentage of users", options: ["Canary Testing", "Integration Testing", "Interface Testing", "Beta/Acceptance Testing"], correct: "Canary Testing" },
+            { q: "After applying your fix, retrace the same steps that took you to the bad experience.", options: ["True", "False"], correct: "False" },
+            { q: "A server is essentially software or a machine that provides services to other software or machines.", options: ["False", "True"], correct: "True" },
+            { q: "Dependency is not a drawback of Cloud Computing", options: ["True", "False"], correct: "False" },
+            { q: "________ request the services from a server", options: ["Students", "Requestor", "Slaves", "Clients"], correct: "Clients" },
+            { q: "FTP does handle data encryption", options: ["True", "False"], correct: "False" }
+        ];
+
+        let questions = JSON.parse(JSON.stringify(originalQuestionsData));
+        let currentIndex = 0;
+        let score = 0;
+        let answeredState = new Array(questions.length).fill(false);
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestion() {
+            const currentQ = questions[currentIndex];
+            const isAnswered = answeredState[currentIndex];
+            
+            document.getElementById('questionCounter').textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = currentQ.q;
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === questions.length - 1;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            currentQ.options.forEach(optText => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = optText;
+                
+                if (isAnswered) {
+                    div.classList.add('disabled');
+                    if (optText === currentQ.correct) div.classList.add('correct');
+                    else if (optText === currentQ.userAnswer) div.classList.add('incorrect');
+                } else {
+                    div.onclick = () => {
+                        currentQ.userAnswer = optText;
+                        answeredState[currentIndex] = true;
+                        if (optText === currentQ.correct) score++;
+                        document.getElementById('scoreDisplay').textContent = score;
+                        loadQuestion();
+                    };
+                }
+                container.appendChild(div);
+            });
+        }
+
+        function navigate(dir) {
+            currentIndex += dir;
+            loadQuestion();
+        }
+
+        function jumpToQuestion() {
+            const val = parseInt(document.getElementById('jumpInput').value);
+            if (val >= 1 && val <= questions.length) {
+                currentIndex = val - 1;
+                loadQuestion();
+            }
+        }
+
+        function shuffleQuestions() {
+            shuffleArray(questions);
+            currentIndex = 0;
+            score = 0;
+            answeredState.fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        function resetQuiz() {
+            questions = JSON.parse(JSON.stringify(originalQuestionsData));
+            currentIndex = 0;
+            score = 0;
+            answeredState.fill(false);
+            document.getElementById('scoreDisplay').textContent = score;
+            loadQuestion();
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
