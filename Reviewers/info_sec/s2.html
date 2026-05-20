@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoSec Interactive Reviewer</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --bg-color: #1e1e1e;
+            --container-bg: #2d2d2d;
+            --text-color: #f5f5f5;
+            --border: #444;
+            --hover: #3d3d3d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h2 { margin: 0; font-size: 1.2rem; }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.8; }
+        .btn:disabled { background-color: #555; cursor: not-allowed; }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .option:hover { background-color: var(--hover); }
+        .option.selected {
+            border-color: var(--primary);
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .hidden { display: none; }
+        
+        #results { text-align: center; }
+        .score { font-size: 2.5rem; color: var(--primary); margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div id="quiz-screen">
+            <div class="header">
+                <span id="progress-text">Question 1 of X</span>
+                <button id="shuffle-btn" class="btn" style="background-color: #2196F3;">Shuffle Questions</button>
+            </div>
+            
+            <div class="question-text" id="question-text">Loading question...</div>
+            
+            <div class="options" id="options-container">
+                </div>
+
+            <div class="navigation">
+                <button id="prev-btn" class="btn" disabled>Back</button>
+                <button id="next-btn" class="btn">Next</button>
+            </div>
+        </div>
+
+        <div id="results-screen" class="hidden">
+            <div id="results">
+                <h2>Review Completed!</h2>
+                <div class="score" id="score-display">0 / 0</div>
+                <button id="restart-btn" class="btn">Restart Reviewer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // The quiz data array. Add the rest of your questions here.
+const quizData = [
+    {
+        question: "It is a file-level (as opposed to block-level) computer data storage server connected to a computer network providing data access to a heterogeneous group of clients",
+        options: ["Direct-attached storage", "Network-Attached Storage", "Data storage", "Storage area network"],
+        answer: "Network-Attached Storage"
+    },
+    {
+        question: "It is a type of malicious exploit of a website where unauthorized commands are transmitted from a user that the web application trusts.",
+        options: ["Stored cross-site scripting", "Exception", "Reflected cross-site scripting", "Cross-site request forgery"],
+        answer: "Cross-site request forgery"
+    },
+    {
+        question: "It is the proper development, deployment, and maintenance of applications.",
+        options: ["Patch management", "Application security", "Configuration baseline", "Application hardening"],
+        answer: "Application security"
+    },
+    {
+        question: "It may be a handle of taking a wrapped-up application and making it more troublesome to switch design and alter",
+        options: ["Application hardening", "Configuration baseline", "Patch management", "Application security"],
+        answer: "Application hardening"
+    },
+    {
+        question: "These are often necessary in order to fix existing problems with software that are noticed after the initial release.",
+        options: ["Application hardening", "Configuration baseline", "Patch management", "Application security"],
+        answer: "Patch management"
+    },
+    {
+        question: "It addresses specific security flaws",
+        options: ["hotfix", "service pack", "patch", "Rollups"],
+        answer: "hotfix"
+    },
+    {
+        question: "It is utilized for access control, all substances are permitted get to, but those recorded within the boycott",
+        options: ["White listing", "Auditing", "Logging", "Blacklisting"],
+        answer: "Blacklisting"
+    },
+    {
+        question: "It may be a set of changes to a computer program or its supporting information planned to upgrade, settle, or progress it.",
+        options: ["security baseline", "hardening", "trusted computing base", "patch"],
+        answer: "patch"
+    },
+    {
+        question: "It may be lasting (until fixed once more) or brief.",
+        options: ["hardening", "security baseline", "trusted computing base", "patch"],
+        answer: "patch"
+    },
+    {
+        question: "It may be permanent (until patched again) or temporary.",
+        options: ["trusted computing base", "patch", "security baseline", "Hardening"],
+        answer: "patch"
+    },
+    {
+        question: "These apparatuses too serve for the reason of observing any person action, the device consequently picks the information from the connected PC that's being utilized by another worker who are ordinarily the bookkeepers and the investigators.",
+        options: ["Logging", "White listing", "Blacklisting", "Auditing"],
+        answer: "Logging"
+    },
+    {
+        question: "These may be introduced either beneath modified control or by a human software engineer utilizing an altering device or a debugger",
+        options: ["hardening", "security baseline", "patch", "trusted computing base"],
+        answer: "patch"
+    },
+    {
+        question: "It determines the device to whom the message is to be transmitted.",
+        options: ["load balancer", "firewall", "router", "switch"],
+        answer: "switch"
+    },
+    {
+        question: "It does this by filtering the data packets traversing the network.",
+        options: ["load balancer", "all-in-one security appliance", "firewall", "switch"],
+        answer: "firewall"
+    },
+    {
+        question: "It is a conceptual framework used to describe the functions of a networking system.",
+        options: ["Physical Layer", "Data Link Layer", "Network Layer", "OSI Model"],
+        answer: "OSI Model"
+    },
+    {
+        question: "It is a form of network security that works to detect and prevent identified threats",
+        options: ["Wireless-based Intrusion Detection System", "Network-based Intrusion Prevention System", "Wireless Intrusion Prevention System", "Network-based Intrusion Detection System"],
+        answer: "Network-based Intrusion Prevention System"
+    },
+    {
+        question: "It is responsible for receiving frames from the data link layer and delivering them to their intended destinations among based on the addresses contained inside the frame.",
+        options: ["Data Link Layer", "Physical Layer", "Network Layer", "OSI Model"],
+        answer: "Network Layer"
+    },
+    {
+        question: "It is used to monitor and analyze network traffic to protect a system from network-based threats.",
+        options: ["Network-based Intrusion Detection System", "Wireless Intrusion Prevention System", "Network-based Intrusion Prevention System", "Wireless-based Intrusion Detection System"],
+        answer: "Network-based Intrusion Detection System"
+    },
+    {
+        question: "The term can moreover be utilized as a collective thing for the press or news detailing organizations.",
+        options: ["Network adapter", "Network operating system", "Device", "Media"],
+        answer: "Media"
+    },
+    {
+        question: "A network administrator wants to implement a method of securing internal routing. Which of the following should the administrator implement?",
+        options: ["DMZ", "VPN", "NAT", "PAT"],
+        answer: "VPN"
+    },
+    {
+        question: "It alludes to the location of assaults by searching for particular designs, such as byte groupings in network activity, or known noxious instruction groupings utilized by malware.",
+        options: ["Behavior-based", "Anomaly-based", "Heuristic", "Signature-based"],
+        answer: "Signature-based"
+    },
+    {
+        question: "It can be used for several applications across multiple platforms, including UNIX, Microsoft Windows, Apple Mac, and Linux.",
+        options: ["SNMP", "Telnet", "ICMP", "Secure Shell (SSH)"],
+        answer: "Secure Shell (SSH)"
+    },
+    {
+        question: "It encompasses the best features of all other deployment models",
+        options: ["Community", "Private", "Hybrid", "Public"],
+        answer: "Hybrid"
+    },
+    {
+        question: "It is a name used to provide several ways that FTP software can perform secure file transfers.",
+        options: ["TFTP", "FTP", "SFTP", "FTPS"],
+        answer: "FTPS"
+    },
+    {
+        question: "It is a technology that uses encrypted tunnels to create secure connections across public networks like the internet",
+        options: ["VPN Concentrator", "Virtualization", "Virtual Private Network", "Cloud Computing"],
+        answer: "Virtual Private Network"
+    },
+    {
+        question: "It was introduced in 1983 by IBM as an improvement to the standard BIOS used by Windows-based computers.",
+        options: ["NetBIOS", "FTP", "SFTP", "Internet protocol security"],
+        answer: "NetBIOS"
+    },
+    {
+        question: "It can also be used for providing security through segregating clients with an unknown MAC address, or through further extension of the protocol to provide login for Cisco ACLS.",
+        options: ["Log analysis", "Wireless Networks", "VLAN Management", "Implicit deny"],
+        answer: "VLAN Management"
+    },
+    {
+        question: "It is a security protocol designed to provide a wireless LAN with a level of security and privacy comparable to what is usually expected of a wired LAN.",
+        options: ["802.11x", "RMON", "WEP", "LDAP"],
+        answer: "WEP"
+    },
+    {
+        question: "It is a web page accessed with a web browser that is displayed to newly connected users of a Wi-Fi or wired network before they are granted broader access to network resources.",
+        options: ["WEP", "Captive Portals", "WPA", "Site Surveys"],
+        answer: "Captive Portals"
+    },
+    {
+        question: "It is capable of monitoring network traffic to identify DoS attacks in progress generated through packet flooding.",
+        options: ["Port Security", "Loop protection", "Flood guards", "Network separation"],
+        answer: "Flood guards"
+    },
+    {
+        question: "It may be a network switch that contains a mapping of gadget data to VLAN.",
+        options: ["VLAN Management", "Network separation", "MAC limiting", "MAC Filtering"],
+        answer: "VLAN Management"
+    },
+    {
+        question: "It serves as preventive control against denial-of-service (DoS) or conveyed denial-of-service (DDoS) assaults",
+        options: ["Flood guards", "Loop protection", "Network separation", "Port Security"],
+        answer: "Flood guards"
+    },
+    {
+        question: "The protocol with the highest bandwidth capability is _____:",
+        options: ["802.11b", "802.11n", "802.11a", "802.11ac"],
+        answer: "802.11ac"
+    },
+    {
+        question: "Which among the following is the least strong security encryption standard?",
+        options: ["WEP", "WPA", "WPA3", "WPA2"],
+        answer: "WEP"
+    },
+    {
+        question: "Which among them has the strongest wireless security?",
+        options: ["WEP", "WPA3", "WPA", "WPA2"],
+        answer: "WPA3"
+    },
+    {
+        question: "An attack that forces an end user to execute unwanted actions on a web application in which they're currently authenticated.",
+        options: ["Reflected XSS", "Cross-site scripting", "Stored XSS", "Cross-Site Request Forgery"],
+        answer: "Cross-Site Request Forgery"
+    },
+    {
+        question: "It also known as data validation",
+        options: ["Input Validation", "Input validation vulnerability", "Client-side validation", "Server-side validation"],
+        answer: "Input Validation"
+    },
+    {
+        question: "It is a dedicated file storage system which can be connected to many different devices at the same time and allows access to the same disk.",
+        options: ["Network-Attached Storage", "Direct-attached storage", "Data storage", "Storage area network"],
+        answer: "Network-Attached Storage"
+    },
+    {
+        question: "It is a specialized chip on an endpoint device that stores RSA encryption keys specific to the host system for hardware authentication",
+        options: ["Hard Drive", "USB", "Hardware Security Module", "Trusted Platform Module"],
+        answer: "Trusted Platform Module"
+    },
+    {
+        question: "The hone is the most excellent defense against this sort of assault, particularly in case coupled with a helplessness administration program",
+        options: ["Application security", "Patch management", "Configuration baseline", "Application hardening"],
+        answer: "Patch management"
+    },
+    {
+        question: "It describes a password that is difficult to detect by both humans and computer programs, effectively protecting data from unauthorized access.",
+        options: ["cable lock", "Host-based firewalls", "BYOD", "strong password"],
+        answer: "strong password"
+    },
+    {
+        question: "It enforces security policies to ensure security of the system and its information.",
+        options: ["patch", "security baseline", "Hardening", "trusted computing base"],
+        answer: "Hardening"
+    },
+    {
+        question: "It is a collection of tools, techniques, and best practices to reduce vulnerability in technology applications, systems, infrastructure, firmware, and other areas.",
+        options: ["Hardening", "security baseline", "trusted computing base", "patch"],
+        answer: "Hardening"
+    },
+    {
+        question: "It is a collection of security settings.",
+        options: ["patch", "security baseline", "Hardening", "trusted computing base"],
+        answer: "security baseline"
+    },
+    {
+        question: "It is used for access control, all entities are allowed access, except those listed in the blacklist",
+        options: ["Auditing", "White listing", "Logging", "Blacklisting"],
+        answer: "White listing"
+    },
+    {
+        question: "It records either events that occur in an operating system or other software runs, or messages between different users of a communication software.",
+        options: ["Blacklisting", "White listing", "Logging", "Auditing"],
+        answer: "Logging"
+    },
+    {
+        question: "It refers to any software, hardware or process that is used to combat the proliferation of spam or to keep spam from entering a system.",
+        options: ["Anti-spyware", "Anti-spam", "Anti-malware", "Antivirus"],
+        answer: "Anti-spam"
+    },
+    {
+        question: "It contains more advanced features than Hub.",
+        options: ["router", "load balancer", "switch", "firewall"],
+        answer: "switch"
+    },
+    {
+        question: "It delivers the message to the correct destination based on the physical address present in the incoming message.",
+        options: ["firewall", "load balancer", "router", "switch"],
+        answer: "switch"
+    },
+    {
+        question: "It is a form of network security that works to detect and prevent identified threats.",
+        options: ["virtual LAN (VLAN)", "Intrusion detection systems (IDS)", "Intrusion prevention system", "A subnetwork or subnet"],
+        answer: "Intrusion prevention system"
+    },
+    {
+        question: "It is any broadcast domain that is partitioned and isolated in a computer network at the data link layer",
+        options: ["Intrusion prevention system", "Intrusion detection systems (IDS)", "A subnetwork or subnet", "virtual LAN (VLAN)"],
+        answer: "virtual LAN (VLAN)"
+    },
+    {
+        question: "It is network traffic that begins inside network and proceeds through its routers to its destination somewhere outside of the network.",
+        options: ["Egress traffic", "Ingress traffic", "Network adapter", "Network operating system"],
+        answer: "Egress traffic"
+    },
+    {
+        question: "It refers to various means of communication.",
+        options: ["Media", "Device", "Network adapter", "Network operating system"],
+        answer: "Media"
+    },
+    {
+        question: "These were developed as an alternate solution to deploying multiple routers.",
+        options: ["Intrusion prevention system", "virtual LAN (VLAN)", "A subnetwork or subnet", "Intrusion detection systems (IDS)"],
+        answer: "virtual LAN (VLAN)"
+    },
+    {
+        question: "A group of non-profit agencies wants to implement a cloud service to share resources with each other and minimize costs. Which of the following cloud deployment models BEST describes this type of effort?",
+        options: ["Community", "Hybrid", "Private", "Public"],
+        answer: "Community"
+    },
+    {
+        question: "It allows companies to mix and match the facets of all three types that best suit their requirements.",
+        options: ["Private", "Hybrid", "Community", "Public"],
+        answer: "Hybrid"
+    },
+    {
+        question: "It implies putting away and getting to information and programs over the Web rather than your computer's difficult drive.",
+        options: ["VPN Concentrator", "Virtual Private Network", "Cloud Computing", "Virtualization"],
+        answer: "Cloud Computing"
+    },
+    {
+        question: "It is a supporting protocol in the Internet protocol suite.",
+        options: ["ICMP", "Telnet", "SNMP", "Secure Shell (SSH)"],
+        answer: "ICMP"
+    },
+    {
+        question: "It is a type of security solution that prevents unsecured traffic from entering an internal network of an organization.",
+        options: ["Network Address Translation", "DMZ", "Network Monitoring Systems", "Web Security Gateway"],
+        answer: "Web Security Gateway"
+    },
+    {
+        question: "It is an interruption discovery framework for identifying both network and computer interruptions and abuse by checking system action and classifying it as either ordinary or atypical",
+        options: ["Anomaly-based", "Heuristic", "Behavior-based", "Signature-based"],
+        answer: "Anomaly-based"
+    },
+    {
+        question: "It is outlined to screen and oversee the network activity stream over a network.",
+        options: ["Network Monitoring Systems", "DMZ", "Web Security Gateway", "Network Address Translation"],
+        answer: "Network Monitoring Systems"
+    },
+    {
+        question: "It may be a method utilized to adjust the network address data of a host whereas traffic is navigating a switch or firewall.",
+        options: ["Network Address Translation", "Network Monitoring Systems", "DMZ", "Web Security Gateway"],
+        answer: "Network Address Translation"
+    },
+    {
+        question: "AP is abbreviated as",
+        options: ["Access Point", "Access Position", "Access Port", "Accessing Port"],
+        answer: "Access Point"
+    },
+    {
+        question: "It helps in reducing problem diagnosis, resolution time and in effective management of applications and infrastructure.",
+        options: ["Wireless Networks", "Implicit deny", "VLAN Management", "Log analysis"],
+        answer: "Log analysis"
+    },
+    {
+        question: "It increments the effectiveness of STP, RSTP, and MSTP by avoiding ports from moving into a sending state that would result in a circle opening within the network",
+        options: ["Network separation", "Loop protection", "Port Security", "Flood guards"],
+        answer: "Loop protection"
+    },
+    {
+        question: "It performs a specified action when BPDUs are not received on a non-designated port interface",
+        options: ["Loop protection", "Port Security", "Network separation", "Flood guards"],
+        answer: "Loop protection"
+    },
+    {
+        question: "It provides enterprise and consumer Wi-Fi users with a high level of assurance that only authorized users can access their wireless networks.",
+        options: ["WPA3", "WEP", "WPA2", "WPA"],
+        answer: "WPA2"
+    },
+    {
+        question: "It allows an attacker to circumvent the same origin policy, which is designed to segregate different websites from each other.",
+        options: ["Cross-Site Request Forgery", "Stored XSS", "Reflected XSS", "Cross-site scripting"],
+        answer: "Cross-site scripting"
+    },
+    {
+        question: "It also known as second-order or persistent XSS",
+        options: ["Cross-site scripting", "Reflected cross-site scripting", "Stored cross-site scripting", "Exception"],
+        answer: "Stored cross-site scripting"
+    },
+    {
+        question: "It enables attackers to inject client-side scripts into web pages viewed by other users.",
+        options: ["Exception", "Reflected cross-site scripting", "Cross-site scripting", "Stored cross-site scripting"],
+        answer: "Cross-site scripting"
+    },
+    {
+        question: "It is the simplest variety of cross-site scripting.",
+        options: ["Cross-site scripting", "Reflected XSS", "Stored XSS", "Cross-Site Request Forgery"],
+        answer: "Reflected XSS"
+    },
+    {
+        question: "It works by manipulating a vulnerable web site so that it returns malicious JavaScript to users.",
+        options: ["Cross-Site Request Forgery", "Reflected XSS", "Stored XSS", "Cross-site scripting"],
+        answer: "Reflected XSS"
+    },
+    {
+        question: "The vulnerability may be used by attackers to bypass access controls such as the same-origin policy.",
+        options: ["Exception", "Stored cross-site scripting", "Cross-site scripting", "Reflected cross-site scripting"],
+        answer: "Cross-site scripting"
+    },
+    {
+        question: "It can be used to find and remove spyware that has already been installed on the user's computer, or it can act much like an anti-virus program by providing real-time protection and preventing spyware from being downloaded in the first place.",
+        options: ["Antivirus", "Anti-malware", "Anti-spyware", "Anti-spam"],
+        answer: "Anti-spyware"
+    },
+    {
+        question: "It detects spyware through rules-based methods or based on downloaded definition files that identify common spyware programs.",
+        options: ["Anti-malware", "Anti-spam", "Antivirus", "Anti-spyware"],
+        answer: "Anti-spyware"
+    },
+    {
+        question: "It implements security arrangements to guarantee security of the system and its data.",
+        options: ["hardening", "security baseline", "patch", "trusted computing base"],
+        answer: "hardening"
+    },
+    {
+        question: "It is list of items, such as usernames or IP addresses, that are denied access to a certain system or protocol.",
+        options: ["Blacklisting", "Logging", "White listing", "Auditing"],
+        answer: "Blacklisting"
+    },
+    {
+        question: "It refers to any software or application that disables any pop-up, pop-over or pop-under advertisement window that you would see while using a Web browser.",
+        options: ["Host-based firewalls", "Anti-spam", "pop-up blocker", "Anti-spyware"],
+        answer: "pop-up blocker"
+    },
+    {
+        question: "These tools also serve for the purpose of monitoring any individual activity, the tool automatically picks the data from the linked PC that is being used by another employee who are usually the accountants and the analysts.",
+        options: ["Logging", "White listing", "Auditing", "Blacklisting"],
+        answer: "Logging"
+    },
+    {
+        question: "Which passwords below would be considered strong?",
+        options: ["password", "W@lk+hed0g", "Alabama", "Shelby07"],
+        answer: "W@lk+hed0g"
+    },
+    {
+        question: "It continuously monitors your network, looking for possible malicious incidents and capturing information about them",
+        options: ["virtual LAN (VLAN)", "Intrusion detection systems (IDS)", "A subnetwork or subnet", "Intrusion prevention system"],
+        answer: "Intrusion detection systems (IDS)"
+    },
+    {
+        question: "It does not broadcast the message to the entire network like the Hub.",
+        options: ["router", "switch", "firewall", "load balancer"],
+        answer: "switch"
+    },
+    {
+        question: "It forwards the packet based on the information available in the routing table.",
+        options: ["switch", "firewall", "load balancer", "router"],
+        answer: "router"
+    },
+    {
+        question: "These are logical network segments used to create separate broadcast domains",
+        options: ["virtual LAN (VLAN)", "Intrusion detection systems (IDS)", "A subnetwork or subnet", "Intrusion prevention system"],
+        answer: "virtual LAN (VLAN)"
+    },
+    {
+        question: "A server administrator needs to administer a server remotely using RDP, but the specified port is closed on the outbound firewall on the network. The access the server using RDP on a port other than the typical registered port for the RDP protocol.",
+        options: ["SCP", "SSH", "TLS", "MPLS"],
+        answer: "SSH"
+    },
+    {
+        question: "It allows you to create a secure connection to another network over the Internet.",
+        options: ["Cloud Computing", "VPN Concentrator", "Virtual Private Network", "Virtualization"],
+        answer: "Virtual Private Network"
+    },
+    {
+        question: "It is a type of router device, built specifically for creating and managing VPN communication infrastructures",
+        options: ["Virtual Private Network", "Cloud Computing", "Virtualization", "VPN Concentrator"],
+        answer: "VPN Concentrator"
+    },
+    {
+        question: "It is basically utilized by arrange directors and security staff to screen the operations of a network",
+        options: ["Network Address Translation", "Web Security Gateway", "Network Monitoring Systems", "DMZ"],
+        answer: "Network Monitoring Systems"
+    },
+    {
+        question: "It is the process of running a virtual instance of a computer system in a layer abstracted from the actual hardware.",
+        options: ["Virtual Private Network", "Virtualization", "VPN Concentrator", "Cloud Computing"],
+        answer: "Virtualization"
+    },
+    {
+        question: "It largely resembles a private one; the only difference is the set of users.",
+        options: ["Community", "Hybrid", "Private", "Public"],
+        answer: "Community"
+    },
+    {
+        question: "It is an old IEEE 802.11 standard from the year 1999.",
+        options: ["WPA2", "WPA", "WEP", "WPA3"],
+        answer: "WEP"
+    },
+    {
+        question: "It is portable, inexpensive and no obtrusive cabling connections of terminals.",
+        options: ["802.11a", "802.11g", "wireless standards", "802.11b"],
+        answer: "wireless standards"
+    },
+    {
+        question: "Maximum speed of 802.11a",
+        options: ["1Gbps", "600 Mbps", "54 Mbps", "11 Mbps"],
+        answer: "54 Mbps"
+    },
+    {
+        question: "Maximum speed of 802.11n",
+        options: ["54 Mbps", "1Gbps", "600 Mbps", "11 Mbps"],
+        answer: "600 Mbps"
+    },
+    {
+        question: "These are available either as standalone devices or as firewall components.",
+        options: ["Flood guards", "Loop protection", "Port Security", "Network separation"],
+        answer: "Flood guards"
+    },
+    {
+        question: "An attack that tricks the victim into submitting a malicious request.",
+        options: ["Stored XSS", "Reflected XSS", "Cross-Site Request Forgery", "Cross-site scripting"],
+        answer: "Cross-Site Request Forgery"
+    },
+    {
+        question: "Input validation and error recover at the server",
+        options: ["Client-side validation", "Input validation vulnerability", "Server-side validation", "Input Validation"],
+        answer: "Server-side validation"
+    },
+    {
+        question: "It is a crypto processor that can be used to enhance security.",
+        options: ["Hard Drive", "USB", "Hardware Security Module", "Trusted Platform Module"],
+        answer: "Trusted Platform Module"
+    },
+    {
+        question: "It is an area of systems management that involves acquiring, testing and installing multiple patches, or code changes, to an administered computer system",
+        options: ["Patch management", "Application security", "Configuration baseline", "Application hardening"],
+        answer: "Patch management"
+    },
+    {
+        question: "These are primarily used to enhance accessibility of storage devices, such as disk arrays and tape libraries, to servers so that the devices appear to the operating system as locally attached devices.",
+        options: ["Data storage", "Storage area network", "Network-Attached Storage", "Direct-attached storage"],
+        answer: "Storage area network"
+    },
+    {
+        question: "These are regularly essential in order to settle existing issues with computer program that are taken note after the introductory discharge",
+        options: ["Application hardening", "Patch management", "Application security", "Configuration baseline"],
+        answer: "Patch management"
+    },
+    {
+        question: "It allows access from all items, except those included the list.",
+        options: ["Auditing", "Blacklisting", "White listing", "Logging"],
+        answer: "Blacklisting"
+    },
+    {
+        question: "It is a list of items that are granted access to a certain system or protocol.",
+        options: ["Logging", "Auditing", "White listing", "Blacklisting"],
+        answer: "White listing"
+    },
+    {
+        question: "It is a supplemental code",
+        options: ["rollups", "service pack", "hotfix", "patch"],
+        answer: "patch"
+    },
+    {
+        question: "It is the process of collecting and storing data over a period in order to analyze specific trends or record the data-based events/actions of a system, network or IT environment.",
+        options: ["Auditing", "White listing", "Logging", "Blacklisting"],
+        answer: "Auditing"
+    },
+    {
+        question: "It finds the destination by using logical addresses, such as IP (internet protocol).",
+        options: ["Data Link Layer", "Physical Layer", "Network Layer", "OSI Model"],
+        answer: "Network Layer"
+    },
+    {
+        question: "It refers to a basic OS that runs on a network device, such as a router or firewall.",
+        options: ["Network adapter", "Media", "Device", "Network operating system"],
+        answer: "Network operating system"
+    },
+    {
+        question: "A Chief Information Security Officer (CISO) asks the security architect to design a method for contractors to access the company's internal network securely without allowing access to systems beyond the scope of their project. Which of the following methods would BEST fit the needs of the CISO?",
+        options: ["VPN", "laas", "VDI", "PaaS"],
+        answer: "VDI"
+    },
+    {
+        question: "It is utilized by ventures to ensure their employees/users from getting to and being contaminated by pernicious Web traffic, websites and virus/malware.",
+        options: ["DMZ", "Web Security Gateway", "Network Monitoring Systems", "Network Address Translation"],
+        answer: "Web Security Gateway"
+    },
+    {
+        question: "It provides wider opportunities for customizing the infrastructure to the company’s requirements.",
+        options: ["Community", "Public", "Private", "Hybrid"],
+        answer: "Private"
+    },
+    {
+        question: "It may be a layer two traffic control highlight on Cisco Catalyst switches",
+        options: ["Port Security", "Loop protection", "Network separation", "Flood guards"],
+        answer: "Port Security"
+    },
+    {
+        question: "Maximum speed of 802.11g",
+        options: ["1Gbps", "11 Mbps", "600 Mbps", "54 Mbps"],
+        answer: "54 Mbps"
+    },
+    {
+        question: "These are accessible either as standalone gadgets or as firewall components.",
+        options: ["Flood guards", "Network separation", "Loop protection", "Port Security"],
+        answer: "Flood guards"
+    },
+    {
+        question: "This is a specification for a set of communication protocols to standardize the way that wireless devices can be used for Internet access.",
+        options: ["WAP", "WAX", "TETRA", "VSAT"],
+        answer: "WAP"
+    },
+    {
+        question: "It could be a settled reference within the advancement cycle or an agreed-upon detail of a item at a point in time.",
+        options: ["Patch management", "Application security", "Application hardening", "Configuration baseline"],
+        answer: "Configuration baseline"
+    },
+    {
+        question: "It involves inputting massive amounts of random data, called fuzz, to the test subject to make it crash.",
+        options: ["Web content", "fuzzing", "Encryption", "Proxy server"],
+        answer: "fuzzing"
+    },
+    {
+        question: "It is a concept in which multiple layers of security are used to defend assets.",
+        options: ["Data Security", "Web content Security", "Site security", "Defense in depth"],
+        answer: "Defense in depth"
+    },
+    {
+        question: "It is a process through which some or all the Internet activity initiated from a Web browser is natively encrypted.",
+        options: ["Site security", "Pop-up blocker", "Defense in depth", "Encryption"],
+        answer: "Encryption"
+    },
+    {
+        question: "It is the correct improvement, arrangement, and support of applications",
+        options: ["Patch management", "Configuration baseline", "Application hardening", "Application security"],
+        answer: "Application security"
+    },
+    {
+        question: "It defines a set of basic security objectives which must be met by any given service or system",
+        options: ["trusted computing base", "security baseline", "patch", "Hardening"],
+        answer: "security baseline"
+    },
+    {
+        question: "It is a software was originally developed to detect and remove computer viruses",
+        options: ["Anti-malware", "Anti-spam", "Anti-spyware", "Antivirus"],
+        answer: "Antivirus"
+    },
+    {
+        question: "A company wishes to move all of its services and applications to a cloud provider but wants to maintain full control of the deployment, access, and provisions of its services to its users. Which of the following BEST represents the required cloud deployment model?",
+        options: ["laas", "SaaS", "Private", "Hybrid", "MaaS"],
+        answer: "Private"
+    },
+    {
+        question: "It is a set of protocols that provides security for Internet Protocol",
+        options: ["FTP", "NetBIOS", "Internet protocol security", "SFTP"],
+        answer: "Internet protocol security"
+    },
+    {
+        question: "It is malware location assesses a protest based on its aiming activities some time recently it can execute that behavior.",
+        options: ["Heuristic", "Signature-based", "Behavior-based", "Anomaly-based"],
+        answer: "Heuristic"
+    },
+    {
+        question: "Which of the following is the appropriate network structure used to protect servers and services that must be provided to external clients without eliminating access for internal users?",
+        options: ["DMZ", "VLAN", "NAC", "Subnet"],
+        answer: "DMZ"
+    },
+    {
+        question: "It ensures against flooding of the Ethernet exchanging table, and is empowered on Layer 2 interfaces",
+        options: ["MAC limiting", "Network separation", "MAC Filtering", "VLAN Management"],
+        answer: "MAC limiting"
+    },
+    {
+        question: "Maximum speed of 802.11ac",
+        options: ["600 Mbps", "11 Mbps", "54 Mbps", "1Gbps"],
+        answer: "1Gbps"
+    },
+    {
+        question: "It inherits the identity and privileges of the victim to perform an undesired function on the victim’s behalf.",
+        options: ["Reflected XSS", "Cross-site scripting", "Stored XSS", "Cross-Site Request Forgery"],
+        answer: "Cross-Site Request Forgery"
+    },
+    {
+        question: "It is a model of computer data storage in which the digital data is stored in logical pools.",
+        options: ["Cloud storage", "Storage area network", "Direct-attached storage", "Network-Attached Storage"],
+        answer: "Cloud storage"
+    },
+    {
+        question: "It is information is being sent to the server and validated using one of server-side languages.",
+        options: ["Server-side validation", "Input validation vulnerability", "Input Validation", "Client-side validation"],
+        answer: "Server-side validation"
+    },
+    {
+        question: "A company would like to prevent the use of a known set of applications from being used on company computers. Which of the following should the security administrator implement?",
+        options: ["Blacklisting", "Application hardening", "Anti-malware", "Whitelisting", "Disable removable media"],
+        answer: "Blacklisting"
+    },
+    {
+        question: "It could be a collection of security settings.",
+        options: ["patch", "security baseline", "trusted computing base", "hardening"],
+        answer: "security baseline"
+    },
+    {
+        question: "Is also used as a collective noun but refers to different types of data storage options.",
+        options: ["Media", "Network operating system", "Network adapter", "Device"],
+        answer: "Media"
+    },
+    {
+        question: "It characterizes computing functions into a universal set of rules and requirements in order to support interoperability between different products and software.",
+        options: ["OSI Model", "Physical Layer", "Data Link Layer", "Network Layer"],
+        answer: "OSI Model"
+    },
+    {
+        question: "It is used to receive, analyze and forward the incoming packets to another network.",
+        options: ["firewall", "router", "switch", "load balancer"],
+        answer: "router"
+    },
+    {
+        question: "These rules include what type of data may be transmitted, what commands are used to send and receive data, and how data transfers are confirmed.",
+        options: ["Network operating system", "Protocol", "Media", "Network adapter"],
+        answer: "Protocol"
+    },
+    {
+        question: "This layer sees network services provided to end-user applications such as a web browser or Office 365.",
+        options: ["Session Layer", "Presentation Layer", "Transport Layer", "Application Layer"],
+        answer: "Application Layer"
+    },
+    {
+        question: "It is the first choice for businesses that operate within the industries with low privacy concerns.",
+        options: ["Public", "Private", "Hybrid", "Community"],
+        answer: "Public"
+    },
+    {
+        question: "It is the method of running a virtual occasion of a computer system in a layer preoccupied from the real equipment",
+        options: ["Virtual Private Network", "Virtualization", "VPN Concentrator", "Cloud Computing"],
+        answer: "Virtualization"
+    },
+    {
+        question: "It was first developed by Netscape in 1995 for the purpose of ensuring privacy, authentication, and data integrity in Internet communications.",
+        options: ["HTTP", "SSL", "TLS", "HTTPS"],
+        answer: "SSL"
+    },
+    {
+        question: "A security administrator suspects that data on a server has been exhilarated as a result of un- authorized remote access. Which of the following would assist the administrator in con-firming the suspicions?",
+        options: ["Log analysis", "Host firewall rules", "Networking access control", "File integrity monitoring"],
+        answer: "Log analysis"
+    },
+    {
+        question: "It refers to a security access control method whereby the MAC address assigned to each network card is used to determine access to the network.",
+        options: ["Network separation", "VLAN Management", "MAC limiting", "MAC Filtering"],
+        answer: "MAC Filtering"
+    },
+    {
+        question: "It is computer storage that is connected to one computer and not accessible to other computers.",
+        options: ["Storage area network", "Direct-attached storage", "Network-Attached Storage", "Data storage"],
+        answer: "Direct-attached storage"
+    },
+    {
+        question: "It should happen as early as possible in the data flow, preferably as soon as the data is received from the external party.",
+        options: ["Client-side validation", "Input Validation", "Input validation vulnerability", "Server-side validation"],
+        answer: "Input Validation"
+    },
+    {
+        question: "An audit found that an organization needs to implement job rotation to be compliant with regulatory requirements. To prevent unauthorized access to systems after an individual changes roles or departments, which of the following should the organization implement?",
+        options: ["Multifactor authentication", "Permission auditing and review", "Exit interviews", "Offboarding"],
+        answer: "Permission auditing and review"
+    },
+    {
+        question: "It ought to incorporate Microsoft's proposals for arranging those settings",
+        options: ["patch", "hardening", "trusted computing base", "security baseline"],
+        answer: "security baseline"
+    },
+    {
+        question: "It records either occasions that happen in a working system or other program runs, or messages between distinctive clients of a communication program",
+        options: ["Blacklisting", "Logging", "Auditing", "White listing"],
+        answer: "Logging"
+    },
+    {
+        question: "A standard set of rules that allow electronic devices to communicate with each other.",
+        options: ["Protocol", "Network adapter", "Network operating system", "Media"],
+        answer: "Protocol"
+    },
+    {
+        question: "Also known as Network Interface Card",
+        options: ["Network adapter", "Media", "Network operating system", "Device"],
+        answer: "Network adapter"
+    },
+    {
+        question: "It is especially suitable for companies that seek to safeguard their mission-critical operations or for businesses with changing requirements.",
+        options: ["Private", "Public", "Hybrid", "Community"],
+        answer: "Hybrid"
+    },
+    {
+        question: "It may be a sort of security arrangement that avoids unsecured activity from entering an inside network of an organization.",
+        options: ["DMZ", "Network Address Translation", "Network Monitoring Systems", "Web Security Gateway"],
+        answer: "Web Security Gateway"
+    },
+    {
+        question: "It alludes to a security get to control strategy whereby the MAC address alloted to each network card is utilized to decide to get to the network",
+        options: ["MAC limiting", "MAC Filtering", "VLAN Management", "Network separation"],
+        answer: "MAC Filtering"
+    },
+    {
+        question: "It is the anticipation of unauthorized access or break to computers or data by means of wireless networks.",
+        options: ["Wired Security", "Wireless security", "Wired device apps", "Wireless access"],
+        answer: "Wireless security"
+    },
+    {
+        question: "It arises when an application receives data from an untrusted source and includes that data within its later HTTP responses in an unsafe way.",
+        options: ["Cross-site scripting", "Exception", "Reflected cross-site scripting", "Stored cross-site scripting"],
+        answer: "Reflected cross-site scripting"
+    },
+    {
+        question: "It specifically targets state-changing requests, not theft of data, since the attacker has no way to see the response to the forged request.",
+        options: ["Cross-site scripting", "Stored XSS", "Reflected XSS", "Cross-Site Request Forgery"],
+        answer: "Cross-Site Request Forgery"
+    },
+    {
+        question: "These are also known by several other names, including XSRF, \"Sea Surf\", Session Riding, Cross-Site Reference Forgery, and Hostile Linking.",
+        options: ["Cross-Site Request Forgery", "Reflected XSS", "Cross-site scripting", "Stored XSS"],
+        answer: "Cross-Site Request Forgery"
+    },
+    {
+        question: "These are typically composed of hosts, switches, storage elements, and storage devices that are interconnected using a variety of technologies, topologies, and protocols.",
+        options: ["Storage area network", "Direct-attached storage", "Data storage", "Network-Attached Storage"],
+        answer: "Storage area network"
+    },
+    {
+        question: "It characterizes a set of fundamental security goals which must be met by any given benefit or system",
+        options: ["security baseline", "patch", "hardening", "trusted computing base"],
+        answer: "security baseline"
+    },
+    {
+        question: "It could be a list of things that are allowed get to a certain framework or convention.",
+        options: ["White listing", "Logging", "Auditing", "Blacklisting"],
+        answer: "White listing"
+    },
+    {
+        question: "It is a type of software program designed to prevent, detect and remove malicious software (malware) on IT systems, as well as individual computing devices.",
+        options: ["Antivirus", "Anti-malware", "Anti-spyware", "Anti-spam"],
+        answer: "Anti-malware"
+    },
+    {
+        question: "These are frequently composed to progress the usefulness, convenience, or execution of a program.",
+        options: ["trusted computing base", "hardening", "patch", "security baseline"],
+        answer: "patch"
+    },
+    {
+        question: "It contains the updated table that decides where the data is transmitted or not.",
+        options: ["firewall", "router", "load balancer", "switch"],
+        answer: "router"
+    },
+    {
+        question: "This strategy is utilized to cover up the network data of a private network whereas permitting activity to be exchanged over a open organize just like the web.",
+        options: ["Network Monitoring Systems", "Web Security Gateway", "DMZ", "Network Address Translation"],
+        answer: "Network Address Translation"
+    },
+    {
+        question: "It is a logical subdivision of an IP network.",
+        options: ["virtual LAN (VLAN)", "Intrusion detection systems (IDS)", "A subnetwork or subnet", "Intrusion prevention system"],
+        answer: "A subnetwork or subnet"
+    },
+    {
+        question: "Maximum speed of 802.11b",
+        options: ["11 Mbps", "54 Mbps", "600 Mbps", "1Gbps"],
+        answer: "11 Mbps"
+    },
+    {
+        question: "At this layer, both the end user and the application layer interact directly with the software application.",
+        options: ["Application Layer", "Presentation Layer", "Transport Layer", "Session Layer"],
+        answer: "Application Layer"
+    },
+    {
+        question: "It could be an innovation that employments scrambled tunnels to form secure associations over open networks just like the web",
+        options: ["Virtualization", "Cloud Computing", "VPN Concentrator", "Virtual Private Network"],
+        answer: "Virtual Private Network"
+    },
+    {
+        question: "It empowers a director to design person switch ports to permit as it were a indicated number of source MAC addresses entrance the port",
+        options: ["Port Security", "Network separation", "Loop protection", "Flood guards"],
+        answer: "Port Security"
+    },
+    {
+        question: "It is the standard security technology for establishing an encrypted link between a web server and a browser",
+        options: ["HTTPS", "TLS", "HTTP", "SSL"],
+        answer: "SSL"
+    },
+    {
+        question: "It is a physical lock on a computer with an accompanying key used for access control or as an anti-theft system.",
+        options: ["strong password", "cable lock", "Host-based firewalls", "BYOD"],
+        answer: "cable lock"
+    },
+    {
+        question: "It is a concept in which multiple layers of security are used to defend assets.",
+        options: ["Pop-up blocker", "Defense in depth", "Parental controls", "Site security"],
+        answer: "Defense in depth"
+    },
+    {
+        question: "It is the opposite of a blacklist.",
+        options: ["White listing", "Blacklisting"],
+        answer: "White listing"
+    },
+    {
+        question: "It may be a firewall setup utilized to secure hosts on a network fragment.",
+        options: ["Web Security Gateway", "Network Monitoring Systems", "Network Address Translation", "DMZ"],
+        answer: "DMZ"
+    },
+    {
+        question: "It is the device utilized for partitioning a arrange into smaller parts which are called subnetworks or network sections",
+        options: ["VLAN Management", "Network separation", "MAC limiting", "MAC Filtering"],
+        answer: "Network separation"
+    },
+    {
+        question: "It is also known as Quick Fix Engineering update (QFE update).",
+        options: ["patch", "Rollups", "service pack", "hotfix"],
+        answer: "hotfix"
+    },
+    {
+        question: "It is traffic that originates from outside the network's routers and proceeds toward a destination inside the network.",
+        options: ["Network adapter", "Network operating system", "Ingress traffic", "Egress traffic"],
+        answer: "Ingress traffic"
+    },
+    {
+        question: "The practice of dividing a network into two or more networks is called",
+        options: ["virtual LAN (VLAN)", "Intrusion detection systems (IDS)", "A subnetwork or subnet", "Intrusion prevention system"],
+        answer: "A subnetwork or subnet"
+    },
+    {
+        question: "It is a set of protocols for network management and monitoring.",
+        options: ["Telnet", "Secure Shell (SSH)", "SNMP", "ICMP"],
+        answer: "SNMP"
+    },
+    {
+        question: "It may be a sort of organizing gadget that gives secure creation of VPN associations and conveyance of messages between VPN hubs.",
+        options: ["Virtualization", "Cloud Computing", "Virtual Private Network", "VPN Concentrator"],
+        answer: "VPN Concentrator"
+    },
+    {
+        question: "It could be a collection of apparatuses, strategies, and best hones to decrease vulnerability in innovation applications, systems, infrastructure, firmware, and other ranges",
+        options: ["hardening", "patch", "trusted computing base", "security baseline"],
+        answer: "hardening"
+    },
+    {
+        question: "The term can also be used as a collective noun for the press or news reporting agencies.",
+        options: ["Network operating system", "Network adapter", "Media", "Device"],
+        answer: "Media"
+    },
+    {
+        question: "These are designed to detect unauthorized user activities, attacks, and network compromises.",
+        options: ["Intrusion detection systems (IDS)", "Router", "virtual LAN (VLAN)", "A subnetwork or subnet"],
+        answer: "Intrusion detection systems (IDS)"
+    },
+    {
+        question: "It is performed to ensure only properly formed data is entering the workflow in an information system, preventing malformed data from persisting in the database and triggering malfunction of various downstream components.",
+        options: ["Input validation vulnerability", "Server-side validation", "Input Validation", "Client-side validation"],
+        answer: "Input Validation"
+    },
+    {
+        question: "It could be a collection of upgrades and fixes, called patches, for an working framework or a software program.",
+        options: ["hotfix", "patch", "Rollups", "service pack"],
+        answer: "patch"
+    }
+];
+
+        // State variables
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let activeQuestions = [...quizData];
+
+        // DOM Elements
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressText = document.getElementById('progress-text');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const scoreDisplay = document.getElementById('score-display');
+
+        // Initialize the quiz
+        function loadQuestion() {
+            const currentQ = activeQuestions[currentQuestionIndex];
+            questionText.textContent = currentQ.question;
+            progressText.textContent = `Question ${currentQuestionIndex + 1} of ${activeQuestions.length}`;
+            
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+
+            // Generate options
+            currentQ.options.forEach(option => {
+                const optionEl = document.createElement('div');
+                optionEl.classList.add('option');
+                optionEl.textContent = option;
+                
+                // Check if this was previously selected by the user
+                if (userAnswers[currentQuestionIndex] === option) {
+                    optionEl.classList.add('selected');
+                }
+
+                optionEl.onclick = () => selectOption(option, optionEl);
+                optionsContainer.appendChild(optionEl);
+            });
+
+            // Update button states
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === activeQuestions.length - 1) {
+                nextBtn.textContent = 'Finish';
+                nextBtn.style.backgroundColor = '#FF9800'; // Change color for finish button
+            } else {
+                nextBtn.textContent = 'Next';
+                nextBtn.style.backgroundColor = 'var(--primary)';
+            }
+        }
+
+        // Handle option selection
+        function selectOption(selectedOption, element) {
+            userAnswers[currentQuestionIndex] = selectedOption;
+            
+            // Visually update selection
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // Fisher-Yates Shuffle Algorithm
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Event Listeners
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < activeQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        });
+
+        shuffleBtn.addEventListener('click', () => {
+            if(confirm("Are you sure you want to shuffle? This will reset your current progress.")) {
+                shuffleArray(activeQuestions);
+                userAnswers = new Array(activeQuestions.length).fill(null);
+                currentQuestionIndex = 0;
+                loadQuestion();
+            }
+        });
+
+        restartBtn.addEventListener('click', () => {
+            userAnswers = new Array(activeQuestions.length).fill(null);
+            currentQuestionIndex = 0;
+            quizScreen.classList.remove('hidden');
+            resultsScreen.classList.add('hidden');
+            
+            // Optional: Auto-shuffle on restart
+            // shuffleArray(activeQuestions); 
+            
+            loadQuestion();
+        });
+
+        function showResults() {
+            let score = 0;
+            
+            for (let i = 0; i < activeQuestions.length; i++) {
+                if (userAnswers[i] === activeQuestions[i].answer) {
+                    score++;
+                }
+            }
+
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+            
+            // Calculate percentage for color coding
+            const percentage = (score / activeQuestions.length) * 100;
+            scoreDisplay.textContent = `${score} / ${activeQuestions.length}`;
+            
+            if(percentage >= 80) {
+                scoreDisplay.style.color = '#4CAF50'; // Green for pass
+            } else if (percentage >= 60) {
+                scoreDisplay.style.color = '#FFC107'; // Yellow for ok
+            } else {
+                scoreDisplay.style.color = '#F44336'; // Red for fail
+            }
+        }
+
+        // Start app
+        loadQuestion();
+    </script>
+</body>
+</html>
