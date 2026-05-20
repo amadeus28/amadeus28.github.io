@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InfoSec Interactive Reviewer</title>
+    <title>InfoSec Interactive Reviewer - Practice Mode</title>
     <style>
         :root {
             --primary: #4CAF50;
+            --danger: #F44336;
             --bg-color: #1e1e1e;
             --container-bg: #2d2d2d;
             --text-color: #f5f5f5;
@@ -47,7 +48,7 @@
         h2 { margin: 0; font-size: 1.2rem; }
 
         .btn {
-            background-color: var(--primary);
+            background-color: #2196F3;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -78,25 +79,46 @@
             padding: 12px;
             border-radius: 5px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, border-color 0.2s;
         }
 
-        .option:hover { background-color: var(--hover); }
-        .option.selected {
+        .option:hover:not(.disabled) { background-color: var(--hover); }
+        
+        /* New Styles for Immediate Feedback */
+        .option.correct {
             border-color: var(--primary);
-            background-color: rgba(76, 175, 80, 0.1);
+            background-color: rgba(76, 175, 80, 0.15);
         }
+
+        .option.incorrect {
+            border-color: var(--danger);
+            background-color: rgba(244, 67, 54, 0.15);
+        }
+        
+        .option.disabled {
+            cursor: default;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+            min-height: 24px;
+        }
+        .feedback.correct { color: var(--primary); }
+        .feedback.incorrect { color: var(--danger); }
 
         .navigation {
             display: flex;
             justify-content: space-between;
-            margin-top: 25px;
+            margin-top: 20px;
         }
 
         .hidden { display: none; }
         
         #results { text-align: center; }
         .score { font-size: 2.5rem; color: var(--primary); margin: 20px 0; }
+        .score-subtext { margin-bottom: 25px; color: #aaa; }
     </style>
 </head>
 <body>
@@ -105,7 +127,7 @@
         <div id="quiz-screen">
             <div class="header">
                 <span id="progress-text">Question 1 of X</span>
-                <button id="shuffle-btn" class="btn" style="background-color: #2196F3;">Shuffle Questions</button>
+                <button id="shuffle-btn" class="btn">Shuffle Questions</button>
             </div>
             
             <div class="question-text" id="question-text">Loading question...</div>
@@ -113,9 +135,11 @@
             <div class="options" id="options-container">
                 </div>
 
+            <div id="feedback-message" class="feedback"></div>
+
             <div class="navigation">
                 <button id="prev-btn" class="btn" disabled>Back</button>
-                <button id="next-btn" class="btn">Next</button>
+                <button id="next-btn" class="btn" style="background-color: var(--primary);">Next</button>
             </div>
         </div>
 
@@ -123,14 +147,15 @@
             <div id="results">
                 <h2>Review Completed!</h2>
                 <div class="score" id="score-display">0 / 0</div>
+                <div class="score-subtext">Score is based on your first attempt for each question.</div>
                 <button id="restart-btn" class="btn">Restart Reviewer</button>
             </div>
         </div>
     </div>
 
     <script>
-        // The quiz data array. Add the rest of your questions here.
-const quizData = [
+        // --- PASTE YOUR FULL 184 QUESTIONS ARRAY HERE ---
+            const quizData = [
     {
         question: "It is a file-level (as opposed to block-level) computer data storage server connected to a computer network providing data access to a heterogeneous group of clients",
         options: ["Direct-attached storage", "Network-Attached Storage", "Data storage", "Storage area network"],
@@ -1055,13 +1080,18 @@ const quizData = [
 
         // State variables
         let currentQuestionIndex = 0;
-        let userAnswers = new Array(quizData.length).fill(null);
         let activeQuestions = [...quizData];
+        
+        // Trackers for immediate feedback and scoring
+        let firstAttempts = new Array(activeQuestions.length).fill(null); // Tracks if 1st guess was right/wrong for scoring
+        let lockedQuestions = new Array(activeQuestions.length).fill(false); // True if they eventually got it right
+        let wrongGuesses = Array.from({ length: activeQuestions.length }, () => []); // Remembers which wrong answers they clicked
 
         // DOM Elements
         const questionText = document.getElementById('question-text');
         const optionsContainer = document.getElementById('options-container');
         const progressText = document.getElementById('progress-text');
+        const feedbackMsg = document.getElementById('feedback-message');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         const shuffleBtn = document.getElementById('shuffle-btn');
@@ -1070,14 +1100,24 @@ const quizData = [
         const resultsScreen = document.getElementById('results-screen');
         const scoreDisplay = document.getElementById('score-display');
 
-        // Initialize the quiz
         function loadQuestion() {
             const currentQ = activeQuestions[currentQuestionIndex];
             questionText.textContent = currentQ.question;
             progressText.textContent = `Question ${currentQuestionIndex + 1} of ${activeQuestions.length}`;
             
-            // Clear previous options
+            // Clear previous options and feedback
             optionsContainer.innerHTML = '';
+            feedbackMsg.textContent = '';
+            feedbackMsg.className = 'feedback';
+
+            // Restore feedback text if navigating back to an already answered question
+            if (lockedQuestions[currentQuestionIndex]) {
+                feedbackMsg.textContent = 'Correct!';
+                feedbackMsg.className = 'feedback correct';
+            } else if (wrongGuesses[currentQuestionIndex].length > 0) {
+                feedbackMsg.textContent = 'Incorrect, try again!';
+                feedbackMsg.className = 'feedback incorrect';
+            }
 
             // Generate options
             currentQ.options.forEach(option => {
@@ -1085,21 +1125,24 @@ const quizData = [
                 optionEl.classList.add('option');
                 optionEl.textContent = option;
                 
-                // Check if this was previously selected by the user
-                if (userAnswers[currentQuestionIndex] === option) {
-                    optionEl.classList.add('selected');
+                // Re-apply states if the user navigated backward
+                if (lockedQuestions[currentQuestionIndex]) {
+                    if (option === currentQ.answer) optionEl.classList.add('correct');
+                    optionEl.classList.add('disabled');
+                } else if (wrongGuesses[currentQuestionIndex].includes(option)) {
+                    optionEl.classList.add('incorrect');
                 }
 
                 optionEl.onclick = () => selectOption(option, optionEl);
                 optionsContainer.appendChild(optionEl);
             });
 
-            // Update button states
+            // Update navigation button states
             prevBtn.disabled = currentQuestionIndex === 0;
             
             if (currentQuestionIndex === activeQuestions.length - 1) {
                 nextBtn.textContent = 'Finish';
-                nextBtn.style.backgroundColor = '#FF9800'; // Change color for finish button
+                nextBtn.style.backgroundColor = '#FF9800'; 
             } else {
                 nextBtn.textContent = 'Next';
                 nextBtn.style.backgroundColor = 'var(--primary)';
@@ -1108,15 +1151,45 @@ const quizData = [
 
         // Handle option selection
         function selectOption(selectedOption, element) {
-            userAnswers[currentQuestionIndex] = selectedOption;
-            
-            // Visually update selection
-            const allOptions = document.querySelectorAll('.option');
-            allOptions.forEach(opt => opt.classList.remove('selected'));
-            element.classList.add('selected');
+            // Do nothing if question is already answered correctly
+            if (lockedQuestions[currentQuestionIndex]) return;
+
+            const currentQ = activeQuestions[currentQuestionIndex];
+
+            // Record first attempt for final score
+            if (firstAttempts[currentQuestionIndex] === null) {
+                firstAttempts[currentQuestionIndex] = (selectedOption === currentQ.answer);
+            }
+
+            if (selectedOption === currentQ.answer) {
+                // Correct Answer Logic
+                element.classList.remove('incorrect');
+                element.classList.add('correct');
+                feedbackMsg.textContent = 'Correct!';
+                feedbackMsg.className = 'feedback correct';
+                lockedQuestions[currentQuestionIndex] = true;
+                
+                // Disable all options
+                const allOptions = document.querySelectorAll('.option');
+                allOptions.forEach(opt => opt.classList.add('disabled'));
+            } else {
+                // Incorrect Answer Logic
+                if (!wrongGuesses[currentQuestionIndex].includes(selectedOption)) {
+                    wrongGuesses[currentQuestionIndex].push(selectedOption);
+                }
+                element.classList.add('incorrect');
+                feedbackMsg.textContent = 'Incorrect, try again!';
+                feedbackMsg.className = 'feedback incorrect';
+            }
         }
 
-        // Fisher-Yates Shuffle Algorithm
+        function resetGameState() {
+            firstAttempts = new Array(activeQuestions.length).fill(null);
+            lockedQuestions = new Array(activeQuestions.length).fill(false);
+            wrongGuesses = Array.from({ length: activeQuestions.length }, () => []);
+            currentQuestionIndex = 0;
+        }
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -1124,7 +1197,6 @@ const quizData = [
             }
         }
 
-        // Event Listeners
         nextBtn.addEventListener('click', () => {
             if (currentQuestionIndex < activeQuestions.length - 1) {
                 currentQuestionIndex++;
@@ -1144,29 +1216,24 @@ const quizData = [
         shuffleBtn.addEventListener('click', () => {
             if(confirm("Are you sure you want to shuffle? This will reset your current progress.")) {
                 shuffleArray(activeQuestions);
-                userAnswers = new Array(activeQuestions.length).fill(null);
-                currentQuestionIndex = 0;
+                resetGameState();
                 loadQuestion();
             }
         });
 
         restartBtn.addEventListener('click', () => {
-            userAnswers = new Array(activeQuestions.length).fill(null);
-            currentQuestionIndex = 0;
+            resetGameState();
             quizScreen.classList.remove('hidden');
             resultsScreen.classList.add('hidden');
-            
-            // Optional: Auto-shuffle on restart
-            // shuffleArray(activeQuestions); 
-            
             loadQuestion();
         });
 
         function showResults() {
             let score = 0;
             
+            // Calculate score based on FIRST attempts only
             for (let i = 0; i < activeQuestions.length; i++) {
-                if (userAnswers[i] === activeQuestions[i].answer) {
+                if (firstAttempts[i] === true) {
                     score++;
                 }
             }
@@ -1174,16 +1241,15 @@ const quizData = [
             quizScreen.classList.add('hidden');
             resultsScreen.classList.remove('hidden');
             
-            // Calculate percentage for color coding
             const percentage = (score / activeQuestions.length) * 100;
             scoreDisplay.textContent = `${score} / ${activeQuestions.length}`;
             
             if(percentage >= 80) {
-                scoreDisplay.style.color = '#4CAF50'; // Green for pass
+                scoreDisplay.style.color = '#4CAF50'; 
             } else if (percentage >= 60) {
-                scoreDisplay.style.color = '#FFC107'; // Yellow for ok
+                scoreDisplay.style.color = '#FFC107'; 
             } else {
-                scoreDisplay.style.color = '#F44336'; // Red for fail
+                scoreDisplay.style.color = '#F44336'; 
             }
         }
 
