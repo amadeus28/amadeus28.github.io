@@ -5,21 +5,21 @@ const credly = (id) => `https://www.credly.com/badges/${id}/public_url`;
 /* ---------- data ---------- */
 
 const certs = [
-  { name: 'DevNet Associate', issuer: 'Cisco', date: 'Apr 2026', badge: 'devnet-associate.png', credly: '427a14a9-955a-4c6f-b689-a8118dff3fcf', pdf: 'DevNet Associate - Certificate.pdf' },
+  { name: 'DevNet Associate', issuer: 'Cisco', date: 'Apr 2026', badge: 'devnet-associate.png', credly: '427a14a9-955a-4c6f-b689-a8118dff3fcf', pdf: 'DevNet Associate - Certificate.pdf', view: 'devnet-associate.jpg' },
   { name: 'PMI Project Management Ready™', issuer: 'Project Management Institute', date: 'Mar 2026', badge: 'pmi-project-management-ready.png', credly: 'e7d8e5d8-dc7f-4379-b713-5930a83cec58' },
-  { name: 'CCNA: Enterprise Networking, Security, and Automation', issuer: 'Cisco', date: 'Dec 2025', badge: 'ccna-enterprise-networking-security-and-automation.png', credly: '888316eb-e863-4d80-8225-dd50bb7e489c', pdf: 'CCNA Enterprise Networking Security and Automation - Certificate.pdf' },
+  { name: 'CCNA: Enterprise Networking, Security, and Automation', issuer: 'Cisco', date: 'Dec 2025', badge: 'ccna-enterprise-networking-security-and-automation.png', credly: '888316eb-e863-4d80-8225-dd50bb7e489c', pdf: 'CCNA Enterprise Networking Security and Automation - Certificate.pdf', view: 'ccna-ensa.jpg' },
   { name: 'IT Specialist – Databases', issuer: 'Certiport', date: 'Nov 2025', badge: 'it-specialist-databases.png', credly: '94dbcb74-43de-4421-8a6f-a8f83b509017' },
   { name: 'NDG Linux Essentials', issuer: 'Cisco', date: 'Nov 2025' },
-  { name: 'CCNA: Switching, Routing, and Wireless Essentials', issuer: 'Cisco', date: 'Mar 2025', badge: 'ccna-switching-routing-and-wireless-essentials.1.png', credly: '1e585b23-9e34-48a5-a31d-32d4f5d94ae7', pdf: 'CCNA Switching Routing and Wireless Essentials - Certification.pdf' },
+  { name: 'CCNA: Switching, Routing, and Wireless Essentials', issuer: 'Cisco', date: 'Mar 2025', badge: 'ccna-switching-routing-and-wireless-essentials.1.png', credly: '1e585b23-9e34-48a5-a31d-32d4f5d94ae7', pdf: 'CCNA Switching Routing and Wireless Essentials - Certification.pdf', view: 'ccna-srwe.jpg' },
   { name: 'Cisco Certified Support Technician Networking', issuer: 'Cisco', date: 'Feb 2025', badge: 'cisco-certified-support-technician-networking-ccst-.png', credly: '5e0785b0-7834-440b-80a1-bb190bd10499' },
   { name: 'IT Specialist – Python', issuer: 'Certiport', date: 'Feb 2025', badge: 'it-specialist-python.png', credly: 'f480f35a-761f-4b10-97d8-a6d53a85a60a' },
-  { name: 'CCNA: Introduction to Networks', issuer: 'Cisco', date: 'Feb 2025', badge: 'ccna-introduction-to-networks.png', credly: '39cd1940-12be-4727-823b-0ed9c6286a41', pdf: 'CCNA Introduction to Networks - Certificate.pdf' },
+  { name: 'CCNA: Introduction to Networks', issuer: 'Cisco', date: 'Feb 2025', badge: 'ccna-introduction-to-networks.png', credly: '39cd1940-12be-4727-823b-0ed9c6286a41', pdf: 'CCNA Introduction to Networks - Certificate.pdf', view: 'ccna-itn.jpg' },
 ];
 
 const courses = [
-  { title: 'Public Speaking Foundations (2023)', sub: 'LinkedIn Learning', date: 'Sep 2025', href: 'Cert/CertificateOfCompletion_Public Speaking Foundations 2023.pdf' },
-  { title: 'Figma Essential Training: The Basics', sub: 'LinkedIn Learning · 1h 37m', date: 'Sep 2025', href: 'Cert/CertificateOfCompletion_Figma Essential Training The Basics.pdf' },
-  { title: 'Essential Skills in Adobe Premiere Pro 2025', sub: 'LinkedIn Learning · Professional Certificate · 5h 53m', date: 'Aug 2025', href: 'Cert/CertificateOfCompletion_Essential Skills in Adobe Premiere Pro 2025 Professional Certificate.pdf' },
+  { title: 'Public Speaking Foundations (2023)', sub: 'LinkedIn Learning', date: 'Sep 2025', href: 'Cert/CertificateOfCompletion_Public Speaking Foundations 2023.pdf', view: 'public-speaking.jpg' },
+  { title: 'Figma Essential Training: The Basics', sub: 'LinkedIn Learning · 1h 37m', date: 'Sep 2025', href: 'Cert/CertificateOfCompletion_Figma Essential Training The Basics.pdf', view: 'figma.jpg' },
+  { title: 'Essential Skills in Adobe Premiere Pro 2025', sub: 'LinkedIn Learning · Professional Certificate · 5h 53m', date: 'Aug 2025', href: 'Cert/CertificateOfCompletion_Essential Skills in Adobe Premiere Pro 2025 Professional Certificate.pdf', view: 'premiere-pro.jpg' },
 ];
 
 const webinars = [
@@ -42,6 +42,9 @@ const el = (tag, attrs = {}, ...children) => {
 };
 const extLink = (href, text, cls = 'link') =>
   el('a', { class: cls, href, target: '_blank', rel: 'noopener' }, text);
+// Opens in the on-page viewer; href stays as a fallback (no JS, or ctrl/middle-click)
+const viewLink = (href, view, caption, content, cls = 'link') =>
+  el('a', { class: cls, href, target: '_blank', rel: 'noopener', 'data-view': view, 'data-caption': caption }, content);
 
 const badgeList = document.getElementById('badgeList');
 certs.forEach((c) => {
@@ -50,7 +53,7 @@ certs.forEach((c) => {
     : el('div', { class: 'badge__img badge__img--blank' }, 'NDG');
   const links = el('div', { class: 'badge__links' },
     c.credly && extLink(credly(c.credly), 'Verify ↗'),
-    c.pdf && extLink(file('Cert/' + c.pdf), 'Certificate'));
+    c.pdf && viewLink(file('Cert/' + c.pdf), 'assets/certs/' + c.view, c.name, 'Certificate'));
   badgeList.append(el('article', { class: 'badge' },
     img,
     el('p', { class: 'badge__name' }, c.name),
@@ -63,7 +66,7 @@ const renderRows = (id, items) => {
   const list = document.getElementById(id);
   items.forEach((r) => {
     list.append(el('li', {},
-      el('p', { class: 'row__title' }, extLink(file(r.href), r.title, '')),
+      el('p', { class: 'row__title' }, viewLink(file(r.href), 'assets/certs/' + r.view, r.title, r.title, '')),
       el('p', { class: 'row__date' }, r.date),
       el('p', { class: 'row__sub' }, r.sub)));
   });
@@ -73,7 +76,9 @@ renderRows('courseList', courses);
 const webinarList = document.getElementById('webinarList');
 webinars.forEach((w) => {
   webinarList.append(el('figure', { class: 'webinar' },
-    el('img', { src: 'assets/webinars/' + w.img, alt: `Certificate of participation: ${w.title}`, loading: 'lazy' }),
+    viewLink('assets/webinars/full/' + w.img, 'assets/webinars/full/' + w.img, w.title,
+      el('img', { src: 'assets/webinars/' + w.img, alt: `Certificate of participation: ${w.title}`, loading: 'lazy' }),
+      'webinar__shot'),
     el('p', { class: 'webinar__meta' }, `Webinar · ${w.date}`),
     el('p', { class: 'webinar__title' }, w.title),
     el('p', { class: 'webinar__host' }, `Hosted by ${w.org}`)));
@@ -105,17 +110,42 @@ document.getElementById('scrim').addEventListener('click', () => setMenu(false))
 document.querySelectorAll('#sideNav a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
 
 // Highlight the section currently in view
-const navLinks = new Map(
-  [...document.querySelectorAll('#sideNav a')].map((a) => [a.getAttribute('href').slice(1), a])
-);
-const spy = new IntersectionObserver((entries) => {
-  entries.forEach((e) => {
-    if (!e.isIntersecting) return;
-    navLinks.forEach((a) => a.classList.remove('is-current'));
-    navLinks.get(e.target.id)?.classList.add('is-current');
-  });
-}, { rootMargin: '-45% 0px -50% 0px' });
-navLinks.forEach((_, id) => spy.observe(document.getElementById(id)));
+const navLinks = [...document.querySelectorAll('#sideNav a')];
+const navTargets = navLinks.map((a) => document.getElementById(a.getAttribute('href').slice(1)));
+
+const updateNav = () => {
+  let current = 0;
+  const line = window.innerHeight * 0.35;
+  navTargets.forEach((t, i) => { if (t.getBoundingClientRect().top <= line) current = i; });
+  // Short last sections can never reach the line; at the bottom of the page, pick the last one
+  if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+    current = navTargets.length - 1;
+  }
+  navLinks.forEach((a, i) => a.classList.toggle('is-current', i === current));
+};
+window.addEventListener('scroll', updateNav, { passive: true });
+window.addEventListener('resize', updateNav);
+updateNav();
+
+/* ---------- image viewer ---------- */
+
+const viewer = document.getElementById('viewer');
+const viewerImg = document.getElementById('viewerImg');
+const viewerCaption = document.getElementById('viewerCaption');
+
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('[data-view]');
+  if (!trigger || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+  e.preventDefault();
+  viewerImg.src = trigger.dataset.view;
+  viewerImg.alt = trigger.dataset.caption || '';
+  viewerCaption.textContent = trigger.dataset.caption || '';
+  viewer.showModal();
+});
+// Clicking outside the image closes it
+viewer.addEventListener('click', (e) => { if (e.target === viewer) viewer.close(); });
+document.getElementById('viewerClose').addEventListener('click', () => viewer.close());
+viewer.addEventListener('close', () => { viewerImg.removeAttribute('src'); });
 
 /* ---------- portrait that looks at the cursor ---------- */
 

@@ -126,18 +126,18 @@
       <h2 class="section__title">Projects</h2>
       <article class="project">
         <div class="project__media">
-          <a class="shot shot--logo" href="Certifications%20and%20Webinars/Projects/Thesis/WsipFlow%20Logo.png" target="_blank" rel="noopener">
+          <a class="shot shot--logo" href="Certifications%20and%20Webinars/Projects/Thesis/WsipFlow%20Logo.png" target="_blank" rel="noopener" data-view="assets/full/wisp-flow-logo.jpg" data-caption="WISP-FLOW logo">
             <img src="assets/wisp-flow-logo.jpg" alt="WISP-FLOW logo" loading="lazy">
           </a>
           <div class="project__posters">
             <figure>
-              <a class="shot" href="Certifications%20and%20Webinars/Projects/Thesis/WISP-FLOW-POSTER.png" target="_blank" rel="noopener">
+              <a class="shot" href="Certifications%20and%20Webinars/Projects/Thesis/WISP-FLOW-POSTER.png" target="_blank" rel="noopener" data-view="assets/full/wisp-flow-poster.jpg" data-caption="WISP-FLOW · Project poster">
                 <img src="assets/wisp-flow-poster.jpg" alt="WISP-FLOW project poster" loading="lazy">
               </a>
               <figcaption>Project poster</figcaption>
             </figure>
             <figure>
-              <a class="shot" href="Certifications%20and%20Webinars/Projects/Thesis/WISP-FLOW-POSTER-2.png" target="_blank" rel="noopener">
+              <a class="shot" href="Certifications%20and%20Webinars/Projects/Thesis/WISP-FLOW-POSTER-2.png" target="_blank" rel="noopener" data-view="assets/full/wisp-flow-poster-2.jpg" data-caption="WISP-FLOW · Research poster">
                 <img src="assets/wisp-flow-poster-2.jpg" alt="WISP-FLOW research poster" loading="lazy">
               </a>
               <figcaption>Research poster</figcaption>
@@ -230,6 +230,16 @@
       <span>© <span id="year"></span> Aldrin Lorenz Ligutan</span>
     </footer>
   </main>
+
+  <dialog class="viewer" id="viewer" aria-label="Image viewer">
+    <button class="viewer__close" id="viewerClose" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <figure>
+      <img id="viewerImg" alt="">
+      <figcaption id="viewerCaption"></figcaption>
+    </figure>
+  </dialog>
 
   <script src="script.js"></script>
 </body>
