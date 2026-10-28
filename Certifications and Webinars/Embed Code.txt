@@ -1,0 +1,31 @@
+CCNA: Enterprise Networking, Security, and Automation
+https://www.credly.com/badges/888316eb-e863-4d80-8225-dd50bb7e489c/public_url
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="888316eb-e863-4d80-8225-dd50bb7e489c" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+CCNA: Introduction to Networks
+https://www.credly.com/badges/39cd1940-12be-4727-823b-0ed9c6286a41/public_url
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="39cd1940-12be-4727-823b-0ed9c6286a41" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+CCNA: Switching, Routing, and Wireless Essentials
+https://www.credly.com/badges/1e585b23-9e34-48a5-a31d-32d4f5d94ae7/public_url
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="1e585b23-9e34-48a5-a31d-32d4f5d94ae7" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+Cisco Certified Support Technician Networking (CCST Networking) - Lifetime
+https://www.credly.com/badges/5e0785b0-7834-440b-80a1-bb190bd10499/public_url
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="5e0785b0-7834-440b-80a1-bb190bd10499" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+DevNet Associate
+https://www.credly.com/badges/427a14a9-955a-4c6f-b689-a8118dff3fcf/public_url
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="427a14a9-955a-4c6f-b689-a8118dff3fcf" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+IT Specialist - Databases
+https://www.credly.com/badges/94dbcb74-43de-4421-8a6f-a8f83b509017/public_url
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="94dbcb74-43de-4421-8a6f-a8f83b509017" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+IT Specialist - Python
+https://www.credly.com/badges/f480f35a-761f-4b10-97d8-a6d53a85a60a/public_url
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="f480f35a-761f-4b10-97d8-a6d53a85a60a" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+PMI Project Management Ready™
+https://www.credly.com/badges/e7d8e5d8-dc7f-4379-b713-5930a83cec58/public_url
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="e7d8e5d8-dc7f-4379-b713-5930a83cec58" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
